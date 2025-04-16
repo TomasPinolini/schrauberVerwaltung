@@ -1,0 +1,882 @@
+<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Screwdriver Management</title><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"/><link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/><style>body{margin:0;background-color:#121212;color:#fff;font-family:Roboto,sans-serif}#root{padding:2rem;max-width:1200px;margin:0 auto}.tree-item{margin:4px 0}.instance{background-color:rgba(255,255,255,.05);border-radius:4px;padding:8px 12px;margin:4px 0;border-left:2px solid #64b5f6}.category{border-left:2px solid #1976d2;padding:8px 0 8px 12px;margin:8px 0}.category-content{margin-left:24px}.button{margin:0 4px;padding:6px 16px;border-radius:4px;border:none;cursor:pointer;font-size:14px;transition:background-color .2s}.button-primary{background-color:#1976d2;color:#fff}.button-primary:hover{background-color:#1565c0}.button-secondary{background-color:#9c27b0;color:#fff}.button-secondary:hover{background-color:#8e24aa}.button-danger{background-color:#d32f2f;color:#fff}.button-danger:hover{background-color:#c62828}.toggle-button{background:0 0;border:none;color:#1976d2;cursor:pointer;padding:4px;margin-right:8px;transition:transform .2s;width:24px;height:24px;display:flex;align-items:center;justify-content:center}.toggle-button.expanded{transform:rotate(90deg)}.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}.header h1{margin:0;font-size:2rem;color:#fff}.modal-backdrop{position:fixed;top:0;left:0;right:0;bottom:0;background-color:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:1000}.modal-content{background-color:#1e1e1e;border-radius:8px;padding:24px;min-width:400px;box-shadow:0 4px 6px rgba(0,0,0,.1)}.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.modal-title{margin:0;font-size:1.5rem;color:#fff}.modal-close{background:0 0;border:none;color:#fff;font-size:1.5rem;cursor:pointer;padding:4px}.modal-body{margin-bottom:20px}.input-group{margin-bottom:16px}.input-label{display:block;margin-bottom:8px;color:#fff}.input-field{width:100%;padding:8px 12px;background-color:#2d3748;border:1px solid #4a5568;border-radius:4px;color:#fff;font-size:1rem}.input-field:focus{outline:0;border-color:#1976d2}.radio-group{margin-top:12px}.radio-label{margin-right:16px;color:#fff}.error-message{color:#f44336;margin-top:8px;font-size:.875rem}</style><script defer="defer" src="/static/js/main.2b4d720b.js"></script></head><body><div id="root"><div style="text-align:center;padding:20px">Loading...</div></div><script type="text/babel">// Helper function to build tree structure
+        function buildTree(items, parentId = null) {
+            return items
+                .filter(item => item.parent_id === parentId)
+                .map(item => ({
+                    ...item,
+                    children: buildTree(items, item.id)
+                }));
+        }
+
+        function Modal({ isOpen, onClose, title, children }) {
+            if (!isOpen) return null;
+
+            return (
+                <div className="modal-backdrop" onClick={onClose}>
+                    <div className="modal-content" onClick={e => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2 className="modal-title">{title}</h2>
+                            <button className="modal-close" onClick={onClose}>&times;</button>
+                        </div>
+                        <div className="modal-body">
+                            {children}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function AddItemForm({ parentItem, onSubmit, onClose }) {
+            const [name, setName] = React.useState('');
+            const [error, setError] = React.useState('');
+            const [loading, setLoading] = React.useState(true);
+            const [attributes, setAttributes] = React.useState([]);
+            const [attributeValues, setAttributeValues] = React.useState({});
+            const isAddingToCategory = Boolean(parentItem.name);
+
+            React.useEffect(() => {
+                if (isAddingToCategory) {
+                    // Fetch all applicable attributes for this category (including inherited ones)
+                    const fetchAttributes = async () => {
+                        try {
+                            const response = await fetch(`http://localhost:3000/api/attributes?screwdriver_id=${parentItem.id}`);
+                            if (!response.ok) throw new Error('Failed to fetch attributes');
+                            const data = await response.json();
+                            setAttributes(data);
+                            
+                            // Initialize attribute values with defaults
+                            const initialValues = {};
+                            data.forEach(attr => {
+                                if (attr.default_value) {
+                                    initialValues[attr.id] = attr.default_value;
+                                }
+                            });
+                            setAttributeValues(initialValues);
+                            
+                            setLoading(false);
+                        } catch (err) {
+                            setError('Failed to load attributes: ' + err.message);
+                            setLoading(false);
+                        }
+                    };
+                    fetchAttributes();
+                } else {
+                    setLoading(false);
+                }
+            }, [parentItem.id, isAddingToCategory]);
+
+            const validateValue = (value, format) => {
+                if (!format) return true;
+                try {
+                    const regex = new RegExp(format);
+                    return regex.test(value);
+                } catch (e) {
+                    return false;
+                }
+            };
+
+            const handleValueChange = (attributeId, value) => {
+                setAttributeValues(prev => ({
+                    ...prev,
+                    [attributeId]: value
+                }));
+            };
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                setError('');
+
+                if (!name.trim()) {
+                    setError('Name is required');
+                    return;
+                }
+
+                // Validate instance name format
+                if (isAddingToCategory) {
+                    if (!/^[\d.]+[A-Z]$/.test(name)) {
+                        setError('Instance name must end with a capital letter (e.g., 1.1.1.A)');
+                        return;
+                    }
+
+                    // Validate required attributes
+                    const missingRequired = attributes
+                        .filter(attr => attr.is_required && !attributeValues[attr.id])
+                        .map(attr => attr.name);
+                    
+                    if (missingRequired.length > 0) {
+                        setError(`Required attributes missing: ${missingRequired.join(', ')}`);
+                        return;
+                    }
+
+                    // Validate attribute formats
+                    const invalidFormats = attributes
+                        .filter(attr => attributeValues[attr.id] && attr.format_data && !validateValue(attributeValues[attr.id], attr.format_data))
+                        .map(attr => attr.name);
+
+                    if (invalidFormats.length > 0) {
+                        setError(`Invalid format for attributes: ${invalidFormats.join(', ')}`);
+                        return;
+                    }
+                } else {
+                    if (!/^[\d.]+$/.test(name)) {
+                        setError('Category name must only contain numbers and dots (e.g., 1.1.1)');
+                        return;
+                    }
+                }
+
+                try {
+                    // Create the instance/category
+                    const response = await fetch('http://localhost:3000/api/screwdrivers', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            name,
+                            type: isAddingToCategory ? 'instance' : 'category',
+                            parent_id: parentItem.id,
+                            state: 'on'
+                        }),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to create item');
+                    }
+
+                    const newItem = await response.json();
+
+                    if (isAddingToCategory) {
+                        // Set attribute values
+                        const attrResponse = await fetch(`http://localhost:3000/api/screwdrivers/${newItem.id}/attributes`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(attributeValues),
+                        });
+
+                        if (!attrResponse.ok) {
+                            throw new Error('Failed to set attribute values');
+                        }
+                    }
+
+                    onSubmit();
+                    onClose();
+                } catch (err) {
+                    setError(err.message);
+                }
+            };
+
+            if (loading && isAddingToCategory) {
+                return <div>Loading attributes...</div>;
+            }
+
+            return (
+                <form onSubmit={handleSubmit}>
+                    <div style={{ 
+                        backgroundColor: '#2d3748', 
+                        padding: '8px 12px', 
+                        borderRadius: '4px', 
+                        marginBottom: '16px',
+                        color: '#a0aec0',
+                        fontSize: '0.9rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
+                    }}>
+                        <span style={{ color: '#63b3ed' }}>📁</span>
+                        {isAddingToCategory ? `Adding instance under: ${parentItem.name}` : "Creating root level category"}
+                    </div>
+
+                    <div className="input-group">
+                        <label className="input-label">Name:</label>
+                        <input
+                            type="text"
+                            className="input-field"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            placeholder={isAddingToCategory ? "e.g., 1.1.1.A" : "e.g., 1.1.1"}
+                        />
+                    </div>
+
+                    {isAddingToCategory && attributes.length > 0 && (
+                        <div style={{ marginTop: '24px' }}>
+                            <h3 style={{ color: '#fff', marginBottom: '16px' }}>Attribute Values</h3>
+                            {attributes.map(attr => {
+                                const value = attributeValues[attr.id] || '';
+                                const isValid = validateValue(value, attr.format_data);
+                                
+                                return (
+                                    <div key={attr.id} className="input-group">
+                                        <label className="input-label">
+                                            {attr.name}
+                                            {attr.is_required && <span style={{ color: '#f56565' }}> *</span>}
+                                        </label>
+                                        <div style={{ fontSize: '0.8rem', color: '#718096', marginBottom: '4px' }}>
+                                            {attr.description}
+                                            {attr.categoryName && (
+                                                <span style={{ color: '#4299e1' }}> (from {attr.categoryName})</span>
+                                            )}
+                                        </div>
+                                        <input
+                                            type="text"
+                                            className="input-field"
+                                            value={value}
+                                            onChange={(e) => handleValueChange(attr.id, e.target.value)}
+                                            style={{
+                                                borderColor: value && !isValid ? '#f56565' : undefined
+                                            }}
+                                            placeholder={attr.default_value || `Enter ${attr.name}`}
+                                        />
+                                        {attr.format_data && (
+                                            <div style={{ fontSize: '0.8rem', color: value && !isValid ? '#f56565' : '#718096' }}>
+                                                Format: {attr.format_data}
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
+
+                    {!isAddingToCategory && (
+                        <div style={{ 
+                            fontSize: '0.9rem', 
+                            color: '#a0aec0', 
+                            marginTop: '8px',
+                            padding: '8px',
+                            backgroundColor: '#2d3748',
+                            borderRadius: '4px'
+                        }}>
+                            Creating a root level category. You can add instances to it later.
+                        </div>
+                    )}
+
+                    {error && <div className="error-message">{error}</div>}
+
+                    <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+                        <button type="button" className="button" onClick={onClose}>Cancel</button>
+                        <button type="submit" className="button button-primary">
+                            {isAddingToCategory ? 'Create Instance' : 'Create Category'}
+                        </button>
+                    </div>
+                </form>
+            );
+        }
+
+        function AttributeForm({ category, onSubmit, onClose }) {
+            const [name, setName] = React.useState('');
+            const [description, setDescription] = React.useState('');
+            const [defaultValue, setDefaultValue] = React.useState('');
+            const [formatData, setFormatData] = React.useState('');
+            const [isRequired, setIsRequired] = React.useState(false);
+            const [error, setError] = React.useState('');
+            const [attributes, setAttributes] = React.useState([]);
+            const [inheritedAttributes, setInheritedAttributes] = React.useState([]);
+            const [loading, setLoading] = React.useState(true);
+
+            React.useEffect(() => {
+                // Fetch both direct and inherited attributes
+                const fetchAttributes = async () => {
+                    try {
+                        // Fetch direct attributes
+                        const directResponse = await fetch(`http://localhost:3000/api/attributes?exact_match=${category.id}`);
+                        if (!directResponse.ok) throw new Error('Failed to fetch direct attributes');
+                        const directData = await directResponse.json();
+                        setAttributes(directData);
+
+                        // Fetch inherited attributes (using screwdriver_id which includes inheritance logic)
+                        const inheritedResponse = await fetch(`http://localhost:3000/api/attributes?screwdriver_id=${category.id}`);
+                        if (!inheritedResponse.ok) throw new Error('Failed to fetch inherited attributes');
+                        const inheritedData = await inheritedResponse.json();
+                        setInheritedAttributes(inheritedData.filter(attr => attr.screwdriver_id !== category.id));
+                        
+                        setLoading(false);
+                    } catch (err) {
+                        setError('Failed to load attributes');
+                        setLoading(false);
+                    }
+                };
+                fetchAttributes();
+            }, [category.id]);
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                setError('');
+
+                // Implement the logic to handle form submission
+            };
+
+            const handleDelete = (id) => {
+                // Implement the logic to delete an attribute
+            };
+
+            return (
+                <div>
+                    <div style={{ 
+                        backgroundColor: '#2d3748', 
+                        padding: '8px 12px', 
+                        borderRadius: '4px', 
+                        marginBottom: '16px',
+                        color: '#a0aec0',
+                        fontSize: '0.9rem'
+                    }}>
+                        Managing attributes for category: {category.name}
+                    </div>
+
+                    <form onSubmit={handleSubmit}>
+                        {/* ... existing form fields ... */}
+                    </form>
+
+                    <div style={{ marginTop: '32px' }}>
+                        <h3 style={{ color: '#fff', marginBottom: '16px' }}>Current Attributes</h3>
+                        {loading ? (
+                            <div>Loading attributes...</div>
+                        ) : (
+                            <>
+                                {/* Direct attributes */}
+                                {attributes.length > 0 && (
+                                    <div style={{ marginBottom: '24px' }}>
+                                        <h4 style={{ color: '#a0aec0', marginBottom: '12px' }}>Defined in this category</h4>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                            {attributes.map(attr => (
+                                                <div 
+                                                    key={attr.id}
+                                                    style={{
+                                                        backgroundColor: '#2d3748',
+                                                        padding: '12px',
+                                                        borderRadius: '4px',
+                                                        display: 'flex',
+                                                        justifyContent: 'space-between',
+                                                        alignItems: 'center'
+                                                    }}
+                                                >
+                                                    <div>
+                                                        <div style={{ fontWeight: 'bold' }}>{attr.name}</div>
+                                                        <div style={{ fontSize: '0.9rem', color: '#a0aec0' }}>
+                                                            {attr.description || 'No description'}
+                                                        </div>
+                                                        <div style={{ fontSize: '0.8rem', color: '#718096' }}>
+                                                            Format: {attr.format_data || 'None'} | 
+                                                            Default: {attr.default_value || 'None'} |
+                                                            {attr.is_required ? ' Required' : ' Optional'}
+                                                        </div>
+                                                    </div>
+                                                    <button 
+                                                        className="button button-danger"
+                                                        onClick={() => handleDelete(attr.id)}
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Inherited attributes */}
+                                {inheritedAttributes.length > 0 && (
+                                    <div>
+                                        <h4 style={{ color: '#a0aec0', marginBottom: '12px' }}>Inherited from parent categories</h4>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                            {inheritedAttributes.map(attr => (
+                                                <div 
+                                                    key={attr.id}
+                                                    style={{
+                                                        backgroundColor: '#1a202c',
+                                                        padding: '12px',
+                                                        borderRadius: '4px',
+                                                        borderLeft: '2px solid #4a5568'
+                                                    }}
+                                                >
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                        <div>
+                                                            <div style={{ fontWeight: 'bold' }}>{attr.name}</div>
+                                                            <div style={{ fontSize: '0.9rem', color: '#a0aec0' }}>
+                                                                {attr.description || 'No description'}
+                                                            </div>
+                                                            <div style={{ fontSize: '0.8rem', color: '#718096' }}>
+                                                                Format: {attr.format_data || 'None'} | 
+                                                                Default: {attr.default_value || 'None'} |
+                                                                {attr.is_required ? ' Required' : ' Optional'}
+                                                            </div>
+                                                            <div style={{ fontSize: '0.8rem', color: '#4299e1', marginTop: '4px' }}>
+                                                                Inherited from: {attr.categoryName}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {attributes.length === 0 && inheritedAttributes.length === 0 && (
+                                    <div style={{ color: '#a0aec0' }}>No attributes defined for this category</div>
+                                )}
+                            </>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        function InstanceAttributeForm({ instance, onSubmit, onClose }) {
+            const [attributeValues, setAttributeValues] = React.useState({});
+            const [attributes, setAttributes] = React.useState([]);
+            const [loading, setLoading] = React.useState(true);
+            const [error, setError] = React.useState('');
+            const [saving, setSaving] = React.useState(false);
+
+            React.useEffect(() => {
+                const fetchData = async () => {
+                    try {
+                        // Fetch all applicable attributes (including inherited ones)
+                        const attrResponse = await fetch(`http://localhost:3000/api/attributes?screwdriver_id=${instance.id}`);
+                        if (!attrResponse.ok) throw new Error('Failed to fetch attributes');
+                        const attrData = await attrResponse.json();
+                        setAttributes(attrData);
+
+                        // Fetch current values
+                        const screwdriver = await fetch(`http://localhost:3000/api/screwdrivers/${instance.id}`);
+                        if (!screwdriver.ok) throw new Error('Failed to fetch instance data');
+                        const screwdriverData = await screwdriver.json();
+                        
+                        // Create a map of current values
+                        const values = {};
+                        screwdriverData.AttributeValues?.forEach(av => {
+                            values[av.attribute_id] = av.value;
+                        });
+                        setAttributeValues(values);
+                        
+                        setLoading(false);
+                    } catch (err) {
+                        setError(err.message);
+                        setLoading(false);
+                    }
+                };
+                fetchData();
+            }, [instance.id]);
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                setSaving(true);
+                setError('');
+
+                try {
+                    const response = await fetch(`http://localhost:3000/api/screwdrivers/${instance.id}/attributes`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(attributeValues),
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || 'Failed to save attribute values');
+                    }
+
+                    onSubmit();
+                    onClose();
+                } catch (err) {
+                    setError(err.message);
+                } finally {
+                    setSaving(false);
+                }
+            };
+
+            const validateValue = (value, format) => {
+                if (!format) return true;
+                try {
+                    const regex = new RegExp(format);
+                    return regex.test(value);
+                } catch (e) {
+                    return false;
+                }
+            };
+
+            const handleValueChange = (attributeId, value) => {
+                setAttributeValues(prev => ({
+                    ...prev,
+                    [attributeId]: value
+                }));
+            };
+
+            if (loading) {
+                return <div>Loading attributes...</div>;
+            }
+
+            return (
+                <div>
+                    <div style={{ 
+                        backgroundColor: '#2d3748', 
+                        padding: '8px 12px', 
+                        borderRadius: '4px', 
+                        marginBottom: '16px',
+                        color: '#a0aec0',
+                        fontSize: '0.9rem'
+                    }}>
+                        Setting attribute values for instance: {instance.name}
+                    </div>
+
+                    <form onSubmit={handleSubmit}>
+                        {attributes.map(attr => {
+                            const value = attributeValues[attr.id] || attr.default_value || '';
+                            const isValid = validateValue(value, attr.format_data);
+                            
+                            return (
+                                <div key={attr.id} className="input-group">
+                                    <label className="input-label">
+                                        {attr.name}
+                                        {attr.is_required && <span style={{ color: '#f56565' }}> *</span>}
+                                    </label>
+                                    <div style={{ fontSize: '0.8rem', color: '#718096', marginBottom: '4px' }}>
+                                        {attr.description}
+                                        {attr.categoryName && (
+                                            <span style={{ color: '#4299e1' }}> (from {attr.categoryName})</span>
+                                        )}
+                                    </div>
+                                    <input
+                                        type="text"
+                                        className="input-field"
+                                        value={value}
+                                        onChange={(e) => handleValueChange(attr.id, e.target.value)}
+                                        style={{
+                                            borderColor: value && !isValid ? '#f56565' : undefined
+                                        }}
+                                        placeholder={attr.default_value || `Enter ${attr.name}`}
+                                    />
+                                    {attr.format_data && (
+                                        <div style={{ fontSize: '0.8rem', color: value && !isValid ? '#f56565' : '#718096' }}>
+                                            Format: {attr.format_data}
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+
+                        {error && <div className="error-message">{error}</div>}
+
+                        <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+                            <button type="button" className="button" onClick={onClose}>Cancel</button>
+                            <button 
+                                type="submit" 
+                                className="button button-primary"
+                                disabled={saving}
+                            >
+                                {saving ? 'Saving...' : 'Save Values'}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            );
+        }
+
+        function AddCategoryForm({ categories, onSubmit, onClose }) {
+            const [name, setName] = React.useState('');
+            const [selectedParentId, setSelectedParentId] = React.useState(null);
+            const [error, setError] = React.useState('');
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                setError('');
+
+                if (!name.trim()) {
+                    setError('Name is required');
+                    return;
+                }
+
+                // Validate category name format
+                if (!/^[\d.]+$/.test(name)) {
+                    setError('Category name must only contain numbers and dots (e.g., 1.1.1)');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('http://localhost:3000/api/screwdrivers', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            name,
+                            type: 'category',
+                            parent_id: selectedParentId,
+                            state: 'on'
+                        }),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to create category');
+                    }
+
+                    onSubmit();
+                    onClose();
+                } catch (err) {
+                    setError(err.message);
+                }
+            };
+
+            // Flatten categories for the dropdown
+            const getFlattenedCategories = (cats, level = 0) => {
+                return cats.reduce((acc, cat) => {
+                    if (cat.type === 'category') {
+                        acc.push({
+                            id: cat.id,
+                            name: cat.name,
+                            level
+                        });
+                        if (cat.children?.length > 0) {
+                            acc.push(...getFlattenedCategories(cat.children, level + 1));
+                        }
+                    }
+                    return acc;
+                }, []);
+            };
+
+            const flattenedCategories = getFlattenedCategories(categories);
+
+            return (
+                <form onSubmit={handleSubmit}>
+                    <div style={{ 
+                        backgroundColor: '#2d3748', 
+                        padding: '8px 12px', 
+                        borderRadius: '4px', 
+                        marginBottom: '16px',
+                        color: '#a0aec0',
+                        fontSize: '0.9rem'
+                    }}>
+                        Creating a new category
+                    </div>
+
+                    <div className="input-group">
+                        <label className="input-label">Category Name:</label>
+                        <input
+                            type="text"
+                            className="input-field"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            placeholder="e.g., 1.1.1"
+                        />
+                    </div>
+
+                    <div className="input-group">
+                        <label className="input-label">Parent Category:</label>
+                        <select 
+                            className="input-field"
+                            value={selectedParentId || ''}
+                            onChange={(e) => setSelectedParentId(e.target.value ? e.target.value : null)}
+                        >
+                            <option value="">Root Level</option>
+                            {flattenedCategories.map(cat => (
+                                <option key={cat.id} value={cat.id}>
+                                    {'  '.repeat(cat.level)}└─ {cat.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {error && <div className="error-message">{error}</div>}
+
+                    <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+                        <button type="button" className="button" onClick={onClose}>Cancel</button>
+                        <button type="submit" className="button button-primary">Create Category</button>
+                    </div>
+                </form>
+            );
+        }
+
+        function TreeItem({ item, onUpdate }) {
+            const [expanded, setExpanded] = React.useState(true);
+            const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
+            const [isAttributeModalOpen, setIsAttributeModalOpen] = React.useState(false);
+            const [isDeleting, setIsDeleting] = React.useState(false);
+            const isInstance = item.type === 'instance';
+            const hasChildren = item.children && item.children.length > 0;
+            
+            const handleDelete = async () => {
+                if (!window.confirm(`Are you sure you want to delete this ${isInstance ? 'instance' : 'category'}${hasChildren ? ' and all its children' : ''}?`)) {
+                    return;
+                }
+
+                setIsDeleting(true);
+                try {
+                    const response = await fetch(`http://localhost:3000/api/screwdrivers/${item.id}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to delete item');
+                    }
+
+                    onUpdate();
+                } catch (err) {
+                    alert('Failed to delete item: ' + err.message);
+                } finally {
+                    setIsDeleting(false);
+                }
+            };
+            
+            return (
+                <div className={`tree-item ${isInstance ? 'instance' : 'category'}`}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            {!isInstance && hasChildren && (
+                                <button 
+                                    className={`toggle-button ${expanded ? 'expanded' : ''}`}
+                                    onClick={() => setExpanded(!expanded)}
+                                >
+                                    ▶
+                                </button>
+                            )}
+                            {!isInstance && !hasChildren && <span style={{ width: '24px', marginRight: '8px' }}></span>}
+                            <span>{item.name}</span>
+                        </div>
+                        <div>
+                            {!isInstance && (
+                                <>
+                                    <button 
+                                        className="button button-primary" 
+                                        onClick={() => setIsAddModalOpen(true)}
+                                        title={item.name ? "Add instance to this category" : "Add subcategory"}
+                                    >
+                                        {item.name ? "Add Instance" : "Add Category"}
+                                    </button>
+                                    <button className="button button-secondary" onClick={() => setIsAttributeModalOpen(true)}>
+                                        Manage Attributes
+                                    </button>
+                                </>
+                            )}
+                            {isInstance && (
+                                <button className="button button-secondary" onClick={() => setIsAttributeModalOpen(true)}>
+                                    Edit Values
+                                </button>
+                            )}
+                            <button 
+                                className="button button-danger" 
+                                onClick={handleDelete}
+                                disabled={isDeleting}
+                            >
+                                {isDeleting ? 'Deleting...' : 'Delete'}
+                            </button>
+                        </div>
+                    </div>
+                    
+                    {!isInstance && hasChildren && expanded && (
+                        <div className="category-content">
+                            {item.children.map(child => (
+                                <TreeItem key={child.id} item={child} onUpdate={onUpdate} />
+                            ))}
+                        </div>
+                    )}
+
+                    <Modal
+                        isOpen={isAddModalOpen}
+                        onClose={() => setIsAddModalOpen(false)}
+                        title={item.name ? "Add New Instance" : "Add New Category"}
+                    >
+                        <AddItemForm
+                            parentItem={item}
+                            onSubmit={onUpdate}
+                            onClose={() => setIsAddModalOpen(false)}
+                        />
+                    </Modal>
+
+                    <Modal
+                        isOpen={isAttributeModalOpen}
+                        onClose={() => setIsAttributeModalOpen(false)}
+                        title={isInstance ? "Edit Instance Values" : "Manage Category Attributes"}
+                    >
+                        {isInstance ? (
+                            <InstanceAttributeForm
+                                instance={item}
+                                onSubmit={onUpdate}
+                                onClose={() => setIsAttributeModalOpen(false)}
+                            />
+                        ) : (
+                            <AttributeForm
+                                category={item}
+                                onSubmit={onUpdate}
+                                onClose={() => setIsAttributeModalOpen(false)}
+                            />
+                        )}
+                    </Modal>
+                </div>
+            );
+        }
+
+        function App() {
+            const [items, setItems] = React.useState([]);
+            const [loading, setLoading] = React.useState(true);
+            const [error, setError] = React.useState(null);
+            const [isAddCategoryModalOpen, setIsAddCategoryModalOpen] = React.useState(false);
+
+            const fetchData = async () => {
+                try {
+                    const response = await fetch('http://localhost:3000/api/screwdrivers');
+                    if (!response.ok) throw new Error('Failed to fetch data');
+                    const data = await response.json();
+                    const treeData = buildTree(data);
+                    setItems(treeData);
+                    setLoading(false);
+                } catch (err) {
+                    setError(err.message);
+                    setLoading(false);
+                }
+            };
+
+            React.useEffect(() => {
+                fetchData();
+            }, []);
+
+            if (loading) {
+                return <div style={{ textAlign: 'center', padding: '20px' }}>Loading...</div>;
+            }
+
+            if (error) {
+                return <div style={{ textAlign: 'center', padding: '20px', color: '#f44336' }}>Error: {error}</div>;
+            }
+
+            return (
+                <div>
+                    <div className="header">
+                        <h1>Screwdriver Management</h1>
+                        <button 
+                            className="button button-primary"
+                            onClick={() => setIsAddCategoryModalOpen(true)}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                padding: '8px 16px'
+                            }}
+                        >
+                            <span style={{ fontSize: '1.2em' }}>+</span>
+                            Add Category
+                        </button>
+                    </div>
+                    
+                    <div>
+                        {items.map(item => (
+                            <TreeItem key={item.id} item={item} onUpdate={fetchData} />
+                        ))}
+                    </div>
+
+                    <Modal
+                        isOpen={isAddCategoryModalOpen}
+                        onClose={() => setIsAddCategoryModalOpen(false)}
+                        title="Add New Category"
+                    >
+                        <AddCategoryForm
+                            categories={items}
+                            onSubmit={fetchData}
+                            onClose={() => setIsAddCategoryModalOpen(false)}
+                        />
+                    </Modal>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);</script></body></html>
