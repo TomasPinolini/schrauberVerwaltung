@@ -1,315 +1,351 @@
-const { Screwdriver, Attribute, AttributeValue } = require('../models');
+const { Screwdriver, ScrewdriverAttribute, Attribute } = require('../models');
+const sequelize = require('../config/database');
 
-// Get all screwdrivers
-exports.getAllScrewdrivers = async (req, res) => {
+const create = async (req, res) => {
+    const t = await sequelize.transaction();
     try {
-        const screwdrivers = await Screwdriver.findAll({
-            where: { state: 'on' },
-            include: [
-                {
-                    model: Screwdriver,
-                    as: 'parent',
-                    attributes: ['id', 'name', 'type']
-                },
-                {
-                    model: Screwdriver,
-                    as: 'children',
-                    where: { state: 'on' },
-                    required: false,
-                    attributes: ['id', 'name', 'type', 'parent_id'],
-                    include: [{
-                        model: Screwdriver,
-                        as: 'children',
-                        where: { state: 'on' },
-                        required: false,
-                        attributes: ['id', 'name', 'type', 'parent_id']
-                    }]
-                }
-            ],
-            order: [
-                ['name', 'ASC'],
-                [{ model: Screwdriver, as: 'children' }, 'name', 'ASC'],
-                [{ model: Screwdriver, as: 'children' }, { model: Screwdriver, as: 'children' }, 'name', 'ASC']
-            ]
+        const { name, description, attributes } = req.body;
+
+        if (!name) {
+            return res.status(400).json({ error: 'Name is required' });
+        }
+
+        // Create the screwdriver
+        const screwdriver = await Screwdriver.create({
+            name,
+            description,
+            state: 'on'
+        }, { transaction: t });
+
+        // Get all required attributes
+        const requiredAttributes = await Attribute.findAll({
+            where: {
+                is_required: true,
+                state: 'on'
+            }
         });
-        res.json(screwdrivers);
+
+        // Check if all required attributes are provided
+        const providedAttributeIds = new Set(attributes?.map(attr => attr.attributeId) || []);
+        const missingRequired = requiredAttributes.filter(attr => !providedAttributeIds.has(attr.id));
+
+        if (missingRequired.length > 0) {
+            throw new Error(`Missing required attributes: ${missingRequired.map(attr => attr.name).join(', ')}`);
+        }
+
+        // Store attribute values
+        if (attributes && attributes.length > 0) {
+            for (const attr of attributes) {
+                const attribute = await Attribute.findOne({
+                    where: {
+                        id: attr.attributeId,
+                        state: 'on'
+                    }
+                });
+
+                if (!attribute) {
+                    throw new Error(`Attribute with id ${attr.attributeId} not found or inactive`);
+                }
+
+                // Basic validation based on data type
+                const value = attr.value.toString().trim();
+                if (!value) {
+                    throw new Error(`Value for attribute ${attribute.name} cannot be empty`);
+                }
+
+                // Validate based on data type
+                switch (attribute.data_type) {
+                    case 'number':
+                        if (isNaN(value)) {
+                            throw new Error(`Invalid number value for attribute ${attribute.name}`);
+                        }
+                        break;
+                    case 'boolean':
+                        if (value !== 'true' && value !== 'false') {
+                            throw new Error(`Invalid boolean value for attribute ${attribute.name}`);
+                        }
+                        break;
+                    case 'date':
+                        if (isNaN(new Date(value).getTime())) {
+                            throw new Error(`Invalid date value for attribute ${attribute.name}`);
+                        }
+                        break;
+                }
+
+                // Validate pattern if exists
+                if (attribute.validation_pattern) {
+                    const regex = new RegExp(attribute.validation_pattern);
+                    if (!regex.test(value)) {
+                        throw new Error(`Invalid format for attribute ${attribute.name}`);
+                    }
+                }
+
+                await ScrewdriverAttribute.create({
+                    screwdriver_id: screwdriver.id,
+                    attribute_id: attr.attributeId,
+                    value: value,
+                    state: 'on'
+                }, { transaction: t });
+            }
+        }
+
+        await t.commit();
+
+        // Fetch the created screwdriver with its attributes
+        const result = await Screwdriver.findOne({
+            where: { id: screwdriver.id },
+            include: [{
+                model: Attribute,
+                through: { 
+                    attributes: ['value', 'state'],
+                    where: { state: 'on' }
+                }
+            }]
+        });
+
+        res.status(201).json(result);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        await t.rollback();
+        res.status(400).json({ error: error.message });
     }
 };
 
-// Get inherited attributes for a category
-exports.getInheritedAttributes = async (req, res) => {
+const getAll = async (req, res) => {
     try {
-        console.log('Getting inherited attributes for category:', req.params.id);
-        const categoryId = req.params.id;
-        const category = await Screwdriver.findByPk(categoryId);
+        const where = {};
         
-        if (!category) {
-            console.log('Category not found:', categoryId);
-            return res.status(404).json({ message: 'Category not found' });
+        if (req.query.state) {
+            where.state = req.query.state;
+        } else {
+            where.state = 'on';
         }
 
-        console.log('Found category:', category.name, 'type:', category.type);
-        if (category.type !== 'category') {
-            console.log('Invalid type:', category.type);
-            return res.status(400).json({ message: 'Can only get attributes from categories' });
-        }
+        console.log('Fetching screwdrivers with query:', where);
 
-        // Get all parent categories up to root
-        const parentCategories = [];
-        let currentId = category.id; // Start from current category
-        
-        while (currentId) {
-            console.log('Checking category:', currentId);
-            const current = await Screwdriver.findByPk(currentId);
-            if (!current || current.type !== 'category') break;
-            parentCategories.push({
-                id: current.id,
-                name: current.name
-            });
-            currentId = current.parent_id;
-        }
-        
-        console.log('Found parent categories:', parentCategories);
-        
-        // Get all attributes that belong to this category or any parent
-        const attributes = await Attribute.findAll({
-            where: {
-                state: 'on',
-                screwdriver_id: parentCategories.map(p => p.id)
-            },
+        const screwdrivers = await Screwdriver.findAll({
+            where,
             include: [{
-                model: Screwdriver,
-                as: 'category',
-                attributes: ['id', 'name', 'type']
+                model: Attribute,
+                through: { 
+                    attributes: ['value'],
+                    where: { state: 'on' }
+                },
+                where: {
+                    state: 'on'
+                },
+                required: false
             }],
             order: [['name', 'ASC']]
         });
         
-        console.log('Found attributes:', attributes.length);
-        
-        // Add parent category information to each attribute
-        const enrichedAttributes = attributes.map(attr => {
-            const attribute = attr.toJSON();
-            const parentCategory = parentCategories.find(p => p.id === attribute.screwdriver_id);
-            if (parentCategory) {
-                attribute.categoryName = parentCategory.name;
-                attribute.inherited = attribute.screwdriver_id !== category.id;
-            }
-            return attribute;
+        console.log('Found screwdrivers:', screwdrivers.length);
+
+        // Format the response to include attribute values
+        const formattedScrewdrivers = screwdrivers.map(screwdriver => {
+            const plainScrewdriver = screwdriver.get({ plain: true });
+            return {
+                ...plainScrewdriver,
+                attributes: plainScrewdriver.Attributes.map(attr => ({
+                    attribute_id: attr.id,
+                    name: attr.name,
+                    description: attr.description,
+                    data_type: attr.data_type,
+                    validation_pattern: attr.validation_pattern,
+                    is_required: attr.is_required,
+                    state: attr.state,
+                    value: attr.ScrewdriverAttribute.value
+                }))
+            };
         });
-        
-        console.log('Sending enriched attributes:', enrichedAttributes.length);
-        res.json(enrichedAttributes);
+
+        res.json(formattedScrewdrivers);
     } catch (error) {
-        console.error('Error in getInheritedAttributes:', error);
+        console.error('Error in getAll:', error);
+        console.error('Stack trace:', error.stack);
         res.status(500).json({ 
-            message: error.message,
-            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+            error: error.message,
+            details: error.stack
         });
     }
 };
 
-// Get a single screwdriver
-exports.getScrewdriver = async (req, res) => {
+const getById = async (req, res) => {
     try {
-        const screwdriver = await Screwdriver.findByPk(req.params.id, {
-            include: [
-                {
-                    model: Screwdriver,
-                    as: 'parent',
-                    attributes: ['id', 'name', 'type']
-                },
-                {
-                    model: AttributeValue,
-                    include: [Attribute]
-                },
-                {
-                    model: Screwdriver,
-                    as: 'children',
-                    where: { state: 'on' },
-                    required: false,
-                    attributes: ['id', 'name', 'type', 'parent_id']
-                }
-            ]
-        });
-        if (!screwdriver) {
-            return res.status(404).json({ message: 'Screwdriver not found' });
-        }
-        res.json(screwdriver);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
-
-// Create a new screwdriver
-exports.createScrewdriver = async (req, res) => {
-    try {
-        const { name, parent_id, type = 'category' } = req.body;
-
-        // Validate parent if provided
-        if (parent_id) {
-            const parent = await Screwdriver.findByPk(parent_id);
-            if (!parent) {
-                return res.status(400).json({ message: 'Parent screwdriver not found' });
-            }
-            // Validate that instances can only be created under categories
-            if (type === 'instance' && parent.type !== 'category') {
-                return res.status(400).json({ message: 'Instances can only be created under categories' });
-            }
-            // Validate that categories can only be created under categories
-            if (type === 'category' && parent.type !== 'category') {
-                return res.status(400).json({ message: 'Categories can only be created under categories' });
-            }
-        }
-
-        const screwdriver = await Screwdriver.create({ name, parent_id, type });
-        
-        // Fetch the created screwdriver with its relationships
-        const createdScrewdriver = await Screwdriver.findByPk(screwdriver.id, {
-            include: [
-                {
-                    model: Screwdriver,
-                    as: 'parent',
-                    attributes: ['id', 'name', 'type']
-                }
-            ]
-        });
-        
-        res.status(201).json(createdScrewdriver);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
-};
-
-// Update a screwdriver
-exports.updateScrewdriver = async (req, res) => {
-    try {
-        const { name, parent_id, type } = req.body;
-
-        const screwdriver = await Screwdriver.findByPk(req.params.id);
-        if (!screwdriver) {
-            return res.status(404).json({ message: 'Screwdriver not found' });
-        }
-
-        // Validate parent if provided
-        if (parent_id) {
-            const parent = await Screwdriver.findByPk(parent_id);
-            if (!parent) {
-                return res.status(400).json({ message: 'Parent screwdriver not found' });
-            }
-            // Validate that instances can only be under categories
-            if ((type || screwdriver.type) === 'instance' && parent.type !== 'category') {
-                return res.status(400).json({ message: 'Instances can only be under categories' });
-            }
-            // Validate that categories can only be under categories
-            if ((type || screwdriver.type) === 'category' && parent.type !== 'category') {
-                return res.status(400).json({ message: 'Categories can only be under categories' });
-            }
-        }
-
-        await screwdriver.update({ name, parent_id, type });
-        
-        const updatedScrewdriver = await Screwdriver.findByPk(req.params.id, {
+        const screwdriver = await Screwdriver.findOne({
+            where: { 
+                id: req.params.id,
+                state: 'on'
+            },
             include: [{
-                model: Screwdriver,
-                as: 'parent',
-                attributes: ['id', 'name', 'type']
+                model: Attribute,
+                through: { 
+                    attributes: ['value', 'state'],
+                    where: { state: 'on' }
+                },
+                required: false
             }]
         });
-        
-        res.json(updatedScrewdriver);
+
+        if (!screwdriver) {
+            return res.status(404).json({ error: 'Screwdriver not found' });
+        }
+
+        res.json(screwdriver);
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        res.status(500).json({ error: error.message });
     }
 };
 
-// Delete (deactivate) a screwdriver
-exports.deleteScrewdriver = async (req, res) => {
+const update = async (req, res) => {
+    const t = await sequelize.transaction();
     try {
-        const screwdriver = await Screwdriver.findByPk(req.params.id);
-        if (!screwdriver) {
-            return res.status(404).json({ message: 'Screwdriver not found' });
-        }
-
-        // If it's a category, also deactivate all children
-        if (screwdriver.type === 'category') {
-            await Screwdriver.update(
-                { state: 'off' },
-                {
-                    where: {
-                        parent_id: req.params.id
-                    }
-                }
-            );
-        }
-
-        await screwdriver.update({ state: 'off' });
-        res.json({ message: 'Screwdriver deactivated successfully' });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
-
-// Set attribute values for a screwdriver
-exports.setAttributeValues = async (req, res) => {
-    try {
-        const screwdriver = await Screwdriver.findByPk(req.params.id);
-        if (!screwdriver) {
-            return res.status(404).json({ message: 'Screwdriver not found' });
-        }
-
-        // Only allow setting attributes on instances
-        if (screwdriver.type !== 'instance') {
-            return res.status(400).json({ message: 'Attributes can only be set on instances' });
-        }
-
-        const requiredAttributes = await Attribute.findAll({
-            where: { is_required: true }
+        const { name, description, attributes, state } = req.body;
+        const screwdriver = await Screwdriver.findOne({
+            where: {
+                id: req.params.id,
+                state: 'on'
+            }
         });
 
-        // Check if all required attributes are provided
-        const missingAttributes = requiredAttributes.filter(attr => 
-            !(attr.id in req.body)
+        if (!screwdriver) {
+            return res.status(404).json({ error: 'Screwdriver not found' });
+        }
+
+        // Validate state if provided
+        if (state && !['on', 'off'].includes(state)) {
+            return res.status(400).json({ error: 'Invalid state. Must be either "on" or "off"' });
+        }
+
+        await screwdriver.update({
+            name: name || screwdriver.name,
+            description: description !== undefined ? description : screwdriver.description,
+            state: state || screwdriver.state
+        }, { transaction: t });
+
+        if (attributes && attributes.length > 0) {
+            // Set existing attribute values to 'off' state
+            await ScrewdriverAttribute.update(
+                { state: 'off' },
+                { 
+                    where: { screwdriver_id: screwdriver.id },
+                    transaction: t 
+                }
+            );
+
+            // Add new attribute values
+            for (const attr of attributes) {
+                const attribute = await Attribute.findOne({
+                    where: {
+                        id: attr.attributeId,
+                        state: 'on'
+                    }
+                });
+
+                if (!attribute) {
+                    throw new Error(`Attribute with id ${attr.attributeId} not found or inactive`);
+                }
+
+                // Basic validation based on data type
+                const value = attr.value.toString().trim();
+                if (!value) {
+                    throw new Error(`Value for attribute ${attribute.name} cannot be empty`);
+                }
+
+                // Validate based on data type
+                switch (attribute.data_type) {
+                    case 'number':
+                        if (isNaN(value)) {
+                            throw new Error(`Invalid number value for attribute ${attribute.name}`);
+                        }
+                        break;
+                    case 'boolean':
+                        if (value !== 'true' && value !== 'false') {
+                            throw new Error(`Invalid boolean value for attribute ${attribute.name}`);
+                        }
+                        break;
+                    case 'date':
+                        if (isNaN(new Date(value).getTime())) {
+                            throw new Error(`Invalid date value for attribute ${attribute.name}`);
+                        }
+                        break;
+                }
+
+                // Validate pattern if exists
+                if (attribute.validation_pattern) {
+                    const regex = new RegExp(attribute.validation_pattern);
+                    if (!regex.test(value)) {
+                        throw new Error(`Invalid format for attribute ${attribute.name}`);
+                    }
+                }
+
+                await ScrewdriverAttribute.create({
+                    screwdriver_id: screwdriver.id,
+                    attribute_id: attr.attributeId,
+                    value: value,
+                    state: 'on'
+                }, { transaction: t });
+            }
+        }
+
+        await t.commit();
+
+        // Fetch the updated screwdriver with its attributes
+        const result = await Screwdriver.findOne({
+            where: { id: screwdriver.id },
+            include: [{
+                model: Attribute,
+                through: { 
+                    attributes: ['value', 'state'],
+                    where: { state: 'on' }
+                }
+            }]
+        });
+
+        res.json(result);
+    } catch (error) {
+        await t.rollback();
+        res.status(400).json({ error: error.message });
+    }
+};
+
+const remove = async (req, res) => {
+    const t = await sequelize.transaction();
+    try {
+        const screwdriver = await Screwdriver.findOne({
+            where: {
+                id: req.params.id,
+                deleted_at: null
+            }
+        });
+        
+        if (!screwdriver) {
+            return res.status(404).json({ error: 'Screwdriver not found' });
+        }
+
+        // Set state to 'off' instead of deleting
+        await screwdriver.update({ state: 'off' }, { transaction: t });
+        
+        // Set all attribute values to 'off'
+        await ScrewdriverAttribute.update(
+            { state: 'off' },
+            { 
+                where: { screwdriver_id: screwdriver.id },
+                transaction: t 
+            }
         );
 
-        if (missingAttributes.length > 0) {
-            return res.status(400).json({
-                message: 'Missing required attributes',
-                missing: missingAttributes.map(attr => attr.name)
-            });
-        }
-
-        // Validate attribute values against their format
-        for (const [attrId, value] of Object.entries(req.body)) {
-            const attribute = await Attribute.findByPk(attrId);
-            if (!attribute) {
-                return res.status(400).json({ message: `Attribute ${attrId} not found` });
-            }
-
-            if (attribute.format_data) {
-                const regex = new RegExp(attribute.format_data);
-                if (!regex.test(value)) {
-                    return res.status(400).json({
-                        message: `Invalid format for attribute ${attribute.name}`,
-                        expected: attribute.format_data
-                    });
-                }
-            }
-        }
-
-        // Update or create attribute values
-        for (const [attrId, value] of Object.entries(req.body)) {
-            await AttributeValue.upsert({
-                screwdriver_id: req.params.id,
-                attribute_id: attrId,
-                value
-            });
-        }
-
-        res.json({ message: 'Attribute values updated successfully' });
+        await t.commit();
+        res.json({ message: 'Screwdriver deactivated successfully' });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        await t.rollback();
+        res.status(500).json({ error: error.message });
     }
+};
+
+module.exports = {
+    create,
+    getAll,
+    getById,
+    update,
+    remove
 }; 

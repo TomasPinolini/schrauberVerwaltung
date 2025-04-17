@@ -1,60 +1,37 @@
 const express = require('express');
 const cors = require('cors');
-const { sequelize } = require('./models');
+const helmet = require('helmet');
+const morgan = require('morgan');
 const screwdriverRoutes = require('./routes/screwdriverRoutes');
 const attributeRoutes = require('./routes/attributeRoutes');
-const attributeValueRoutes = require('./routes/attributeValueRoutes');
-const path = require('path');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
-
-// CORS configuration
-const corsOptions = {
-    origin: ['http://localhost:3001', 'http://localhost:3002'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true
-};
 
 // Middleware
-app.use(cors(corsOptions));
+app.use(cors());
+app.use(helmet());
+app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// API Routes - these must come BEFORE static file serving
+// Routes
 app.use('/api/screwdrivers', screwdriverRoutes);
 app.use('/api/attributes', attributeRoutes);
-app.use('/api/attribute-values', attributeValueRoutes);
 
-// Serve static files from the React app
-app.use(express.static(path.join(__dirname, '../../frontend/build')));
-
-// Handle React routing, return all requests to React app
-// This must come AFTER all API routes
-app.get('*', (req, res) => {
-    // Only serve index.html for non-API routes
-    if (!req.path.startsWith('/api/')) {
-        res.sendFile(path.join(__dirname, '../../frontend/build', 'index.html'));
-    }
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ error: 'Something went wrong!' });
 });
 
-// Database connection and server start
-const startServer = async () => {
-    try {
-        await sequelize.authenticate();
-        console.log('Database connection established successfully.');
-        
-        // Sync all models
-        await sequelize.sync();
-        console.log('All models were synchronized successfully.');
+// 404 handler
+app.use((req, res) => {
+    res.status(404).json({ error: 'Not found' });
+});
 
-        app.listen(PORT, () => {
-            console.log(`Server is running on port ${PORT}`);
-        });
-    } catch (error) {
-        console.error('Unable to connect to the database:', error);
-    }
-};
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
 
-startServer(); 
+module.exports = app; 

@@ -5,83 +5,54 @@ USE schrauber_verwaltung;
 -- Create the screwdrivers table
 CREATE TABLE IF NOT EXISTS screwdrivers (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL UNIQUE,
-    parent_id INT NULL,
-    type ENUM('category', 'instance') NOT NULL DEFAULT 'category',
-    state ENUM('on', 'off') NOT NULL DEFAULT 'on',
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    state ENUM('on', 'off') DEFAULT 'on',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (parent_id) REFERENCES screwdrivers(id) ON DELETE SET NULL
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Create the attributes table
 CREATE TABLE IF NOT EXISTS attributes (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL UNIQUE,
+    name VARCHAR(255) NOT NULL,
     description TEXT,
-    default_value TEXT,
-    format_data VARCHAR(255) COMMENT 'Regex pattern for validation',
-    is_required BOOLEAN DEFAULT FALSE COMMENT 'If true, this attribute is required for all screwdrivers',
-    state ENUM('on', 'off') NOT NULL DEFAULT 'on',
-    screwdriver_id INT NULL,
+    data_type ENUM('string', 'number', 'boolean', 'date') NOT NULL,
+    validation_pattern VARCHAR(255),
+    is_required BOOLEAN DEFAULT FALSE,
+    state ENUM('on', 'off') DEFAULT 'on',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (screwdriver_id) REFERENCES screwdrivers(id) ON DELETE SET NULL
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Create the attribute_values table
-CREATE TABLE IF NOT EXISTS attribute_values (
+-- Create the screwdriver_attributes table (junction table)
+CREATE TABLE IF NOT EXISTS screwdriver_attributes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     screwdriver_id INT NOT NULL,
     attribute_id INT NOT NULL,
-    value TEXT NOT NULL,
+    value VARCHAR(255) NOT NULL,
+    state ENUM('on', 'off') DEFAULT 'on',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (screwdriver_id) REFERENCES screwdrivers(id) ON DELETE CASCADE,
-    FOREIGN KEY (attribute_id) REFERENCES attributes(id) ON DELETE CASCADE,
-    UNIQUE KEY unique_screwdriver_attribute (screwdriver_id, attribute_id)
+    FOREIGN KEY (attribute_id) REFERENCES attributes(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Migration: Add type and state to screwdrivers table if they don't exist
+-- Add indexes
 ALTER TABLE screwdrivers
-    ADD COLUMN IF NOT EXISTS type ENUM('category', 'instance') NOT NULL DEFAULT 'category' AFTER parent_id,
-    ADD COLUMN IF NOT EXISTS state ENUM('on', 'off') NOT NULL DEFAULT 'on' AFTER type;
-
--- Migration: Add state and description to attributes table if they don't exist
-ALTER TABLE attributes
-    ADD COLUMN IF NOT EXISTS state ENUM('on', 'off') NOT NULL DEFAULT 'on' AFTER is_required,
-    ADD COLUMN IF NOT EXISTS description TEXT NULL AFTER name;
-
--- Migration: Update existing screwdrivers
--- Set type='instance' for screwdrivers that have attribute values
-UPDATE screwdrivers s
-SET s.type = 'instance'
-WHERE EXISTS (
-    SELECT 1 FROM attribute_values av 
-    WHERE av.screwdriver_id = s.id
-);
-
--- Set type='category' for screwdrivers that have children
-UPDATE screwdrivers s
-SET s.type = 'category'
-WHERE EXISTS (
-    SELECT 1 FROM screwdrivers child 
-    WHERE child.parent_id = s.id
-);
-
--- Set state='on' for all existing records if not already set
-UPDATE screwdrivers SET state = 'on' WHERE state IS NULL;
-UPDATE attributes SET state = 'on' WHERE state IS NULL;
-
--- Add indexes for better performance
-ALTER TABLE screwdrivers
-    ADD INDEX idx_type (type),
-    ADD INDEX idx_state (state),
-    ADD INDEX idx_parent (parent_id);
+    ADD INDEX idx_state (state);
 
 ALTER TABLE attributes
-    ADD INDEX idx_state (state),
-    ADD INDEX idx_screwdriver (screwdriver_id);
+    ADD INDEX idx_state (state);
 
-ALTER TABLE attribute_values
-    ADD INDEX idx_screwdriver_attribute (screwdriver_id, attribute_id); 
+ALTER TABLE screwdriver_attributes
+    ADD INDEX idx_screwdriver_attribute (screwdriver_id, attribute_id),
+    ADD INDEX idx_state (state);
+
+-- Insert some default attributes
+INSERT INTO attributes (name, description, data_type, validation_pattern, is_required) VALUES
+('Halle', 'Name der Halle', 'string', '^[A-Za-z0-9\\s]+$', TRUE),
+('Abteilung', 'Name der Abteilung', 'string', '^[A-Za-z0-9\\s]+$', TRUE),
+('Prüfmittel', 'Bezeichnung des Prüfmittels', 'string', '^[A-Za-z0-9\\s]+$', TRUE),
+('MAC', 'MAC-Adresse', 'string', '^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$', TRUE),
+('IP', 'IP-Adresse', 'string', '^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$', TRUE); 

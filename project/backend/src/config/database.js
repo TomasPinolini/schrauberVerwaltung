@@ -1,15 +1,24 @@
 const { Sequelize } = require('sequelize');
-require('dotenv').config();
 
-module.exports = {
-    dialect: 'mysql',
-    host: 'localhost',
-    username: 'root',
-    password: '',
-    database: 'schrauber_verwaltung',
-    logging: false,
-    define: {
-        timestamps: true,
-        underscored: true
-    }
-}; 
+const sequelize = new Sequelize('schrauber_verwaltung', 'root', '', {
+  host: 'localhost',
+  dialect: 'mysql',
+  logging: false,
+  define: {
+    timestamps: true,
+    underscored: true,
+  }
+});
+
+const testConnection = async () => {
+  try {
+    await sequelize.authenticate();
+    console.log('Database connection has been established successfully.');
+  } catch (error) {
+    console.error('Unable to connect to the database:', error);
+  }
+};
+
+testConnection();
+
+module.exports = sequelize;
