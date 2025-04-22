@@ -1,0 +1,1058 @@
+{
+  "format": "application",
+  "hardware": "KE350G",
+  "mac0": "00-C0-3A-6E-bd-f4",
+  "ip0": "10.52.116.79",
+  "sw version": "2.500",
+  "sw build": "Release",
+  "location name": ["1", "2", "3", "4", "5", "6", "7"],
+  "channel": "",
+  "appl block": 1,
+  "appl nr": 3,
+  "appl name": "PGH4-3x",
+  "appl cycle": 1076991879,
+  "ke cycle": 2685017053,
+  "id code": "R901450936-1108_001",
+  "date": "2025-03-06 06:17:44",
+  "quality code": "    1",
+  "result": "OK",
+  "last cmd": "application completed",
+  "last step row": "4",
+  "last step column": "A",
+  "direction": 1,
+  "no of channels": 4,
+  "channels": [
+    {
+      "format": "channel",
+      "node id": "0.1",
+      "nr": 1,
+      "SST": "PGH4-3x",
+      "result": "OK",
+      "hardware": "SE352 ",
+      "mac0": "00-C0-3A-6E-bd-f4",
+      "ip0": "10.52.116.79",
+      "sw version": "2.500",
+      "sw build": "Release",
+      "MCE factor": 0.99,
+      "MCE": [
+        {
+          "Transducer function": "primary",
+          "measuring": "direct",
+          "factor": 0.99
+        }
+      ],
+      "max. speed": 133,
+      "location name": ["1", "2", "3", "4", "5", "6", "7"],
+      "channel": "",
+      "prg nr": 3,
+      "prg name": "PGH4-3X",
+      "prg date": "2021-02-09 08:26:45",
+      "cycle": 67573,
+      "redundancy sensor": -1,
+      "nominal torque": 356.4,
+      "date": "2025-03-06 06:17:43",
+      "id code": "R901450936-1108_001",
+      "id code channel": "",
+      "torque unit": "Nm",
+      "last cmd": "TF Yield Point",
+      "last step row": "8",
+      "last step column": "A",
+      "quality code": "    1",
+      "total time": "14.5",
+      "tool serial": 755000013,
+      "redundancy transducer serial": 2147483648,
+      "spindle id": "",
+      "rework code": 0,
+      "rework text": "",
+      "batch nr": -1,
+      "batch canceled": -1,
+      "batch direction OK": -1,
+      "batch direction NOK": -1,
+      "batch max OK": -1,
+      "batch OK": -1,
+      "batch max NOK": -1,
+      "batch NOK": -1,
+      "angle global threshold": { "nom": 0 },
+      "Torque CT": 1,
+      "Torque Cred": 1,
+      "tightening steps": [
+        {
+          "step type": "",
+          "row": "2",
+          "column": "A",
+          "name": "8Nm",
+          "last cmd": "TF Angle",
+          "quality code": "    1",
+          "speed": 100,
+          "category": 0,
+          "docu buffer": 3,
+          "result": "OK",
+          "angle threshold": { "nom": 0, "act": 0 },
+          "tightening functions": [
+            { "name": "TF Torque", "nom": 8, "act": 0 },
+            {
+              "name": "TF Angle",
+              "nom": 2200,
+              "act": 2200.05,
+              "add": [{ "angle threshold": { "nom": 0, "act": 0 } }]
+            },
+            { "name": "MFs TimeMax", "nom": 10, "act": 3.7 },
+            { "name": "MF TorqueMin", "nom": -5, "act": 0 },
+            { "name": "MFs TorqueMax", "nom": 80, "act": 0 },
+            {
+              "name": "MF AngleMin",
+              "nom": 100,
+              "act": 2200.05,
+              "add": [{ "angle threshold": { "nom": 0, "act": 0 } }]
+            },
+            {
+              "name": "MF AngleMax",
+              "nom": 7777,
+              "act": 2200.05,
+              "add": [{ "angle threshold": { "nom": 0, "act": 0 } }]
+            }
+          ],
+          "graph_b64": {
+            "points": 163,
+            "angle values": "AAAAAAAAKjAAAFP8AAB+LAAAfiwAAKf4AACn+AAA0igAANIoAAD8WAAA/FgAASYkAAEmJAABUFQAAVBUAAF6IAABeiAAAaRQAAGkUAABzhwAAc4cAAH4TAAB+EwAAiJ8AAIifAACTEgAAkxIAAJ2eAACdngAAqBEAAKgRAACynQAAsp0AAL0pAAC9KQAAx5wAAMecAADSKAAA0igAANybAADcmwAA5ycAAPGaAADxmgAA/CYAAPwmAAEGsgABBrIAARElAAERJQABG7EAARuxAAElQwABJUMAASVDAAHq6wACtHsAA3lCAARDswAFCHoABc1BAAaSCAAHVdUACBmiAAjdbwAJoTwACmbkAAsqsQAL73gADLQ/AA1+yQAOSToADw0HAA/SyAAQnTkAEWIAABIscQAS8TgAE7UFABR40gAVPZkAFgJgABbGLQAXivQAGE7BABkYOAAZ3fkAGqHGABtmjQAcKloAHO4nAB2y7gAedrsAHzuCAB//TwAgw/0AIYfKACJMkQAjFxsAI9viACSgkAAlaxoAJi7nACb0qAAnuHUAKILmAClHrQAqEh4AKtblACubrAAsX3kALSNGAC3oDQAuq9oAL2+nADAzdAAw+DsAMb0CADKBsAAzRX0ANA8NADTT1AA1mJsANlxoADciEAA37JoAOLBnADl0NAA6OAEAOv2pADvBdgA8hj0APUoKAD4N1wA+0aQAP5VxAEBaOABBHv8AQePGAEKuNwBDcgQARDXRAET6mABFv18ARoMsAEdI7QBIDLoASNYxAEmZ/gBKX78ASyOMAEvoUwBMrCAATXDnAE40tABO+IEAT71IAFCBFQBRROIAUgmQAFLOVwBTmOEAVFyuA==",
+            "angle scale": 10000,
+            "torque values": "AAAAAAAAAAAAAAAAAAAAAAAATiAAAAAAAAAnEAAAJxAAACcQAAAAAAAATiAAAE4gAAAAAAAAAAAAAAAAAABOIAAAAAAAACcQAABOIAAAAAAAACcQAABOIAAAJxAAACcQAAAnEAAAJxAAACcQAAAnEAAATiAAACcQAAAAAAAAAAAAAAAAAAAAAAAATiAAACcQAAAAAAAAJxAAAE4gAAAnEAAAAAAAAAAAAAAAAAAAAAAAACcQAAAAAAAAJxAAAAAAAAAAAAAAAAAAAE4gAAAAAAAAJxAAAAAAAAAAAAAAJxAAAAAAAAAAAAAAJxAAAE4gAAAnEAAAJxAAAE4gAABOIAAAAAAAAAAAAAAAAAAAJxAAACcQAAAAAAAATiAAAE4gAAAAAAAATiAAAE4gAAAAAAAATiAAAAAAAAAnEAAATiAAAE4gAABOIAAATiAAAE4gAABOIAAATiAAACcQAABOIAAATiAAAAAAAABOIAAATiAAAE4gAABOIAAAJxAAAE4gAABOIAAATiAAAE4gAABOIAAATiAAAE4gAABOIAAATiAAAE4gAABOIAAATiAAAAAAAABOIAAAJxAAAE4gAAAnEAAAAAAAAE4gAAAnEAAATiAAAE4gAABOIAAAAAAAAE4gAAAnEAAAAAAAAE4gAAAAAAAATiAAACcQAAAnEAAATiAAAE4gAABOIAAATiAAAE4gAABOIAAAJxAAAE4gAAAnEAAATiAAAE4gAABOIAAATiAAAE4gAABOIAAATiAAAE4gAABOIAAATiAAACcQAAAnEAAATiAAAE4gAAAAAAAATiAAAE4gAAAnEAAAJxAAAE4gAABOIAAATiAAAE4gAABOIAAAJxAAACcQAABOIA==",
+            "torque scale": 100000
+          }
+        },
+        {
+          "step type": "",
+          "row": "3",
+          "column": "A",
+          "name": "25Nm",
+          "last cmd": "TF Torque",
+          "quality code": "    1",
+          "speed": 35,
+          "category": 0,
+          "docu buffer": 2,
+          "result": "OK",
+          "angle threshold": { "nom": 0, "act": 0 },
+          "tightening functions": [
+            { "name": "TF Torque", "nom": 25, "act": 25.2 },
+            { "name": "MFs TimeMax", "nom": 15, "act": 4.33 },
+            { "name": "MF TorqueMin", "nom": -5, "act": 25.2 },
+            { "name": "MFs TorqueMax", "nom": 100, "act": 25.2 },
+            {
+              "name": "MF AngleMin",
+              "nom": 10,
+              "act": 904.71,
+              "add": [{ "angle threshold": { "nom": 0, "act": 0 } }]
+            },
+            {
+              "name": "MFs AngleMax",
+              "nom": 1500,
+              "act": 904.71,
+              "add": [{ "angle threshold": { "nom": 0, "act": 0 } }]
+            }
+          ],
+          "graph_b64": {
+            "points": 47,
+            "angle values": "AVRIgAFUZvgBV3oUAVqJSAFdmHwBYKewAWO+tAFm1VQBaeSIAWzzvAFwAvABcxYMAXYtEAF5Q7ABfFq0AX9p6AGCeRwBhYhQAYiXhAGLrogBjr28AZHM8AGU45ABl/LEAZsB+AGeESwBoSBgAaQzfAGnQrABqlHkAa1hGAGwcEwBs3+AAbaOtAG5pbgBvLy8Ab/L8AHC2yQBxe3cAckE4AHMFBQBzysYAdJBuAHVUOwB2GAgAdtvVAHegnA=",
+            "angle scale": 10000,
+            "torque values": "AAAAAAAAAAAAAAAAAAAnEAAATiAAAE4gAAAnEAAAAAAAAAAAAABOIAAATiAAAJxAAABOIAAAJxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAE4gAABOIAAATiAAAE4gAABOIAAATiAAACcQAAAnEAAATiAAACcQAABOIAAAAAAAACcQAAAAAAAAAAAAAAAAAAAAAAAAJxAAAE4gAABOIAAAAAAAAMNQAAGtsAACmBAAA/egAA27oAAlYlA=",
+            "torque scale": 100000
+          }
+        },
+        {
+          "step type": "",
+          "row": "5",
+          "column": "A",
+          "name": "-15�",
+          "last cmd": "TF Angle",
+          "quality code": "    1",
+          "speed": -5,
+          "category": 0,
+          "docu buffer": 0,
+          "result": "OK",
+          "angle threshold": { "nom": 0, "act": -0.2 },
+          "tightening functions": [
+            {
+              "name": "TF Angle",
+              "nom": 15,
+              "act": 15.06,
+              "add": [{ "angle threshold": { "nom": 0, "act": -0.2 } }]
+            },
+            { "name": "MFs TimeMax", "nom": 10, "act": 0.62 },
+            { "name": "MF TorqueMin", "nom": -15, "act": 2.8 },
+            { "name": "MFs TorqueMax", "nom": 40, "act": 2.8 }
+          ],
+          "graph_b64": {
+            "points": 11,
+            "angle values": "Ad6soAHerKAB3qygAd5JBAHeSQQB3kkEAd5JBAHeSQQB3kkEAd2ClAHcu8A=",
+            "angle scale": 10000,
+            "torque values": "ACYloAAmc8AAGaKAAABOIAAAdTAAAJxAAACcQAAAw1AAAE4gAAAAAP//2PA=",
+            "torque scale": 100000
+          }
+        },
+        {
+          "step type": "",
+          "row": "6",
+          "column": "A",
+          "name": "100Nm",
+          "last cmd": "TF Torque",
+          "quality code": "    1",
+          "speed": 12,
+          "category": 2,
+          "docu buffer": 1,
+          "result": "OK",
+          "angle threshold": { "nom": 25, "act": 25.4 },
+          "tightening functions": [
+            { "name": "TF Torque", "nom": 100, "act": 100.2 },
+            { "name": "MFs TimeMax", "nom": 15, "act": 0.91 },
+            { "name": "MF TorqueMin", "nom": 15, "act": 100.2 },
+            { "name": "MFs TorqueMax", "nom": 140, "act": 100.2 },
+            {
+              "name": "MF AngleMin",
+              "nom": 1,
+              "act": 41.08,
+              "add": [{ "angle threshold": { "nom": 25, "act": 25.4 } }]
+            },
+            {
+              "name": "MFs AngleMax",
+              "nom": 120,
+              "act": 41.08,
+              "add": [{ "angle threshold": { "nom": 25, "act": 25.4 } }]
+            }
+          ],
+          "graph_b64": {
+            "points": 40,
+            "angle values": "Adv8vAHb/LwB2/jUAdv41AHb+NQB3ElMAdyZYAHc6dgB3TnsAd2KAAHd2ngB3iqMAd4qjAHeewQB3qygAd78tAHfTSwB351AAd/tVAHf7VQB4D3MAeCN4AHg3lgB4S5sAeEubAHhfoAB4c74AeIfDAHibyAB4r+YAeMPrAHjYCQB47A4AeQATAHkUMQB5KDYAeSg2AHk8VAB5PFQAeVBZA==",
+            "angle scale": 10000,
+            "torque values": "//u6QP/7bCD/+0UQ//r28P/74VAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAiLgAAJxAAAOpgAAJsHgACrgkAAwELAANPKwADoi0AA6cPAAP6EQAET4QABKnZAAUELgAFCRAABV6DAAW2ZwAGFZ4ABnTVAAbKSAAHJJ0AB4PUAAfgmgAIOH4ACJ8IAAjeggAI4PMACSBtAAki3gAJf6QA==",
+            "torque scale": 100000
+          }
+        },
+        {
+          "step type": "",
+          "row": "8",
+          "column": "A",
+          "name": "195Nm",
+          "last cmd": "TF Yield Point",
+          "quality code": "    1",
+          "speed": 8,
+          "category": 0,
+          "docu buffer": 0,
+          "result": "OK",
+          "gradient threshold": { "nom": 120, "act": 120 },
+          "angle threshold": { "nom": 100, "act": 100.1 },
+          "tightening functions": [
+            { "name": "TF Torque", "nom": 195, "act": 182.4 },
+            {
+              "name": "TF Yield Point",
+              "nom": 50,
+              "act": 61,
+              "add": [
+                {
+                  "gradient threshold": { "nom": 120, "act": 120 },
+                  "control angle": 5
+                }
+              ]
+            },
+            { "name": "MFs TimeMax", "nom": 15, "act": 1.15 },
+            { "name": "MF TorqueMin", "nom": 160, "act": 182.4 },
+            { "name": "MFs TorqueMax", "nom": 230, "act": 182.4 },
+            {
+              "name": "MF AngleMin",
+              "nom": 1,
+              "act": 43.51,
+              "add": [{ "angle threshold": { "nom": 100, "act": 100.1 } }]
+            },
+            {
+              "name": "MFs AngleMax",
+              "nom": 120,
+              "act": 43.51,
+              "add": [{ "angle threshold": { "nom": 100, "act": 100.1 } }]
+            }
+          ],
+          "graph_b64": {
+            "points": 127,
+            "torsion release": 38,
+            "angle values": "AeVMuAHlUKAB5VCgAeVQoAHlAIwB5QCMAeSwFAHksBQB5JGcAeSRnAHkkZwB5I20AeSNtAHkt+QB5LfkAeTiFAHk4hQB5QvgAeUL4AHlNhAB5TYQAeVf3AHlX9wB5WuUAeVrlAHllWAB5ZVgAeW/kAHl6VwB5elcAeYTjAHmPbwB5j28AeZniAHmkbgB5pG4Aea7hAHm5bQB5w+AAecPgAHnObAB5zmwAedj4AHnjawB57fcAee33AHn4agB5+GoAegL2AHoC9gB6DYIAeg2CAHoX9QB6F/UAeiKBAHos9AB6N4AAekPOAHpOWgB6WM0AemNZAHptzAB6bcwAenhYAHp4WAB6guQAeo1XAHqNVwB6l+MAepfjAHqiVgB6olYAeqziAHqs4gB6t1UAesHhAHrB4QB6zG0AetbgAHrW4AB64WwAeuFsAHrr3wB6698AevZrAHsA9wB7C2oAewtqAHsU/AB7FPwAexT8AHsKcAB7CnAAev/9AHr//QB69XEAevVxAHrq/gB66v4AeuByAHrgcgB61eYAetXmAHrLcwB6y3MAestzAHrLcwB6y3MAestzAHrLcwB6y3MAestzAHrLcwB6wOcAerZ0AHqr6AB6oXUAepbpAHqMXQB6geoAendeAHps6wB6Yl8AelfTAHpRLwB6UDUAektsA==",
+            "angle scale": 10000,
+            "torque values": "AJiWgACYloAAmOSgAIfNoAAzbBAAMUkwAAnEAAAI2aAAAuYwAAKYEAACmBAAAnEAAALmMAAZ8KAAG3dAADqYAAA8HqAAYCFgAGHPEAB61VAAfA3QAJLKIACTtIAAmL2QAJlZ0ACesQAAntgQAKKBkAClZ8AApY7QAKicEACrNCAAq1swAK5BYACwsmAAsNlwALOYkAC2V7AAuRbQALk94AC8SyAAvHIwAL8KQADCF4AAxK+QAMVL0ADICvAAx+PgAMpU4ADKowAAzWIgAM2wQADQb2AA0L2AANN8oADWieAA2XAQANxWQADfPHAA4nDAAOThwADnK7AA53nQAOoR4ADqhxAA7W1AAO+3MADv3kAA8nZQAPMSkAD3pnAA982AAPplkAD6s7AA/SSwAP7SYAD/R5ABAZGAAQQpkAED23ABCCEwAQhvUAEKuUABCuBQAQyOAAERSPABE+EAARQIEAEWUgABFlIAAP42IAC9NYAAuuuQAIfNoACFqsAAXFDQAFrxQAA7DTAAOYaQACQCwAAi8VAAEKHQAA+QYAACSfAABfNwAAYagAAGGoAABkGQAAZooAAGj7AABrbAAAbd0AAGGoAAACcQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//9jw//5SUP//2PAAAAAAAAAAAA==",
+            "torque scale": 100000
+          }
+        }
+      ]
+    },
+    {
+      "format": "channel",
+      "node id": "0.2",
+      "nr": 2,
+      "SST": "PGH4-3x",
+      "result": "OK",
+      "hardware": "SE352 ",
+      "mac0": "00-C0-3A-6E-bd-f4",
+      "ip0": "10.52.116.79",
+      "sw version": "2.500",
+      "sw build": "Release",
+      "MCE factor": 0.99,
+      "MCE": [
+        {
+          "Transducer function": "primary",
+          "measuring": "direct",
+          "factor": 0.99
+        }
+      ],
+      "max. speed": 133,
+      "location name": ["1", "2", "3", "4", "5", "6", "7"],
+      "channel": "",
+      "prg nr": 3,
+      "prg name": "PGH4-3X",
+      "prg date": "2021-02-09 08:26:45",
+      "cycle": 67574,
+      "redundancy sensor": -1,
+      "nominal torque": 356.4,
+      "date": "2025-03-06 06:17:43",
+      "id code": "R901450936-1108_001",
+      "id code channel": "",
+      "torque unit": "Nm",
+      "last cmd": "TF Torque",
+      "last step row": "8",
+      "last step column": "A",
+      "quality code": "    1",
+      "total time": "14.2",
+      "tool serial": 755000016,
+      "redundancy transducer serial": 2147483648,
+      "spindle id": "",
+      "rework code": 0,
+      "rework text": "",
+      "batch nr": -1,
+      "batch canceled": -1,
+      "batch direction OK": -1,
+      "batch direction NOK": -1,
+      "batch max OK": -1,
+      "batch OK": -1,
+      "batch max NOK": -1,
+      "batch NOK": -1,
+      "angle global threshold": { "nom": 0 },
+      "Torque CT": 1,
+      "Torque Cred": 1,
+      "tightening steps": [
+        {
+          "step type": "",
+          "row": "2",
+          "column": "A",
+          "name": "8Nm",
+          "last cmd": "TF Angle",
+          "quality code": "    1",
+          "speed": 100,
+          "category": 0,
+          "docu buffer": 3,
+          "result": "OK",
+          "angle threshold": { "nom": 0, "act": 0.2 },
+          "tightening functions": [
+            { "name": "TF Torque", "nom": 8, "act": 0.5 },
+            {
+              "name": "TF Angle",
+              "nom": 2200,
+              "act": 2200.64,
+              "add": [{ "angle threshold": { "nom": 0, "act": 0.2 } }]
+            },
+            { "name": "MFs TimeMax", "nom": 10, "act": 3.7 },
+            { "name": "MF TorqueMin", "nom": -5, "act": 0.5 },
+            { "name": "MFs TorqueMax", "nom": 80, "act": 0.5 },
+            {
+              "name": "MF AngleMin",
+              "nom": 100,
+              "act": 2200.64,
+              "add": [{ "angle threshold": { "nom": 0, "act": 0.2 } }]
+            },
+            {
+              "name": "MF AngleMax",
+              "nom": 7777,
+              "act": 2200.64,
+              "add": [{ "angle threshold": { "nom": 0, "act": 0.2 } }]
+            }
+          ],
+          "graph_b64": {
+            "points": 152,
+            "angle values": "AAAAAAAAAAAAACowAAAqMAAAU/wAAFP8AAB+LAAAfiwAAKf4AADSKAAA/FgAASYkAAFQVAABUFQAAXogAAF6IAABpFAAAc4cAAHOHAAB+EwAAiJ8AAJMSAACdngAAqBEAAKgRAACynQAAsp0AAL0pAADHnAAAx5wAANIoAADSKAAA3JsAAOcnAADxmgAA/CYAAQayAAEGsgABESUAARuxAAEbsQABJUMAASVDAAHs3wACsaYAA3ZUAAQ6IQAE/e4ABcHUAAaFoQAHSk8ACA8WAAjS4wAJl6oAClt3AAsfRAAL4xEADKbeAA1rpQAOMU0ADvYUAA/AngAQiw8AEU7cABISqQAS13AAE5w3ABRgBAAVJcUAFe88ABa0AwAXd9AAGDyXABkBXgAZxiUAGonyABtNvwAcGDAAHNv9AB2fygAeZYsAHylYAB/tJQAgsewAIXW5ACI5hgAi/jQAI8IaACSGyAAlSpUAJg9cACbUIwAnnpQAKGJhACknKAAp6+8AKrC2ACt7JwAsPvQALQLBAC3HiAAui1UAL1EWADAU4wAw2aoAMaQbADJn6AAzLK8AM/B8ADS2PQA1egoANj3XADcCngA3zBUAOI/iADlVowA6GXAAOt09ADui/gA8ZssAPSqYAD3uZQA+sxMAP3bgAEA7pwBBBjEAQcr4AEKVaQBDWyoARCWbAETpaABFri8ARnigAEc8bQBIATQASMX7AEmJyABKT4kASxNWAEvXIwBMmvAATV69AE4iigBO6DIAT6v/AFBvzABRNJMAUfhgAFLC6gBTh7EAVExfAFUQLA=",
+            "angle scale": 10000,
+            "torque values": "AAAAAAAAAAAAAAAAAAAnEAAAJxAAAE4gAABOIAAAJxAAAE4gAABOIAAATiAAAE4gAABOIAAATiAAAE4gAABOIAAATiAAACcQAABOIAAATiAAAE4gAABOIAAATiAAAAAAAABOIAAATiAAAE4gAABOIAAAJxAAAE4gAABOIAAAAAAAAE4gAABOIAAATiAAAE4gAAAnEAAATiAAAE4gAAAnEAAAJxAAACcQAABOIAAAJxAAAE4gAABOIAAATiAAAE4gAAB1MAAAdTAAAE4gAABOIAAATiAAAHUwAABOIAAATiAAAJxAAABOIAAATiAAAE4gAABOIAAAdTAAAE4gAABOIAAAdTAAAE4gAABOIAAATiAAAE4gAABOIAAATiAAAE4gAABOIAAATiAAACcQAABOIAAATiAAAE4gAAB1MAAATiAAAE4gAABOIAAATiAAAE4gAABOIAAATiAAAE4gAABOIAAAw1AAAE4gAABOIAAATiAAAMNQAADDUAAAdTAAAE4gAABOIAAATiAAAE4gAABOIAAATiAAAE4gAAB1MAAATiAAAE4gAABOIAAATiAAAE4gAACcQAAATiAAAE4gAABOIAAATiAAAE4gAABOIAAATiAAAHUwAABOIAAATiAAAE4gAABOIAAATiAAAE4gAABOIAAATiAAACcQAAAnEAAAnEAAAJxAAACcQAAAdTAAAE4gAABOIAAAdTAAAE4gAABOIAAATiAAAE4gAABOIAAATiAAAE4gAABOIAAATiAAAE4gAABOIAAATiAAAHUwAACcQAAAw1AAAMNQAADDUAAAw1A=",
+            "torque scale": 100000
+          }
+        },
+        {
+          "step type": "",
+          "row": "3",
+          "column": "A",
+          "name": "25Nm",
+          "last cmd": "TF Torque",
+          "quality code": "    1",
+          "speed": 35,
+          "category": 0,
+          "docu buffer": 2,
+          "result": "OK",
+          "angle threshold": { "nom": 0, "act": 0.5 },
+          "tightening functions": [
+            { "name": "TF Torque", "nom": 25, "act": 25.1 },
+            { "name": "MFs TimeMax", "nom": 15, "act": 5.78 },
+            { "name": "MF TorqueMin", "nom": -5, "act": 25.1 },
+            { "name": "MFs TorqueMax", "nom": 100, "act": 25.1 },
+            {
+              "name": "MF AngleMin",
+              "nom": 10,
+              "act": 1203.49,
+              "add": [{ "angle threshold": { "nom": 0, "act": 0.5 } }]
+            },
+            {
+              "name": "MFs AngleMax",
+              "nom": 1500,
+              "act": 1203.49,
+              "add": [{ "angle threshold": { "nom": 0, "act": 0.5 } }]
+            }
+          ],
+          "graph_b64": {
+            "points": 61,
+            "angle values": "AVRfjAFUehwBV4lQAVqYhAFdp7gBYLbsAWPN8AFm3SQBaexYAWz7jAFwEpABcyHEAXYw+AF5R5gBfFbMAX9mAAGCdTQBhYw4AYibbAGLqqABjrnUAZHJCAGU2DwBl+9AAZr+dAGeDagBoSRIAaQzfAGnQrABqlHkAa1o6AGweBwBs48gAbaeVAG5rYgBvLy8Ab/L8AHC2yQBxepYAcj9dAHMDKgBzx9gAdIulAHVPcgB2FTMAdtr0AHeewQB4Yo4AeSZbAHnqKAB6r7cAe3OEAHw5RQB8/RIAfcDfAH6GoAB/Sm0AgA46AIDSBwCBl68Aglx2A==",
+            "angle scale": 10000,
+            "torque values": "AADDUAAAw1AAAMNQAADDUAAATiAAAE4gAABOIAAATiAAAE4gAABOIAAATiAAAAAAAAB1MAABEXAAARFwAAE4gAAAw1AAAMNQAAERcAAAw1AAAHUwAACcQAAAdTAAAE4gAAAnEAAATiAAAHUwAADqYAABEXAAAMNQAACcQAAAw1AAARFwAADDUAAAw1AAARFwAADDUAAAw1AAAJxAAACcQAAAdTAAAE4gAAB1MAAATiAAACcQAACcQAAAdTAAAE4gAABOIAAATiAAAE4gAABOIAAATiAAAE4gAABOIAAATiAAAMNQAACcQAAAdTAAAw1AAA0fYA==",
+            "torque scale": 100000
+          }
+        },
+        {
+          "step type": "",
+          "row": "5",
+          "column": "A",
+          "name": "-15�",
+          "last cmd": "TF Angle",
+          "quality code": "    1",
+          "speed": -5,
+          "category": 0,
+          "docu buffer": 0,
+          "result": "OK",
+          "angle threshold": { "nom": 0, "act": -0.7 },
+          "tightening functions": [
+            {
+              "name": "TF Angle",
+              "nom": 15,
+              "act": 15.06,
+              "add": [{ "angle threshold": { "nom": 0, "act": -0.7 } }]
+            },
+            { "name": "MFs TimeMax", "nom": 10, "act": 0.62 },
+            { "name": "MF TorqueMin", "nom": -15, "act": 1.7 },
+            { "name": "MFs TorqueMax", "nom": 40, "act": 1.7 }
+          ],
+          "graph_b64": {
+            "points": 7,
+            "angle values": "AgxPcAIMT3ACDE9wAgv++AIL/vgCCziIAgpxtA==",
+            "angle scale": 10000,
+            "torque values": "ACYloAAmTLAAHZogAAERcAAAnEAAAAAAAAAAAA==",
+            "torque scale": 100000
+          }
+        },
+        {
+          "step type": "",
+          "row": "6",
+          "column": "A",
+          "name": "100Nm",
+          "last cmd": "TF Torque",
+          "quality code": "    1",
+          "speed": 12,
+          "category": 2,
+          "docu buffer": 1,
+          "result": "OK",
+          "angle threshold": { "nom": 25, "act": 25 },
+          "tightening functions": [
+            { "name": "TF Torque", "nom": 100, "act": 100.4 },
+            { "name": "MFs TimeMax", "nom": 15, "act": 0.79 },
+            { "name": "MF TorqueMin", "nom": 15, "act": 100.4 },
+            { "name": "MFs TorqueMax", "nom": 140, "act": 100.4 },
+            {
+              "name": "MF AngleMin",
+              "nom": 1,
+              "act": 31.59,
+              "add": [{ "angle threshold": { "nom": 25, "act": 25 } }]
+            },
+            {
+              "name": "MFs AngleMax",
+              "nom": 120,
+              "act": 31.59,
+              "add": [{ "angle threshold": { "nom": 25, "act": 25 } }]
+            }
+          ],
+          "graph_b64": {
+            "points": 34,
+            "angle values": "AgmysAIJsrACCbKwAgmuyAIJrsgCCf9AAgpPVAIKn8wCCu/gAgs/9AILkGwCC+CAAgww+AIMZnwCDLaQAg0GpAINBqQCDVccAg2nMAIN96gCDke8Ag5HvAIOl9ACDuhIAg84XAIPiHACD9joAhAo/AIQeXQCEMmIAhEZnAIRGZwCEWoUAhFqFA==",
+            "angle scale": 10000,
+            "torque values": "//1n8P/9jwD//Wfw//0Z0P//seAAAE4gAABOIAAATiAAAHUwAAHUwAACSfAABOIAABsCEAAmJaAAKuCQADGXUAAx5XAANu6AADy64ABCYDAASFOgAEihwABPWIAAVl1gAF2JUABleJAAbY7gAHXMQAB+CaAAhdHQAI6EYACOq3AAlYlAAJWwUA==",
+            "torque scale": 100000
+          }
+        },
+        {
+          "step type": "",
+          "row": "8",
+          "column": "A",
+          "name": "195Nm",
+          "last cmd": "TF Torque",
+          "quality code": "    1",
+          "speed": 8,
+          "category": 0,
+          "docu buffer": 0,
+          "result": "OK",
+          "gradient threshold": { "nom": 120, "act": 120.2 },
+          "angle threshold": { "nom": 100, "act": 100 },
+          "tightening functions": [
+            { "name": "TF Torque", "nom": 195, "act": 195.3 },
+            {
+              "name": "TF Yield Point",
+              "nom": 50,
+              "act": 21,
+              "add": [
+                {
+                  "gradient threshold": { "nom": 120, "act": 120.2 },
+                  "control angle": 5
+                }
+              ]
+            },
+            { "name": "MFs TimeMax", "nom": 15, "act": 0.88 },
+            { "name": "MF TorqueMin", "nom": 160, "act": 195.3 },
+            { "name": "MFs TorqueMax", "nom": 230, "act": 195.3 },
+            {
+              "name": "MF AngleMin",
+              "nom": 1,
+              "act": 29.15,
+              "add": [{ "angle threshold": { "nom": 100, "act": 100 } }]
+            },
+            {
+              "name": "MFs AngleMax",
+              "nom": 120,
+              "act": 29.15,
+              "add": [{ "angle threshold": { "nom": 100, "act": 100 } }]
+            }
+          ],
+          "graph_b64": {
+            "points": 110,
+            "torsion release": 37,
+            "angle values": "AhGT4AIRl8gCEZfIAhGXyAIRR7QCEUe0AhD3PAIQ9zwCEKcoAhCUBAIQlAQCEJQEAhCUBAIQvjQCEL40AhDoAAIREjACETv8AhE7/AIRZiwCEWYsAhGQXAIRkFwCEarsAhHVHAIR1RwCEf7oAhH+6AISKRgCEikYAhJS5AISfRQCEn0UAhKnRAISp0QCEtEQAhLREAIS+0ACEvtAAhMlDAITJQwCE088AhN5bAITozgCE6M4AhPNaAITzWgCE/c0AhP3NAIUIWQCFCFkAhRLlAIUdWACFJ+QAhSfkAIUyVwCFMlcAhTzjAIU84wCFR1YAhVHiAIVR4gCFXG4AhWbhAIVm4QCFcW0AhXFtAIV74ACFe+AAhYZsAIWGbACFkPgAhZecAIWXnACFmJYAhZiWAIWYlgCFjgoAhY4KAIWDlwCFg5cAhXkLAIV5CwCFbn8AhW5/AIVkDACFZAwAhVmAAIVZgACFTw0AhU8NAIVEgQCFRIEAhToOAIU6DgCFL4IAhS+CAIUquQCFKrkAhSAtAIUVugCFCy4AhQC7AIT2LwCE67wAhOEwAITWpACE088AhNLVAITNKw=",
+            "angle scale": 10000,
+            "torque values": "AJi9kACZC7AAmTLAAId/gAAtUZAALI5AABE+EAAQesAABB6wAAERcAAAw1AAAJxAAADqYAAJALAACcQAABpl0AAx5XAAUXtgAFMpEABycOAAc9BwAIwTYACNS+AAmJaAAJ2fkACd7bAAolqAAKKooACn/9AAqCbgAK0v8ACyOQAAsmAQALdpIAC3kDAAvCQQALyZQADBolAAwfBwAMaEUADG0nAAy2ZQANBIUADVA0AA1NwwANnlQADaqJAA32OAAN+KkADkbJAA5JOgAOnq0ADuCYAA8xKQAPM5oAD3zYAA+BugAP1y0AD+DxABAxggAQesAAEH0xABDQMwAREh4AERSPABFUCQARW1wAEbDPABG1sQASDZUAEhAGABJjCAASmL4AEpi+ABKdoAASoBEAEcRXAAxjYwAMAbsACD1gAAgdowAFvboABafBAAQesAAEDZkAAs3GAAK/IAAByvwAAcE4AAEYwwABFlIAAMNQAADA3wAAehIAAHehAAA/egAAOpgAAIPWAAB1MAAAGGoAAATiAAACcQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+            "torque scale": 100000
+          }
+        }
+      ]
+    },
+    {
+      "format": "channel",
+      "node id": "0.3",
+      "nr": 3,
+      "SST": "PGH4-3x",
+      "result": "OK",
+      "hardware": "SE352 ",
+      "mac0": "00-C0-3A-6E-bd-f4",
+      "ip0": "10.52.116.79",
+      "sw version": "2.500",
+      "sw build": "Release",
+      "MCE factor": 0.99,
+      "MCE": [
+        {
+          "Transducer function": "primary",
+          "measuring": "direct",
+          "factor": 0.99
+        }
+      ],
+      "max. speed": 133,
+      "location name": ["1", "2", "3", "4", "5", "6", "7"],
+      "channel": "",
+      "prg nr": 3,
+      "prg name": "PGH4-3X",
+      "prg date": "2021-02-09 08:26:45",
+      "cycle": 67577,
+      "redundancy sensor": -1,
+      "nominal torque": 356.4,
+      "date": "2025-03-06 06:17:43",
+      "id code": "R901450936-1108_001",
+      "id code channel": "",
+      "torque unit": "Nm",
+      "last cmd": "TF Torque",
+      "last step row": "8",
+      "last step column": "A",
+      "quality code": "    1",
+      "total time": "14.4",
+      "tool serial": 755000015,
+      "redundancy transducer serial": 2147483648,
+      "spindle id": "",
+      "rework code": 0,
+      "rework text": "",
+      "batch nr": -1,
+      "batch canceled": -1,
+      "batch direction OK": -1,
+      "batch direction NOK": -1,
+      "batch max OK": -1,
+      "batch OK": -1,
+      "batch max NOK": -1,
+      "batch NOK": -1,
+      "angle global threshold": { "nom": 0 },
+      "Torque CT": 1,
+      "Torque Cred": 1,
+      "tightening steps": [
+        {
+          "step type": "",
+          "row": "2",
+          "column": "A",
+          "name": "8Nm",
+          "last cmd": "TF Angle",
+          "quality code": "    1",
+          "speed": 100,
+          "category": 0,
+          "docu buffer": 3,
+          "result": "OK",
+          "angle threshold": { "nom": 0, "act": 0 },
+          "tightening functions": [
+            { "name": "TF Torque", "nom": 8, "act": 0.2 },
+            {
+              "name": "TF Angle",
+              "nom": 2200,
+              "act": 2200.34,
+              "add": [{ "angle threshold": { "nom": 0, "act": 0 } }]
+            },
+            { "name": "MFs TimeMax", "nom": 10, "act": 3.7 },
+            { "name": "MF TorqueMin", "nom": -5, "act": 0.2 },
+            { "name": "MFs TorqueMax", "nom": 80, "act": 0.2 },
+            {
+              "name": "MF AngleMin",
+              "nom": 100,
+              "act": 2200.34,
+              "add": [{ "angle threshold": { "nom": 0, "act": 0 } }]
+            },
+            {
+              "name": "MF AngleMax",
+              "nom": 7777,
+              "act": 2200.34,
+              "add": [{ "angle threshold": { "nom": 0, "act": 0 } }]
+            }
+          ],
+          "graph_b64": {
+            "points": 147,
+            "angle values": "AAAAAAAAKjAAAFP8AAB+LAAAp/gAANIoAAD8WAABJiQAASYkAAFQVAABeiAAAaRQAAHOHAAB+EwAAiJ8AAIifAACTEgAAnZ4AAKgRAACynQAAvSkAAL0pAADHnAAAx5wAANIoAADSKAAA3JsAANybAADnJwAA5ycAAPGaAAD8JgABBrIAARElAAERJQABG7EAASVDAAElQwAB6usAAq64AANzfwAEN0wABPsZAAW+5gAGg60AB0h0AAgNOwAI0ekACZt5AApgQAALJA0AC+faAAysoQANcG4ADjU1AA754wAPvbAAEIg6ABFNAQASEcgAEtWVABOaQwAUXhAAFSiaABXsZwAWsigAF3X1ABg5wgAY/2oAGcM3ABqNwQAbUogAHBz5ABzhwAAdpocAHmpUAB8vAgAf8s8AILa1ACF6ggAiPzAAIwP3ACPOgQAkky8AJV25ACYhhgAm5k0AJ6sUAChvwgApM48AKfdcACq7KQArfw8ALELcAC0IhAAtzUsALpEYAC9U5QAwH28AMOUXADGo5AAybLEAMzF4ADP1RQA0uRIANX3ZADZISgA3DREAN9HYADiWnwA5WmwAOh45ADriBgA7ps0APGqaAD0vSAA99A8APrfcAD+CZgBARy0AQRGeAEHVawBCmywAQ1/zAEQpagBE7jEARbi7AEZ8iABHQjAASAb3AEjKxABJjpEASlJeAEsWKwBL2fgATJ+5AE1kgABOKS4ATvK+AE+3hQBQe1IAUUAZAFID5gBSyY4AU41bAFRRKABVFPU",
+            "angle scale": 10000,
+            "torque values": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACcQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJxAAAAAAAAAAAAAAJxAAAAAAAAAAAAAAAAAAACcQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAnEAAAAAAAAE4gAAAnEAAATiAAAAAAAAAnEAAATiAAAE4gAABOIAAATiAAACcQAABOIAAAAAAAAAAAAABOIAAATiAAACcQAAAnEAAAJxAAAE4gAABOIAAATiAAAE4gAABOIAAATiAAAAAAAABOIAAATiAAAE4gAAB1MAAATiAAAE4gAABOIAAATiAAAE4gAAB1MAAAnEAAAMNQAADDUAAAJxAAAE4gAABOIAAATiAAAE4gAABOIAAATiAAAAAAAABOIAAATiAAAE4gAABOIAAAAAAAAE4gAAAnEAAAdTAAAE4gAABOIAAATiAAACcQAABOIAAAdTAAAHUwAABOIAAATiAAAE4gAABOIAAAJxAAAE4gAABOIAAATiAAACcQAAB1MAAAdTAAAE4gAAB1MAAATiAAAE4gAAAAAAAAAAAAAE4gAABOIAAATiAAAAAAAABOIAAATiAAAE4gAABOIAAATiAAAHUwAAB1MAAATiAAAE4gAABOIAAATiAAAE4gAABOIAAATiAAAE4gAAAnEAAATiAAAE4gAABOIAAATiAAAAAAAABOIAAATiAAAE4gAABOIAAATiAAAE4g",
+            "torque scale": 100000
+          }
+        },
+        {
+          "step type": "",
+          "row": "3",
+          "column": "A",
+          "name": "25Nm",
+          "last cmd": "TF Torque",
+          "quality code": "    1",
+          "speed": 35,
+          "category": 0,
+          "docu buffer": 2,
+          "result": "OK",
+          "angle threshold": { "nom": 0, "act": 0.2 },
+          "tightening functions": [
+            { "name": "TF Torque", "nom": 25, "act": 25.1 },
+            { "name": "MFs TimeMax", "nom": 15, "act": 4.21 },
+            { "name": "MF TorqueMin", "nom": -5, "act": 25.1 },
+            { "name": "MFs TorqueMax", "nom": 100, "act": 25.1 },
+            {
+              "name": "MF AngleMin",
+              "nom": 10,
+              "act": 880.06,
+              "add": [{ "angle threshold": { "nom": 0, "act": 0.2 } }]
+            },
+            {
+              "name": "MFs AngleMax",
+              "nom": 1500,
+              "act": 880.06,
+              "add": [{ "angle threshold": { "nom": 0, "act": 0.2 } }]
+            }
+          ],
+          "graph_b64": {
+            "points": 45,
+            "angle values": "AVRT1AFUbsgBV338AVqUnAFdo9ABYLbsAWPN8AFm3SQBafPEAW0DXAFwGfwBcykwAXY8TAF5S4ABfGKEAX9xuAGChHABhZOkAYimwAGLtfQBjsUoAZHcLAGU62ABmAJkAZsZBAGeKDgBoTdsAaRKiAGnYYwBqnDAAa2DeAGwkqwBs6XIAba0/AG5xDABvNs0Ab/qaAHC/YQBxgy4Ackf1AHMLwgBzz48AdJNcAHVZBAB2HsU",
+            "angle scale": 10000,
+            "torque values": "AABOIAAAdTAAACcQAABOIAAATiAAAAAAAABOIAAATiAAAMNQAADDUAAAdTAAAE4gAAAAAAAATiAAAAAAAABOIAAAAAAAACcQAABOIAAATiAAAE4gAABOIAAATiAAAE4gAAB1MAAAdTAAAHUwAAB1MAAATiAAAE4gAAAAAAAATiAAAAAAAABOIAAAJxAAAE4gAABOIAAATiAAAE4gAABOIAAATiAAAMNQAAE4gAACmBAAC+bg",
+            "torque scale": 100000
+          }
+        },
+        {
+          "step type": "",
+          "row": "5",
+          "column": "A",
+          "name": "-15�",
+          "last cmd": "TF Angle",
+          "quality code": "    1",
+          "speed": -5,
+          "category": 0,
+          "docu buffer": 0,
+          "result": "OK",
+          "angle threshold": { "nom": 0, "act": 0 },
+          "tightening functions": [
+            {
+              "name": "TF Angle",
+              "nom": 15,
+              "act": 15.07,
+              "add": [{ "angle threshold": { "nom": 0, "act": 0 } }]
+            },
+            { "name": "MFs TimeMax", "nom": 10, "act": 0.62 },
+            { "name": "MF TorqueMin", "nom": -15, "act": 11.7 },
+            { "name": "MFs TorqueMax", "nom": 40, "act": 11.7 }
+          ],
+          "graph_b64": {
+            "points": 9,
+            "angle values": "AdtJcAHbUNwB21DcAdqZqAHamagB2pmoAdnS1AHZDAAB2QwA",
+            "angle scale": 10000,
+            "torque values": "ACYloAAmTLAAHXMQAAAAAAAAJxAAAAAAAAAAAP/+x4D//qBw",
+            "torque scale": 100000
+          }
+        },
+        {
+          "step type": "",
+          "row": "6",
+          "column": "A",
+          "name": "100Nm",
+          "last cmd": "TF Torque",
+          "quality code": "    1",
+          "speed": 12,
+          "category": 2,
+          "docu buffer": 1,
+          "result": "OK",
+          "angle threshold": { "nom": 25, "act": 25 },
+          "tightening functions": [
+            { "name": "TF Torque", "nom": 100, "act": 100.3 },
+            { "name": "MFs TimeMax", "nom": 15, "act": 0.87 },
+            { "name": "MF TorqueMin", "nom": 15, "act": 100.3 },
+            { "name": "MFs TorqueMax", "nom": 140, "act": 100.3 },
+            {
+              "name": "MF AngleMin",
+              "nom": 1,
+              "act": 35.7,
+              "add": [{ "angle threshold": { "nom": 25, "act": 25 } }]
+            },
+            {
+              "name": "MFs AngleMax",
+              "nom": 120,
+              "act": 35.7,
+              "add": [{ "angle threshold": { "nom": 25, "act": 25 } }]
+            }
+          ],
+          "graph_b64": {
+            "points": 41,
+            "angle values": "AdhM/AHYTPwB2Ez8AdhJeAHYSXgB2EWQAdhFkAHYRZAB2EWQAdiVpAHY5hwB2TYwAdmGRAHZ1rwB2ibQAdp3SAHax1wB2xdwAdtUxAHbpNgB2/VQAdxFZAHclXgB3JV4Adzl8AHdNgQB3YZ8Ad3WkAHd1pAB3iakAd53HAHexzAB3xeoAd9nvAHft9AB4AhIAeBYXAHgWFwB4KjUAeD46AHg+Og=",
+            "angle scale": 10000,
+            "torque values": "/+4lsP/t15D/7Ylw/+1iYP/s7TD/7HgA/+wC0P/rtLD/76xQAAAAAAAATiAAAAAAAAAAAAAAAAAAAAAAAABOIAADqYAAERcAACYloAAqHUAALv9AADR9gAA5raAAOdSwAD96AABE+EAASk9wAFBC4ABQafAAVtKQAF2JUABkQBAAavbQAHGtkAB4FjAAfvQAAIWqwACF+OAAjZoAAJO0gACUKbA=",
+            "torque scale": 100000
+          }
+        },
+        {
+          "step type": "",
+          "row": "8",
+          "column": "A",
+          "name": "195Nm",
+          "last cmd": "TF Torque",
+          "quality code": "    1",
+          "speed": 8,
+          "category": 0,
+          "docu buffer": 0,
+          "result": "OK",
+          "gradient threshold": { "nom": 120, "act": 120.1 },
+          "angle threshold": { "nom": 100, "act": 100.1 },
+          "tightening functions": [
+            { "name": "TF Torque", "nom": 195, "act": 195.5 },
+            {
+              "name": "TF Yield Point",
+              "nom": 50,
+              "act": 40,
+              "add": [
+                {
+                  "gradient threshold": { "nom": 120, "act": 120.1 },
+                  "control angle": 5
+                }
+              ]
+            },
+            { "name": "MFs TimeMax", "nom": 15, "act": 1.01 },
+            { "name": "MF TorqueMin", "nom": 160, "act": 195.5 },
+            { "name": "MFs TorqueMax", "nom": 230, "act": 195.5 },
+            {
+              "name": "MF AngleMin",
+              "nom": 1,
+              "act": 35.31,
+              "add": [{ "angle threshold": { "nom": 100, "act": 100.1 } }]
+            },
+            {
+              "name": "MFs AngleMax",
+              "nom": 120,
+              "act": 35.31,
+              "add": [{ "angle threshold": { "nom": 100, "act": 100.1 } }]
+            }
+          ],
+          "graph_b64": {
+            "points": 117,
+            "torsion release": 38,
+            "angle values": "AeEqhAHhLmwB4TJUAeEyVAHg4dwB4OHcAeCRyAHgkcgB4EU4AeBFOAHgb2gB4Jk0AeCZNAHgw2QB4MNkAeDtlAHg7ZQB4RdgAeEXYAHhQZAB4UGQAeFI/AHhSPwB4XMsAeGdXAHhnVwB4ccoAeHHKAHh8VgB4fFYAeIbJAHiGyQB4kVUAeJFVAHibyAB4m8gAeKZUAHiw4AB4u1MAeLtTAHjF3wB4xd8AeNBSAHjQUgB42t4AeNreAHjlagB45WoAeO/dAHjv3QB4+mkAeQTcAHkE3AB5D2gAeQ9oAHkZ9AB5GfQAeSRnAHku8wB5LvMAeTlmAHlD8gB5TmUAeVjxAHljfQB5Y30AeW3wAHl4fAB5eHwAeYLvAHmNewB5jXsAeZgHAHmYBwB5onoAeaJ6AHmtBgB5t3kAeb42AHm+NgB5vzAAeb8wAHm0pAB5tKQAeaoYAHmqGAB5n6UAeZ+lAHmVGQB5lRkAeYqmAHmKpgB5gBoAeYAaAHl1jgB5dY4AeWsbAHlrGwB5YI8AeWCPAHlWHAB5VhwAeUuQAHlLkAB5TIoAeUyKAHlB/gB5N4sAeTeLAHks/wB5IowAeRgAAHkNdAB5AwEAePppAHj5bwB48ss",
+            "angle scale": 10000,
+            "torque values": "AJiWgACYvZAAmQuwAIlUQAA13RAAM+FAABKdoAARs0AAAw1AAAQesAAVXMAAMKzwADIMgABPf5AAUtrwAGuTEABtZ9AAgxKwAIRLMACXrCAAl9MwAJi9kACY5KAAne2wAKIMYACiWoAApgQAAKYrEACp1JAAqiKwAK3zQACtzDAAsergALIR8AC1u3AAtgmQALooQAC9+NAAwfBwAMHJYADFwQAAxegQAMot0ADKe/AAzbBAAM3XUADRgNAA0fYAANXtoADWFLAA2jNgAN2OwADeA/AA4kmwAOJwwADl8zAA5hpAAOpgAADupcAA7n6wAPMSkAD3CjAA+yjgAP+8wAEDjVABA7RgAQesAAELyrABDBjQAQ/CUAEVtcABFirwARpJoAEal8ABHt2AAR9SsAEjmHABJ0HwASmL4AEqARABKk8wARy6oADPNuAAybigAJLxMACQp0AAajOAAGfCgABUOoAAUmXAAECygAA/oRAAMUkwADBe0AAiVRAAIgbwABbjYAAWlUAADgnAAA27oAAHehAABwTgAAH70AAFVzAABhqAAAUJEAAATiAAAAAAAAAnEAAAAAAAAAAAAAAAAAAAAAAAAAAA//1n8P/9QOAAAAAA",
+            "torque scale": 100000
+          }
+        }
+      ]
+    },
+    {
+      "format": "channel",
+      "node id": "0.4",
+      "nr": 4,
+      "SST": "PGH4-3x",
+      "result": "OK",
+      "hardware": "SE352 ",
+      "mac0": "00-C0-3A-6E-bd-f4",
+      "ip0": "10.52.116.79",
+      "sw version": "2.500",
+      "sw build": "Release",
+      "MCE factor": 0.99,
+      "MCE": [
+        {
+          "Transducer function": "primary",
+          "measuring": "direct",
+          "factor": 0.99
+        }
+      ],
+      "max. speed": 133,
+      "location name": ["1", "2", "3", "4", "5", "6", "7"],
+      "channel": "",
+      "prg nr": 3,
+      "prg name": "PGH4-3X",
+      "prg date": "2021-02-09 08:26:45",
+      "cycle": 67582,
+      "redundancy sensor": -1,
+      "nominal torque": 356.4,
+      "date": "2025-03-06 06:17:43",
+      "id code": "R901450936-1108_001",
+      "id code channel": "",
+      "torque unit": "Nm",
+      "last cmd": "TF Torque",
+      "last step row": "8",
+      "last step column": "A",
+      "quality code": "    1",
+      "total time": "14.4",
+      "tool serial": 755000014,
+      "redundancy transducer serial": 2147483648,
+      "spindle id": "",
+      "rework code": 0,
+      "rework text": "",
+      "batch nr": -1,
+      "batch canceled": -1,
+      "batch direction OK": -1,
+      "batch direction NOK": -1,
+      "batch max OK": -1,
+      "batch OK": -1,
+      "batch max NOK": -1,
+      "batch NOK": -1,
+      "angle global threshold": { "nom": 0 },
+      "Torque CT": 1,
+      "Torque Cred": 1,
+      "tightening steps": [
+        {
+          "step type": "",
+          "row": "2",
+          "column": "A",
+          "name": "8Nm",
+          "last cmd": "TF Angle",
+          "quality code": "    1",
+          "speed": 100,
+          "category": 0,
+          "docu buffer": 3,
+          "result": "OK",
+          "angle threshold": { "nom": 0, "act": 0.1 },
+          "tightening functions": [
+            { "name": "TF Torque", "nom": 8, "act": 0.3 },
+            {
+              "name": "TF Angle",
+              "nom": 2200,
+              "act": 2200.25,
+              "add": [{ "angle threshold": { "nom": 0, "act": 0.1 } }]
+            },
+            { "name": "MFs TimeMax", "nom": 10, "act": 3.7 },
+            { "name": "MF TorqueMin", "nom": -5, "act": 0.3 },
+            { "name": "MFs TorqueMax", "nom": 80, "act": 0.3 },
+            {
+              "name": "MF AngleMin",
+              "nom": 100,
+              "act": 2200.25,
+              "add": [{ "angle threshold": { "nom": 0, "act": 0.1 } }]
+            },
+            {
+              "name": "MF AngleMax",
+              "nom": 7777,
+              "act": 2200.25,
+              "add": [{ "angle threshold": { "nom": 0, "act": 0.1 } }]
+            }
+          ],
+          "graph_b64": {
+            "points": 151,
+            "angle values": "AAAAAAAAKjAAAFP8AABT/AAAfiwAAH4sAACn+AAA0igAAPxYAAD8WAABJiQAASYkAAFQVAABUFQAAXogAAGkUAABzhwAAfhMAAH4TAACInwAAiJ8AAJMSAACdngAAqBEAALKdAAC9KQAAx5wAANIoAADSKAAA3JsAAOcnAADxmgAA8ZoAAPwmAAD8JgABBrIAAQayAAERJQABG7EAARuxAAElQwABJUMAAenxAAKtvgADcaQABDhGAAUB1gAFzEcABpEOAAdU2wAIGaIACN5pAAmjFwAKbaEACzFuAAv2NQAMwKYADYRzAA5JOgAPDvsAD9lsABCj9gARZ8MAEi1rABLxOAATtf8AFICJABVEVgAWCCMAFsvwABeRmAAYVWUAGRkyABnd+QAaocYAG2aNABww/gAc9MsAHbmSAB5/UwAfQyAAIA2RACDYGwAhnOIAImCvACMlXQAj6iQAJK3xACVxvgAmNYsAJvtMACe/GQAog+AAKUetACoLegAqz0cAK5QOACxY1QAtHKIALeFQAC6mFwAvaeQAMDN0ADD4OwAxvAgAMoDPADNEnAA0CkQANNTOADWYmwA2XGgANyEvADfl3QA4qqQAOW5xADoyPgA69gsAO7nYADx+nwA9Q2YAPgczAD7LAAA/j8cAQFOUAEEXYQBB3CgAQqDWAENkowBEKWoARO03AEWxBABGdNEARzieAEf+XwBIwiwASYbzAEpKwABLD4cAS9NUAEyXIQBNW88ATiCWAE7kYwBPqSoAUGz3AFE3gQBR+04AUsD2AFOEwwBUSYoAVQ1XA==",
+            "angle scale": 10000,
+            "torque values": "AAAAAAAAAAAAACcQAAAAAAAATiAAAE4gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJxAAAAAAAAAAAAAAAAAAAAAAAAAnEAAAJxAAAAAAAAAAAAAAAAAAACcQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACcQAAAAAAAATiAAAAAAAAAAAAAAJxAAACcQAAAnEAAATiAAAE4gAABOIAAAJxAAAE4gAAAAAAAATiAAAE4gAAAAAAAATiAAACcQAAAnEAAATiAAAE4gAABOIAAATiAAAAAAAABOIAAATiAAAE4gAAAnEAAAJxAAAAAAAAAnEAAATiAAACcQAABOIAAAJxAAAE4gAABOIAAATiAAAE4gAAAnEAAATiAAAE4gAABOIAAATiAAAE4gAABOIAAATiAAAE4gAABOIAAAAAAAACcQAABOIAAAJxAAAE4gAAAAAAAAJxAAAAAAAABOIAAAJxAAACcQAAAnEAAAAAAAACcQAAAnEAAATiAAAE4gAAAnEAAAJxAAAE4gAABOIAAATiAAAE4gAABOIAAATiAAAHUwAAAnEAAAdTAAAE4gAABOIAAATiAAAE4gAABOIAAATiAAAHUwAACcQAAAdTAAAMNQAADDUAAAw1AAAJxAAABOIAAATiAAAE4gAABOIAAATiAAACcQAABOIAAATiAAAE4gAABOIAAAJxAAAAAAAABOIAAAJxAAAE4gAAB1MAAATiAAAHUwAAB1MA==",
+            "torque scale": 100000
+          }
+        },
+        {
+          "step type": "",
+          "row": "3",
+          "column": "A",
+          "name": "25Nm",
+          "last cmd": "TF Torque",
+          "quality code": "    1",
+          "speed": 35,
+          "category": 0,
+          "docu buffer": 2,
+          "result": "OK",
+          "angle threshold": { "nom": 0, "act": 0.3 },
+          "tightening functions": [
+            { "name": "TF Torque", "nom": 25, "act": 25.2 },
+            { "name": "MFs TimeMax", "nom": 15, "act": 4.94 },
+            { "name": "MF TorqueMin", "nom": -5, "act": 25.2 },
+            { "name": "MFs TorqueMax", "nom": 100, "act": 25.2 },
+            {
+              "name": "MF AngleMin",
+              "nom": 10,
+              "act": 1031.45,
+              "add": [{ "angle threshold": { "nom": 0, "act": 0.3 } }]
+            },
+            {
+              "name": "MFs AngleMax",
+              "nom": 1500,
+              "act": 1031.45,
+              "add": [{ "angle threshold": { "nom": 0, "act": 0.3 } }]
+            }
+          ],
+          "graph_b64": {
+            "points": 53,
+            "angle values": "AVRQUAFUbsgBV4VoAVqUnAFdo9ABYLNoAWPCnAFm0dABaeEEAWz3pAFwDqgBcx3cAXYtEAF5PEQBfEt4AX9arAGCcbABhYDkAYiQGAGLprgBjrXsAZHFIAGU1FQBl+tYAZr6jAGeCcABoRj0AaQoKAGnN1wBqkaQAa1VxAGwbMgBs3v8AbaSnAG5odABvLEEAb/ICAHC1zwBxeZwAcj1pAHMBNgBzxQMAdIrEAHVOkQB2FDkAdtgGAHeb0wB4YZQAeSVhAHnpLgB6rr0Ae3OEAHw3UQ=",
+            "angle scale": 10000,
+            "torque values": "AAB1MAAAdTAAAE4gAAAAAAAAAAAAACcQAAAAAAAAAAAAAAAAAAAnEAAAJxAAAE4gAAAnEAAAJxAAACcQAABOIAAAJxAAAAAAAAAnEAAATiAAAE4gAABOIAAAAAAAAE4gAAAAAAAAAAAAACcQAAAnEAAATiAAAE4gAABOIAAATiAAACcQAABOIAAATiAAAE4gAABOIAAAJxAAAAAAAAAnEAAAJxAAACcQAAAnEAAAAAAAAAAAAABOIAAATiAAAE4gAABOIAAAdTAAAE4gAAZBkAAbAhA=",
+            "torque scale": 100000
+          }
+        },
+        {
+          "step type": "",
+          "row": "5",
+          "column": "A",
+          "name": "-15�",
+          "last cmd": "TF Angle",
+          "quality code": "    1",
+          "speed": -5,
+          "category": 0,
+          "docu buffer": 0,
+          "result": "OK",
+          "angle threshold": { "nom": 0, "act": -1.2 },
+          "tightening functions": [
+            {
+              "name": "TF Angle",
+              "nom": 15,
+              "act": 15.06,
+              "add": [{ "angle threshold": { "nom": 0, "act": -1.2 } }]
+            },
+            { "name": "MFs TimeMax", "nom": 10, "act": 0.62 },
+            { "name": "MF TorqueMin", "nom": -15, "act": 1.1 },
+            { "name": "MFs TorqueMax", "nom": 40, "act": 1.1 }
+          ],
+          "graph_b64": {
+            "points": 8,
+            "angle values": "AfH0LAHx9CwB8fgUAfH4FAHxTDQB8Uw0AfCFYAHvvvA=",
+            "angle scale": 10000,
+            "torque values": "ACYloAAmTLAAJnPAAB7SoAAB1MAAAMNQAAAAAP//FaA=",
+            "torque scale": 100000
+          }
+        },
+        {
+          "step type": "",
+          "row": "6",
+          "column": "A",
+          "name": "100Nm",
+          "last cmd": "TF Torque",
+          "quality code": "    1",
+          "speed": 12,
+          "category": 2,
+          "docu buffer": 1,
+          "result": "OK",
+          "angle threshold": { "nom": 25, "act": 25.3 },
+          "tightening functions": [
+            { "name": "TF Torque", "nom": 100, "act": 100.5 },
+            { "name": "MFs TimeMax", "nom": 15, "act": 0.92 },
+            { "name": "MF TorqueMin", "nom": 15, "act": 100.5 },
+            { "name": "MFs TorqueMax", "nom": 140, "act": 100.5 },
+            {
+              "name": "MF AngleMin",
+              "nom": 1,
+              "act": 40.3,
+              "add": [{ "angle threshold": { "nom": 25, "act": 25.3 } }]
+            },
+            {
+              "name": "MFs AngleMax",
+              "nom": 120,
+              "act": 40.3,
+              "add": [{ "angle threshold": { "nom": 25, "act": 25.3 } }]
+            }
+          ],
+          "graph_b64": {
+            "points": 44,
+            "angle values": "Ae7/7AHu/+wB7vwEAe78BAHu+BwB7vQ0Ae70NAHu9DQB70SsAe+UwAHv5TgB8DVMAfCFYAHw1dgB8SXsAfF2ZAHxxngB8cZ4AfIWjAHyZwQB8mcEAfK3GAHzBywB81ekAfOnuAHzp7gB8/gwAfRIRAH0mFgB9OjQAfTo0AH1OOQB9YlcAfXZcAH12XAB9imEAfZ5/AH2yhAB9xqIAfdqnAH3urAB97qwAfgLKAH4Cyg=",
+            "angle scale": 10000,
+            "torque values": "//5SUP/+UlD//itA//4EMP/9thD//Y8A//1n8P/+UlAAACcQAAAAAAAAAAAAACcQAAAAAAAATiAAAE4gAAZooAAlO0AAJprQACwZEAAxIiAAMXBAADYEIAA7gmAAQNmQAEZ+4ABGpfAATJlgAFI+sABYWTAAXddwAF4lkABjo9AAaSIQAG7ucABvPJAAdLrQAHoSAAB/QiAAhHJAAIoXkACONkAAjl1QAJLKIACS8TA=",
+            "torque scale": 100000
+          }
+        },
+        {
+          "step type": "",
+          "row": "8",
+          "column": "A",
+          "name": "195Nm",
+          "last cmd": "TF Torque",
+          "quality code": "    1",
+          "speed": 8,
+          "category": 0,
+          "docu buffer": 0,
+          "result": "OK",
+          "gradient threshold": { "nom": 120, "act": 120 },
+          "angle threshold": { "nom": 100, "act": 100.1 },
+          "tightening functions": [
+            { "name": "TF Torque", "nom": 195, "act": 195.1 },
+            {
+              "name": "TF Yield Point",
+              "nom": 50,
+              "act": 53,
+              "add": [
+                {
+                  "gradient threshold": { "nom": 120, "act": 120 },
+                  "control angle": 5
+                }
+              ]
+            },
+            { "name": "MFs TimeMax", "nom": 15, "act": 1.09 },
+            { "name": "MF TorqueMin", "nom": 160, "act": 195.1 },
+            { "name": "MFs TorqueMax", "nom": 230, "act": 195.1 },
+            {
+              "name": "MF AngleMin",
+              "nom": 1,
+              "act": 39.62,
+              "add": [{ "angle threshold": { "nom": 100, "act": 100.1 } }]
+            },
+            {
+              "name": "MFs AngleMax",
+              "nom": 120,
+              "act": 39.62,
+              "add": [{ "angle threshold": { "nom": 100, "act": 100.1 } }]
+            }
+          ],
+          "graph_b64": {
+            "points": 127,
+            "torsion release": 36,
+            "angle values": "AfhXVAH4V1QB+Fs8AfhbPAH4CygB+AsoAfe6sAH3urAB94UsAfeFLAH3hSwB94UsAfeFLAH3hSwB94UsAfeFLAH3gagB94GoAfeBqAH3gagB94GoAferdAH3q3QB99WkAffVpAH3/3AB9/9wAfgpoAH4KaAB+FPQAfh5tAH4o+QB+M4UAfjOFAH49+AB+PfgAfkiEAH5S9wB+UvcAfl2DAH5dgwB+aA8AfmgPAH5yggB+coIAfn0OAH6HgQB+h4EAfpINAH6cgAB+pwwAfqcMAH6xmAB+vAsAfrwLAH7GlwB+xpcAftEKAH7blgB+5iIAfvCVAH7wlQB++yEAfwWUAH8QIAB/GqwAfyUfAH8lHwB/L6sAfy+rAH86HgB/Oh4Af0SqAH9EqgB/Tx0Af1mpAH9ZqQB/ZDUAf26oAH9uqAB/eTQAf3k0AH+DpwB/g6cAf44zAH+YvwB/mL8Af6MyAH+tvgB/rb4Af7KHAH+yhwB/socAf6f7AH+n+wB/nW8Af51vAH+S/AB/kvwAf4hwAH+IcAB/ff0Af339AH9zcQB/c3EAf2j+AH9o/gB/XnIAf15yAH9aowB/WqMAf1qjAH9QFwB/RaQAfzsYAH8wjAB/JhkAfxuNAH8RGgB/Bo4AfvwbAH7xjwB+7roAfu66AH7sxgB+7MYAfu3AA==",
+            "angle scale": 10000,
+            "torque values": "AJiWgACYvZAAmVnQAIyvoAA3//AANsdwABFlIAAQLKAABhqAAAXzcAAFzGAABaVQAAV+QAAFVzAABTAgAATiAAAEk+AABGzQAARFwAAEHrAABaVQABvscAAdJPAANxWQADh1IABWhHAAV7zwAG2O4ABueUAAhVygAJi9kACd7bAAoXAgAKG+QAClZ8AApbXgAKjqMACr93AArGygAK+g8ACvyAAAstVAALMjYAC2fsAAtqXQALoBMAC9g6AAvdHAAMF7QADE1qAAyDIAAMhZEADL24AAz13wAM+FAADTVZAA06OwANb/EADaqJAA3qAwAOH7kADiSbAA5hpAAOnq0ADt4nAA8bMAAPWDkAD10bAA+S0QAPl7MAD9JLAA/UvAAQBZAAEAzjABBOzgAQn18AEKuUABDtfwARHlMAERviABFH1AARTLYAEYJsABGE3QARupMAEh6sABIjjgASSC0AEnaQABJ94wASmy8AEpZNABDyYQAMQ6YAC+bgAAhh/wAIRyQABia1AAYOSwAEmMIABIerAANMugADO6MAAi8VAAIi4AABLEsAAR2lAABLrwAARFwAALSqAAC5jAAAl14AAATiAAAAAAAAAAAAAAAAAAAAAAAAAAAP//2PD//7Hg//8VoP/+K0D//Y8A//1n8P/9GdAAAAAA//+x4A==",
+            "torque scale": 100000
+          }
+        }
+      ]
+    }
+  ]
+}
