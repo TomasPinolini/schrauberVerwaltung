@@ -1,5 +1,5 @@
 // Hilfsfunktionen für Datumsformatierung
-function formatDate(dateStr) {
+export function formatDate(dateStr) {
     if (!dateStr) return '';
     const date = new Date(dateStr);
     return date.toLocaleDateString('de-DE', {
@@ -9,7 +9,7 @@ function formatDate(dateStr) {
     });
 }
 
-function parseGermanDate(dateStr) {
+export function parseGermanDate(dateStr) {
     if (!dateStr) return '';
     // Unterstützt sowohl - als auch / als Trennzeichen
     const parts = dateStr.split(/[-/]/);
@@ -24,7 +24,7 @@ function parseGermanDate(dateStr) {
 }
 
 // Datentyp Validierung
-function validateDataType(value, dataType) {
+export function validateDataType(value, dataType) {
     switch(dataType) {
         case 'string':
             return typeof value === 'string';
@@ -41,7 +41,7 @@ function validateDataType(value, dataType) {
 }
 
 // IP-Adresse validieren
-function isValidIPv4(ip) {
+export function isValidIPv4(ip) {
     const pattern = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
     if (!pattern.test(ip)) {
         showError('Ungültiges IP-Adressformat. Bitte verwenden Sie das Format: xxx.xxx.xxx.xxx');
@@ -70,7 +70,7 @@ function isValidIPv4(ip) {
 }
 
 // Fehlermeldung anzeigen
-function showError(message) {
+export function showError(message) {
     const alertDiv = document.createElement('div');
     alertDiv.className = 'alert alert-danger alert-dismissible fade show floating-alert';
     alertDiv.innerHTML = `
@@ -86,7 +86,7 @@ function showError(message) {
 }
 
 // Erfolgsmeldung anzeigen
-function showSuccess(message) {
+export function showSuccess(message) {
     const alertDiv = document.createElement('div');
     alertDiv.className = 'alert alert-success alert-dismissible fade show floating-alert';
     alertDiv.innerHTML = `
@@ -98,7 +98,7 @@ function showSuccess(message) {
 }
 
 // Datentyp Icons
-function getDataTypeIcon(dataType) {
+export function getDataTypeIcon(dataType) {
     switch (dataType) {
         case 'string': return 'type';
         case 'number': return 'hash';
@@ -109,7 +109,7 @@ function getDataTypeIcon(dataType) {
 }
 
 // Datentyp Labels
-function getDataTypeLabel(dataType) {
+export function getDataTypeLabel(dataType) {
     switch (dataType) {
         case 'string': return 'Text';
         case 'number': return 'Zahl';

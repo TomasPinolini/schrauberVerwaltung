@@ -30,7 +30,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-    origin: [process.env.CORS_ORIGIN || 'http://localhost:3001', 'http://localhost:3000'],
+    origin: ['http://localhost', 'http://localhost:3000', 'http://localhost:3001'],
     credentials: true
 }));
 
@@ -43,7 +43,7 @@ app.use(helmet({
             scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
             styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
             imgSrc: ["'self'", "data:", "blob:", "http://localhost:3000", "http://localhost:3001"],
-            connectSrc: ["'self'", "http://localhost:3000", "http://localhost:3001"],
+            connectSrc: ["'self'", "http://localhost:3000", "http://localhost:3001", "http://localhost"],
             fontSrc: ["'self'", "https://cdn.jsdelivr.net"],
             objectSrc: ["'none'"],
             mediaSrc: ["'self'"],
