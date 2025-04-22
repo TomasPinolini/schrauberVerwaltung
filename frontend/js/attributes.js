@@ -1,7 +1,9 @@
+import { showError, showSuccess, getDataTypeIcon, getDataTypeLabel } from './common.js';
+
 // Attribute laden
 async function loadAttributes() {
     try {
-        const response = await fetch('http://localhost:3001/api/attributes', {
+        const response = await fetch('http://localhost:3000/api/attributes', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -38,7 +40,7 @@ async function loadAttributes() {
         
     } catch (error) {
         console.error('Fehler beim Laden der Attribute:', error);
-        showError('Fehler beim Laden der Attribute');
+        showError('Fehler beim Laden der Attribute: ' + error.message);
     }
 }
 
@@ -47,64 +49,6 @@ function displayAttributes(attributes, containerId) {
     const container = document.getElementById(containerId);
     container.innerHTML = '';
     
-    attributes.forEach(attr => {
-        const isDeleted = attr.deleted_at !== null;
-        const card = document.createElement('div');
-        card.className = 'col-md-6 col-lg-4 mb-4';
-        card.innerHTML = `
-            <div class="card h-100 attribute-card ${attr.state === 'off' || isDeleted ? 'bg-light' : ''}">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <span class="state-badge badge ${getStatusBadgeClass(attr)}">
-                            ${getStatusText(attr)}
-                        </span>
-                        ${isDeleted ? `
-                            <span class="badge bg-secondary" title="Gelöscht am ${formatDate(attr.deleted_at)}">
-                                <i class="bi bi-trash"></i> Gelöscht
-                            </span>
-                        ` : ''}
-                    </div>
-                    <h5 class="card-title mb-3">
-                        <i class="bi bi-${getDataTypeIcon(attr.data_type)} me-2"></i>
-                        ${attr.name}
-                    </h5>
-                    <p class="card-text text-muted small mb-2">${attr.description || 'Keine Beschreibung'}</p>
-                    <div class="mb-2">
-                        <span class="badge bg-primary me-2">${getDataTypeLabel(attr.data_type)}</span>
-                        ${attr.is_required ? '<span class="badge bg-warning text-dark">Pflichtfeld</span>' : ''}
-                    </div>
-                    ${attr.validation_pattern ? `
-                        <div class="small text-muted mt-2">
-                            <i class="bi bi-code-slash me-1"></i>
-                            Pattern: ${attr.validation_pattern}
-                        </div>
-                    ` : ''}
-                    <div class="small text-muted mt-2">
-                        <i class="bi bi-clock-history me-1"></i>
-                        Erstellt: ${formatDate(attr.created_at)}
-                        ${attr.updated_at !== attr.created_at ? `<br>Aktualisiert: ${formatDate(attr.updated_at)}` : ''}
-                    </div>
-                </div>
-                ${!isDeleted ? `
-                    <div class="card-footer bg-transparent">
-                        <div class="btn-group w-100">
-                            <button class="btn btn-outline-primary btn-sm" onclick="editAttribute(${attr.id})">
-                                <i class="bi bi-pencil me-1"></i>Bearbeiten
-                            </button>
-                            <button class="btn btn-outline-${attr.state === 'on' ? 'danger' : 'success'} btn-sm" 
-                                    onclick="toggleAttributeState(${attr.id}, '${attr.state === 'on' ? 'off' : 'on'}')">
-                                <i class="bi bi-${attr.state === 'on' ? 'x-circle' : 'check-circle'} me-1"></i>
-                                ${attr.state === 'on' ? 'Deaktivieren' : 'Aktivieren'}
-                            </button>
-                        </div>
-                    </div>
-                ` : ''}
-            </div>
-        `;
-        container.appendChild(card);
-    });
-
-    // Wenn keine Attribute vorhanden sind, zeige eine Nachricht
     if (attributes.length === 0) {
         container.innerHTML = `
             <div class="col-12">
@@ -113,7 +57,57 @@ function displayAttributes(attributes, containerId) {
                     Keine ${containerId === 'activeAttributesList' ? 'aktiven' : 'inaktiven'} Attribute gefunden
                 </div>
             </div>`;
+        return;
     }
+
+    attributes.forEach(attr => {
+        const isDeleted = attr.deleted_at !== null;
+        const tr = document.createElement('tr');
+        tr.className = attr.state === 'off' ? 'table-light' : '';
+        
+        tr.innerHTML = `
+            <td>
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-${getDataTypeIcon(attr.data_type)} me-2"></i>
+                    ${attr.name}
+                </div>
+            </td>
+            <td>${attr.description || '<span class="text-muted">-</span>'}</td>
+            <td>
+                <span class="badge bg-primary">
+                    ${getDataTypeLabel(attr.data_type)}
+                </span>
+            </td>
+            <td>
+                ${attr.is_required ? 
+                    '<span class="badge bg-warning text-dark">Pflichtfeld</span>' : 
+                    '<span class="text-muted">-</span>'}
+            </td>
+            <td>
+                ${attr.validation_pattern ? 
+                    `<code class="small">${attr.validation_pattern}</code>` : 
+                    '<span class="text-muted">-</span>'}
+            </td>
+            <td>
+                <span class="badge ${attr.state === 'on' ? 'bg-success' : 'bg-danger'}">
+                    ${attr.state === 'on' ? 'Aktiv' : 'Inaktiv'}
+                </span>
+            </td>
+            <td>
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-primary" onclick="editAttribute(${attr.id})" title="Bearbeiten">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-outline-${attr.state === 'on' ? 'danger' : 'success'}" 
+                            onclick="toggleAttributeState(${attr.id}, '${attr.state === 'on' ? 'off' : 'on'}')"
+                            title="${attr.state === 'on' ? 'Deaktivieren' : 'Aktivieren'}">
+                        <i class="bi bi-${attr.state === 'on' ? 'x-circle' : 'check-circle'}"></i>
+                    </button>
+                </div>
+            </td>
+        `;
+        container.appendChild(tr);
+    });
 }
 
 // Hilfsfunktionen für die Anzeige
@@ -160,18 +154,20 @@ function getDataTypeLabel(dataType) {
 }
 
 // Attribut speichern
-async function saveAttribute() {
+async function saveAttribute(event) {
+    event.preventDefault();
+    
     const formData = {
-        name: document.getElementById('name').value,
-        description: document.getElementById('description').value,
-        data_type: document.getElementById('dataType').value,
-        validation_pattern: document.getElementById('validationPattern').value,
-        is_required: document.getElementById('isRequired').checked,
+        name: document.getElementById('attributeName').value,
+        description: document.getElementById('attributeDescription').value,
+        data_type: document.getElementById('attributeDataType').value,
+        validation_pattern: document.getElementById('attributeValidationPattern').value,
+        is_required: document.getElementById('attributeIsRequired').checked,
         state: 'on'
     };
 
     try {
-        const response = await fetch('http://localhost:3001/api/attributes', {
+        const response = await fetch('http://localhost:3000/api/attributes', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -185,9 +181,9 @@ async function saveAttribute() {
         }
 
         await loadAttributes();
-        const modal = bootstrap.Modal.getInstance(document.getElementById('addAttributeModal'));
+        const modal = bootstrap.Modal.getInstance(document.getElementById('createAttributeModal'));
         modal.hide();
-        document.getElementById('attributeForm').reset();
+        document.getElementById('createAttributeForm').reset();
         showSuccess('Attribut erfolgreich gespeichert');
     } catch (error) {
         console.error('Fehler:', error);
@@ -198,7 +194,7 @@ async function saveAttribute() {
 // Status ändern
 async function toggleAttributeState(id, newState) {
     try {
-        const response = await fetch(`http://localhost:3001/api/attributes/${id}`, {
+        const response = await fetch(`http://localhost:3000/api/attributes/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -220,17 +216,20 @@ async function toggleAttributeState(id, newState) {
 }
 
 // Attribut aktualisieren
-async function updateAttribute(id) {
-    try {
-        const formData = {
-            name: document.getElementById('editName').value,
-            description: document.getElementById('editDescription').value,
-            data_type: document.getElementById('editDataType').value,
-            validation_pattern: document.getElementById('editValidationPattern').value,
-            is_required: document.getElementById('editIsRequired').checked
-        };
+async function updateAttribute(event) {
+    event.preventDefault();
+    
+    const id = document.getElementById('editAttributeId').value;
+    const formData = {
+        name: document.getElementById('editAttributeName').value,
+        description: document.getElementById('editAttributeDescription').value,
+        data_type: document.getElementById('editAttributeDataType').value,
+        validation_pattern: document.getElementById('editAttributeValidationPattern').value,
+        is_required: document.getElementById('editAttributeRequired').checked
+    };
 
-        const response = await fetch(`http://localhost:3001/api/attributes/${id}`, {
+    try {
+        const response = await fetch(`http://localhost:3000/api/attributes/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -256,7 +255,7 @@ async function updateAttribute(id) {
 // Attribut löschen
 async function deleteAttribute(id) {
     try {
-        const response = await fetch(`http://localhost:3001/api/attributes/${id}`, {
+        const response = await fetch(`http://localhost:3000/api/attributes/${id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
@@ -277,4 +276,49 @@ async function deleteAttribute(id) {
 }
 
 // Initial Attribute laden
-document.addEventListener('DOMContentLoaded', loadAttributes); 
+document.addEventListener('DOMContentLoaded', () => {
+    loadAttributes();
+    
+    // Add form submit handlers
+    document.getElementById('createAttributeForm').addEventListener('submit', saveAttribute);
+    document.getElementById('editAttributeForm').addEventListener('submit', updateAttribute);
+    
+    // Add filter handler
+    document.getElementById('attributeFilter').addEventListener('change', async (e) => {
+        const filter = e.target.value;
+        const response = await fetch('http://localhost:3000/api/attributes');
+        const attributes = await response.json();
+        
+        let filteredAttributes;
+        switch(filter) {
+            case 'active':
+                filteredAttributes = attributes.filter(attr => attr.state === 'on');
+                break;
+            case 'inactive':
+                filteredAttributes = attributes.filter(attr => attr.state === 'off');
+                break;
+            default:
+                filteredAttributes = attributes;
+        }
+        
+        displayAttributes(filteredAttributes);
+    });
+    
+    // Add search handler
+    document.getElementById('searchInput').addEventListener('input', async (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        const response = await fetch('http://localhost:3000/api/attributes');
+        const attributes = await response.json();
+        
+        const filteredAttributes = attributes.filter(attr => 
+            attr.name.toLowerCase().includes(searchTerm) ||
+            (attr.description && attr.description.toLowerCase().includes(searchTerm))
+        );
+        
+        displayAttributes(filteredAttributes);
+    });
+});
+
+// Make functions available globally
+window.editAttribute = editAttribute;
+window.toggleAttributeState = toggleAttributeState; 
