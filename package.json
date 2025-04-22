@@ -1,0 +1,16 @@
+{
+  "name": "schrauber-verwaltung",
+  "version": "1.0.0",
+  "description": "A management system for screwdriver data and operations",
+  "scripts": {
+    "install:all": "npm install && cd backend && npm install",
+    "start": "cd backend && npm start",
+    "dev": "cd backend && npm run dev",
+    "test": "cd backend && npm test"
+  },
+  "author": "",
+  "license": "ISC",
+  "workspaces": [
+    "backend"
+  ]
+} 

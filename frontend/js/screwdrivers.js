@@ -1,7 +1,7 @@
 // Pflichtattribute laden
 async function loadRequiredAttributes() {
     try {
-        const response = await fetch('http://localhost:3000/api/attributes');
+        const response = await fetch('http://localhost:3001/api/attributes');
         if (!response.ok) {
             throw new Error('Fehler beim Laden der Attribute');
         }
