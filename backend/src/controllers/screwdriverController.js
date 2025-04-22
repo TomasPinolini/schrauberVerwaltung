@@ -114,10 +114,9 @@ const getAll = async (req, res) => {
     try {
         const where = {};
         
-        if (req.query.state) {
-            where.state = req.query.state;
-        } else {
-            where.state = 'on';
+        // Only filter by state if include_inactive is not true
+        if (req.query.include_inactive !== 'true') {
+            where.state = req.query.state || 'on';
         }
 
         console.log('Fetching screwdrivers with query:', where);
@@ -173,8 +172,7 @@ const getById = async (req, res) => {
     try {
         const screwdriver = await Screwdriver.findOne({
             where: { 
-                id: req.params.id,
-                state: 'on'
+                id: req.params.id
             },
             include: [{
                 model: Attribute,
@@ -202,8 +200,7 @@ const update = async (req, res) => {
         const { name, description, attributes, state } = req.body;
         const screwdriver = await Screwdriver.findOne({
             where: {
-                id: req.params.id,
-                state: 'on'
+                id: req.params.id
             }
         });
 
@@ -247,35 +244,8 @@ const update = async (req, res) => {
 
                 // Basic validation based on data type
                 const value = attr.value.toString().trim();
-                if (!value) {
+                if (!value && attribute.is_required) {
                     throw new Error(`Value for attribute ${attribute.name} cannot be empty`);
-                }
-
-                // Validate based on data type
-                switch (attribute.data_type) {
-                    case 'number':
-                        if (isNaN(value)) {
-                            throw new Error(`Invalid number value for attribute ${attribute.name}`);
-                        }
-                        break;
-                    case 'boolean':
-                        if (value !== 'true' && value !== 'false') {
-                            throw new Error(`Invalid boolean value for attribute ${attribute.name}`);
-                        }
-                        break;
-                    case 'date':
-                        if (isNaN(new Date(value).getTime())) {
-                            throw new Error(`Invalid date value for attribute ${attribute.name}`);
-                        }
-                        break;
-                }
-
-                // Validate pattern if exists
-                if (attribute.validation_pattern) {
-                    const regex = new RegExp(attribute.validation_pattern);
-                    if (!regex.test(value)) {
-                        throw new Error(`Invalid format for attribute ${attribute.name}`);
-                    }
                 }
 
                 await ScrewdriverAttribute.create({

@@ -30,10 +30,29 @@ const app = express();
 
 // Middleware
 app.use(cors({
-    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+    origin: [process.env.CORS_ORIGIN || 'http://localhost:3001', 'http://localhost:3000'],
     credentials: true
 }));
-app.use(helmet());
+
+// Configure helmet with custom CSP
+app.use(helmet({
+    contentSecurityPolicy: {
+        useDefaults: false,
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
+            imgSrc: ["'self'", "data:", "blob:", "http://localhost:3000", "http://localhost:3001"],
+            connectSrc: ["'self'", "http://localhost:3000", "http://localhost:3001"],
+            fontSrc: ["'self'", "https://cdn.jsdelivr.net"],
+            objectSrc: ["'none'"],
+            mediaSrc: ["'self'"],
+            frameSrc: ["'none'"],
+            baseUri: ["'self'"]
+        }
+    }
+}));
+
 app.use(morgan('dev'));
 app.use(express.json({ limit: process.env.MAX_PAYLOAD_SIZE || '10mb' }));
 app.use(express.urlencoded({ extended: true }));

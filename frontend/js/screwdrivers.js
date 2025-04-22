@@ -190,10 +190,10 @@ async function validateValue(value, attribute) {
                     throw new Error(`${attribute.name} muss zwischen 1995 und 2050 liegen`);
                 }
                 // Validate date format
-                const date = new Date(value);
-                if (isNaN(date.getTime())) {
-                    throw new Error(`${attribute.name} muss ein gültiges Datum sein`);
-                }
+            const date = new Date(value);
+            if (isNaN(date.getTime())) {
+                throw new Error(`${attribute.name} muss ein gültiges Datum sein`);
+            }
             } catch (error) {
                 throw new Error(`${attribute.name} muss ein gültiges Datum zwischen 1995 und 2050 sein`);
             }

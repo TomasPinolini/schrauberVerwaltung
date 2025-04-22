@@ -1,7 +1,7 @@
 // Pflichtattribute laden
 async function loadRequiredAttributes() {
     try {
-        const response = await fetch('http://localhost:3000/api/attributes');
+        const response = await fetch('http://localhost:3001/api/attributes');
         if (!response.ok) {
             throw new Error('Fehler beim Laden der Attribute');
         }
@@ -245,7 +245,7 @@ async function submitScrewdriverForm(e) {
     try {
         console.log('Sende Daten:', formData); // Debug-Ausgabe
 
-        const response = await fetch('http://localhost:3000/api/screwdrivers', {
+        const response = await fetch('http://localhost:3001/api/screwdrivers', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -292,7 +292,7 @@ function formatDateForDisplay(dateStr) {
 async function loadScrewdrivers() {
     try {
         // First, get all active attributes to create the table headers
-        const attributesResponse = await fetch('http://localhost:3000/api/attributes');
+        const attributesResponse = await fetch('http://localhost:3001/api/attributes');
         if (!attributesResponse.ok) {
             throw new Error('Fehler beim Laden der Attribute');
         }
@@ -300,7 +300,7 @@ async function loadScrewdrivers() {
         const activeAttributes = allAttributes.filter(attr => attr.state === 'on');
 
         // Then get all screwdrivers
-        const response = await fetch('http://localhost:3000/api/screwdrivers');
+        const response = await fetch('http://localhost:3001/api/screwdrivers');
         if (!response.ok) {
             throw new Error('Fehler beim Laden der Schraubendreher');
         }
@@ -423,7 +423,7 @@ async function loadScrewdrivers() {
 // Status eines Schraubendrehers ändern
 async function toggleScrewdriverState(id, newState) {
     try {
-        const response = await fetch(`http://localhost:3000/api/screwdrivers/${id}`, {
+        const response = await fetch(`http://localhost:3001/api/screwdrivers/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -464,7 +464,7 @@ function formatDate(dateString) {
 
 async function getAttributeValues(screwdriverId) {
     try {
-        const response = await fetch(`http://localhost:3000/api/attribute-values/screwdriver/${screwdriverId}/values`);
+        const response = await fetch(`http://localhost:3001/api/attribute-values/screwdriver/${screwdriverId}/values`);
         if (!response.ok) {
             const error = await response.json();
             throw new Error(error.message || 'Fehler beim Laden der Attributwerte');
@@ -478,7 +478,7 @@ async function getAttributeValues(screwdriverId) {
 
 async function updateAttributeValues(screwdriverId, values) {
     try {
-        const response = await fetch(`http://localhost:3000/api/attribute-values/screwdriver/${screwdriverId}/values`, {
+        const response = await fetch(`http://localhost:3001/api/attribute-values/screwdriver/${screwdriverId}/values`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

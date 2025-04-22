@@ -1,7 +1,7 @@
 // Attribute laden
 async function loadAttributes() {
     try {
-        const response = await fetch('http://localhost:3000/api/attributes', {
+        const response = await fetch('http://localhost:3001/api/attributes', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -171,7 +171,7 @@ async function saveAttribute() {
     };
 
     try {
-        const response = await fetch('http://localhost:3000/api/attributes', {
+        const response = await fetch('http://localhost:3001/api/attributes', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -198,7 +198,7 @@ async function saveAttribute() {
 // Status ändern
 async function toggleAttributeState(id, newState) {
     try {
-        const response = await fetch(`http://localhost:3000/api/attributes/${id}`, {
+        const response = await fetch(`http://localhost:3001/api/attributes/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'

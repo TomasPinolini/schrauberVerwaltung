@@ -50,7 +50,7 @@ schrauber_verwaltung/
    ```
 
 5. Open the frontend in your browser:
-   - Navigate to `http://localhost:3000`
+   - Navigate to `http://localhost:3001`
 
 ## Environment Configuration
 

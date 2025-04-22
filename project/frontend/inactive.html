@@ -79,7 +79,7 @@
         // Schraubendreher laden
         async function loadScrewdrivers() {
             try {
-                const response = await fetch('http://localhost:3000/api/screwdrivers?state=off');
+                const response = await fetch('http://localhost:3001/api/screwdrivers?state=off');
                 if (!response.ok) {
                     throw new Error('Fehler beim Laden der Schraubendreher');
                 }
@@ -150,7 +150,7 @@
         // Status ändern
         async function toggleScrewdriverState(id, newState) {
             try {
-                const response = await fetch(`http://localhost:3000/api/screwdrivers/${id}`, {
+                const response = await fetch(`http://localhost:3001/api/screwdrivers/${id}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'

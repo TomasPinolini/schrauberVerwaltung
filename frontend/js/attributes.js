@@ -1,7 +1,7 @@
 // Attribute laden
 async function loadAttributes() {
     try {
-        const response = await fetch('http://localhost:3000/api/attributes', {
+        const response = await fetch('http://localhost:3001/api/attributes', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -171,7 +171,7 @@ async function saveAttribute() {
     };
 
     try {
-        const response = await fetch('http://localhost:3000/api/attributes', {
+        const response = await fetch('http://localhost:3001/api/attributes', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -198,7 +198,7 @@ async function saveAttribute() {
 // Status ändern
 async function toggleAttributeState(id, newState) {
     try {
-        const response = await fetch(`http://localhost:3000/api/attributes/${id}`, {
+        const response = await fetch(`http://localhost:3001/api/attributes/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -216,6 +216,63 @@ async function toggleAttributeState(id, newState) {
     } catch (error) {
         console.error('Fehler:', error);
         showError(`Fehler beim Ändern des Status: ${error.message}`);
+    }
+}
+
+// Attribut aktualisieren
+async function updateAttribute(id) {
+    try {
+        const formData = {
+            name: document.getElementById('editName').value,
+            description: document.getElementById('editDescription').value,
+            data_type: document.getElementById('editDataType').value,
+            validation_pattern: document.getElementById('editValidationPattern').value,
+            is_required: document.getElementById('editIsRequired').checked
+        };
+
+        const response = await fetch(`http://localhost:3001/api/attributes/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Fehler beim Aktualisieren');
+        }
+
+        await loadAttributes();
+        const modal = bootstrap.Modal.getInstance(document.getElementById('editAttributeModal'));
+        modal.hide();
+        showSuccess('Attribut erfolgreich aktualisiert');
+    } catch (error) {
+        console.error('Fehler:', error);
+        showError(`Fehler beim Aktualisieren: ${error.message}`);
+    }
+}
+
+// Attribut löschen
+async function deleteAttribute(id) {
+    try {
+        const response = await fetch(`http://localhost:3001/api/attributes/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Fehler beim Löschen');
+        }
+
+        await loadAttributes();
+        showSuccess('Attribut erfolgreich gelöscht');
+    } catch (error) {
+        console.error('Fehler:', error);
+        showError(`Fehler beim Löschen: ${error.message}`);
     }
 }
 
