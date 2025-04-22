@@ -1,7 +1,7 @@
 // Pflichtattribute laden
 async function loadRequiredAttributes() {
     try {
-        const response = await fetch('http://localhost:3001/api/attributes');
+        const response = await fetch('http://localhost:3000/api/attributes');
         if (!response.ok) {
             throw new Error('Fehler beim Laden der Attribute');
         }
@@ -63,16 +63,22 @@ async function loadRequiredAttributes() {
 // Eingabefeld basierend auf Attributtyp generieren
 function getInputField(attribute) {
     const commonAttrs = `
-        id="attr_${attribute.id}"
+        id="${attribute.id || `attr_${attribute.id}`}"
         name="attributes[${attribute.id}]"
         data-attribute-id="${attribute.id}"
         data-type="${attribute.data_type}"
-        data-pattern="${attribute.validation_pattern}"
-        required
+        ${attribute.validation_pattern ? `pattern="${attribute.validation_pattern}"` : ''}
+        ${attribute.is_required ? 'required' : ''}
     `;
     
     switch (attribute.data_type) {
         case 'date':
+            let dateValue = '';
+            if (attribute.value) {
+                const [day, month, year] = attribute.value.split('/');
+                dateValue = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+            }
+            
             return `
                 <div class="input-group">
                     <span class="input-group-text">
@@ -80,9 +86,13 @@ function getInputField(attribute) {
                     </span>
                     <input type="date" 
                            class="form-control" 
-                           ${commonAttrs}>
+                           min="1995-01-01"
+                           max="2050-12-31"
+                           placeholder="TT/MM/JJJJ"
+                           ${commonAttrs}
+                           value="${dateValue}">
                     <div class="invalid-feedback">
-                        Bitte wählen Sie ein Datum
+                        Bitte wählen Sie ein Datum zwischen 1995 und 2050
                     </div>
                 </div>`;
             
@@ -94,10 +104,11 @@ function getInputField(attribute) {
                     </span>
                     <input type="number" 
                            class="form-control" 
-                           ${commonAttrs}
-                           ${attribute.validation_pattern ? `pattern="${attribute.validation_pattern}"` : ''}>
+                           ${commonAttrs}>
                     <div class="invalid-feedback">
-                        Bitte geben Sie eine gültige Zahl ein
+                        ${attribute.validation_pattern ? 
+                          'Bitte geben Sie eine gültige Zahl gemäß dem vorgegebenen Format ein' : 
+                          'Bitte geben Sie eine gültige Zahl ein'}
                     </div>
                 </div>`;
             
@@ -109,8 +120,8 @@ function getInputField(attribute) {
                     </span>
                     <select class="form-select" ${commonAttrs}>
                         <option value="">Bitte wählen...</option>
-                        <option value="true">Ja</option>
-                        <option value="false">Nein</option>
+                        <option value="true" ${attribute.value === 'true' ? 'selected' : ''}>Ja</option>
+                        <option value="false" ${attribute.value === 'false' ? 'selected' : ''}>Nein</option>
                     </select>
                     <div class="invalid-feedback">
                         Bitte wählen Sie einen Wert
@@ -125,10 +136,11 @@ function getInputField(attribute) {
                     </span>
                     <input type="text" 
                            class="form-control" 
-                           ${commonAttrs}
-                           ${attribute.validation_pattern ? `pattern="${attribute.validation_pattern}"` : ''}>
+                           ${commonAttrs}>
                     <div class="invalid-feedback">
-                        Bitte geben Sie einen gültigen Wert ein
+                        ${attribute.validation_pattern ? 
+                          `Bitte geben Sie einen gültigen Wert ein (Format: ${attribute.validation_pattern})` : 
+                          'Bitte geben Sie einen gültigen Wert ein'}
                     </div>
                 </div>`;
     }
@@ -136,37 +148,54 @@ function getInputField(attribute) {
 
 // Wert validieren
 async function validateValue(value, attribute) {
+    // Check if required
     if (attribute.is_required && (value === null || value === undefined || value === '')) {
         throw new Error(`${attribute.name} ist erforderlich`);
     }
 
+    // If not required and empty, it's valid
     if (!value && !attribute.is_required) {
         return true;
     }
 
+    // Check validation pattern if exists
+    if (attribute.validation_pattern && value) {
+        const regex = new RegExp(attribute.validation_pattern);
+        if (!regex.test(value.toString())) {
+            throw new Error(`${attribute.name} entspricht nicht dem erforderlichen Format (${attribute.validation_pattern})`);
+        }
+    }
+
+    // Type-specific validation
     switch (attribute.data_type) {
         case 'string':
-            if (attribute.validation_pattern && !new RegExp(attribute.validation_pattern).test(value)) {
-                throw new Error(`${attribute.name} entspricht nicht dem erforderlichen Format`);
-            }
+            // Already checked with validation pattern if exists
             break;
         case 'number':
             if (isNaN(value)) {
                 throw new Error(`${attribute.name} muss eine Zahl sein`);
             }
+            // Additional number validation if pattern exists was done above
             break;
         case 'boolean':
-            if (typeof value !== 'boolean' && value !== 'true' && value !== 'false') {
-                throw new Error(`${attribute.name} muss ein Boolean-Wert sein`);
+            if (value !== 'true' && value !== 'false') {
+                throw new Error(`${attribute.name} muss Ja oder Nein sein`);
             }
             break;
         case 'date':
-            const date = new Date(value);
-            if (isNaN(date.getTime())) {
-                throw new Error(`${attribute.name} muss ein gültiges Datum sein`);
-            }
-            if (date.getFullYear() !== 2025) {
-                throw new Error(`${attribute.name} muss im Jahr 2025 liegen`);
+            try {
+                const [year, month, day] = value.split('-');
+                const yearNum = parseInt(year);
+                if (yearNum < 1995 || yearNum > 2050) {
+                    throw new Error(`${attribute.name} muss zwischen 1995 und 2050 liegen`);
+                }
+                // Validate date format
+                const date = new Date(value);
+                if (isNaN(date.getTime())) {
+                    throw new Error(`${attribute.name} muss ein gültiges Datum sein`);
+                }
+            } catch (error) {
+                throw new Error(`${attribute.name} muss ein gültiges Datum zwischen 1995 und 2050 sein`);
             }
             break;
         default:
@@ -197,7 +226,6 @@ async function submitScrewdriverForm(e) {
     for (const input of attributeInputs) {
         const attributeId = input.getAttribute('data-attribute-id');
         const dataType = input.getAttribute('data-type');
-        const validationPattern = input.getAttribute('data-pattern');
         let value = input.value.trim();
 
         // Erstelle ein Attributobjekt für die Validierung
@@ -205,7 +233,6 @@ async function submitScrewdriverForm(e) {
             id: parseInt(attributeId),
             name: input.closest('.form-group').querySelector('label').textContent.trim().replace('*', ''),
             data_type: dataType,
-            validation_pattern: validationPattern,
             is_required: input.hasAttribute('required')
         };
 
@@ -220,16 +247,9 @@ async function submitScrewdriverForm(e) {
 
         // Formatiere den Wert entsprechend
         if (dataType === 'date') {
-            // Ensure the date is in DD/MM/YYYY format for the API
-            value = formatDateForAPI(value);
-            
-            // Validate the formatted date
-            const dateParts = value.split('/');
-            if (dateParts.length !== 3 || dateParts[2] !== '2025') {
-                input.classList.add('is-invalid');
-                showError(`${attribute.name} muss im Jahr 2025 sein und im Format DD/MM/YYYY vorliegen`);
-                return;
-            }
+            // Convert YYYY-MM-DD to DD/MM/YYYY
+            const [year, month, day] = value.split('-');
+            value = `${day}/${month}/${year}`;
         } else if (dataType === 'boolean') {
             value = value === 'true';
         } else if (dataType === 'number') {
@@ -243,8 +263,6 @@ async function submitScrewdriverForm(e) {
     }
 
     try {
-        console.log('Sende Daten:', formData); // Debug-Ausgabe
-
         const response = await fetch('http://localhost:3000/api/screwdrivers', {
             method: 'POST',
             headers: {
@@ -252,22 +270,19 @@ async function submitScrewdriverForm(e) {
             },
             body: JSON.stringify(formData)
         });
-
-        const responseData = await response.json();
         
         if (!response.ok) {
-            throw new Error(responseData.message || responseData.error || 'Ein unerwarteter Fehler ist aufgetreten');
+            const error = await response.json();
+            throw new Error(error.error || 'Ein unerwarteter Fehler ist aufgetreten');
         }
 
         showSuccess('Schraubendreher erfolgreich gespeichert!');
         e.target.reset();
         e.target.classList.remove('was-validated');
         document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
-        await loadScrewdrivers(); // Tabelle aktualisieren
+        await loadScrewdrivers();
     } catch (error) {
-        console.error('Fehler beim Speichern:', error);
-        const errorMessage = error.message || 'Ein unerwarteter Fehler ist aufgetreten';
-        showError(`Fehler beim Speichern: ${errorMessage}`);
+        showError(`Fehler beim Speichern: ${error.message}`);
     }
 }
 
@@ -281,146 +296,257 @@ function formatDateForAPI(dateStr) {
 // Datum für Anzeige formatieren
 function formatDateForDisplay(dateStr) {
     const date = new Date(dateStr);
-    return date.toLocaleDateString('de-DE', {
-        day: '2-digit',
+    return date.toLocaleString('de-DE', {
+        year: 'numeric',
         month: '2-digit',
-        year: 'numeric'
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+    }).replace(',', '');
+}
+
+// Filter state
+let currentFilter = 'all';
+let currentSearch = '';
+
+// Function to filter screwdrivers
+function filterScrewdrivers(screwdrivers) {
+    console.log('Filtering screwdrivers:', { currentFilter, currentSearch, totalScrewdrivers: screwdrivers.length });
+    
+    return screwdrivers.filter(screwdriver => {
+        // Apply state filter
+        const stateMatch = currentFilter === 'all' || 
+                          (currentFilter === 'active' && screwdriver.state === 'on') ||
+                          (currentFilter === 'inactive' && screwdriver.state === 'off');
+
+        // Apply search filter
+        const searchMatch = !currentSearch || 
+                          screwdriver.name.toLowerCase().includes(currentSearch.toLowerCase()) ||
+                          screwdriver.description?.toLowerCase().includes(currentSearch.toLowerCase());
+
+        console.log('Screwdriver:', {
+            id: screwdriver.id,
+            name: screwdriver.name,
+            state: screwdriver.state,
+            stateMatch,
+            searchMatch
+        });
+
+        return stateMatch && searchMatch;
     });
 }
 
-// Schraubendreher laden
+// Function to update table with filtered data
+function updateTableWithFilteredData(screwdrivers) {
+    console.log('Updating table with screwdrivers:', screwdrivers);
+    const filteredScrewdrivers = filterScrewdrivers(screwdrivers);
+    console.log('Filtered screwdrivers:', filteredScrewdrivers);
+    displayScrewdrivers(filteredScrewdrivers);
+}
+
+// Event listeners for filter buttons
+document.addEventListener('DOMContentLoaded', function() {
+    // Filter button click handlers
+    document.querySelectorAll('[data-filter]').forEach(button => {
+        button.addEventListener('click', function() {
+            // Update active state of buttons
+            document.querySelectorAll('[data-filter]').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            this.classList.add('active');
+
+            // Update filter and refresh table
+            currentFilter = this.dataset.filter;
+            console.log('Filter changed to:', currentFilter);
+            loadScrewdrivers();
+        });
+    });
+
+    // Search input handler
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            currentSearch = this.value;
+            console.log('Search changed to:', currentSearch);
+            loadScrewdrivers();
+        });
+    }
+});
+
+// Modify loadScrewdrivers function to use filtering
 async function loadScrewdrivers() {
     try {
-        // First, get all active attributes to create the table headers
-        const attributesResponse = await fetch('http://localhost:3000/api/attributes');
-        if (!attributesResponse.ok) {
-            throw new Error('Fehler beim Laden der Attribute');
-        }
-        const allAttributes = await attributesResponse.json();
-        const activeAttributes = allAttributes.filter(attr => attr.state === 'on');
-
-        // Then get all screwdrivers
-        const response = await fetch('http://localhost:3000/api/screwdrivers');
+        const response = await fetch('http://localhost:3000/api/screwdrivers?include_inactive=true');
         if (!response.ok) {
             throw new Error('Fehler beim Laden der Schraubendreher');
         }
-        
         const screwdrivers = await response.json();
-        console.log('Loaded screwdrivers:', screwdrivers); // Debug log
-
-        // Create table header if it doesn't exist
-        const tableHeader = document.querySelector('#screwdriversTable thead');
-        if (tableHeader) {
-            tableHeader.innerHTML = `
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Beschreibung</th>
-                    ${activeAttributes.map(attr => `
-                        <th>
-                            ${attr.name}
-                            ${attr.is_required ? '<span class="text-danger">*</span>' : ''}
-                            ${attr.description ? `
-                                <i class="bi bi-info-circle ms-1" 
-                                   data-bs-toggle="tooltip" 
-                                   title="${attr.description}"></i>
-                            ` : ''}
-                        </th>
-                    `).join('')}
-                    <th>Erstellt am</th>
-                    <th>Status</th>
-                    <th>Aktionen</th>
-                </tr>
-            `;
-        }
-        
-        const tableBody = document.getElementById('screwdriversTableBody');
-        
-        if (!tableBody) {
-            console.error('Table body element not found');
-            return;
-        }
-        
-        if (screwdrivers.length === 0) {
-            tableBody.innerHTML = `
-                <tr>
-                    <td colspan="${6 + activeAttributes.length}" class="text-center py-4">
-                        <i class="bi bi-info-circle me-2"></i>
-                        Keine Schraubendreher gefunden
-                    </td>
-                </tr>`;
-            return;
-        }
-        
-        tableBody.innerHTML = screwdrivers.map(screwdriver => `
-            <tr>
-                <td>${screwdriver.id}</td>
-                <td>
-                    <div class="d-flex align-items-center">
-                        <i class="bi bi-tools me-2"></i>
-                        ${screwdriver.name}
-                    </div>
-                </td>
-                <td>${screwdriver.description || '-'}</td>
-                ${activeAttributes.map(attr => {
-                    const attributeValue = screwdriver.attributes.find(a => a.attribute_id === attr.id)?.value;
-                    let displayValue = attributeValue || '-';
-                    
-                    // Format the value based on attribute type
-                    if (attr.data_type === 'date' && attributeValue) {
-                        displayValue = formatDateForDisplay(attributeValue);
-                    } else if (attr.data_type === 'boolean') {
-                        displayValue = attributeValue === 'true' ? 
-                            '<i class="bi bi-check-circle text-success"></i>' : 
-                            '<i class="bi bi-x-circle text-danger"></i>';
-                    }
-                    
-                    return `
-                        <td class="attribute-value" data-attribute-id="${attr.id}" data-type="${attr.data_type}">
-                            ${displayValue}
-                        </td>
-                    `;
-                }).join('')}
-                <td>${formatDateForDisplay(screwdriver.created_at)}</td>
-                <td>
-                    <span class="badge ${screwdriver.state === 'on' ? 'bg-success' : 'bg-danger'}">
-                        ${screwdriver.state === 'on' ? 'Aktiv' : 'Inaktiv'}
-                    </span>
-                </td>
-                <td>
-                    <div class="btn-group btn-group-sm">
-                        <button class="btn btn-outline-primary" onclick="editScrewdriver(${screwdriver.id})">
-                            <i class="bi bi-pencil"></i>
-                        </button>
-                        <button class="btn btn-outline-${screwdriver.state === 'on' ? 'danger' : 'success'}" 
-                                onclick="toggleScrewdriverState(${screwdriver.id}, '${screwdriver.state === 'on' ? 'off' : 'on'}')">
-                            <i class="bi bi-${screwdriver.state === 'on' ? 'x-circle' : 'check-circle'}"></i>
-                        </button>
-                    </div>
-                </td>
-            </tr>
-        `).join('');
-        
-        // Initialize tooltips
-        const tooltips = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        tooltips.map(el => new bootstrap.Tooltip(el));
-        
+        console.log('Loaded screwdrivers:', screwdrivers);
+        updateTableWithFilteredData(screwdrivers);
     } catch (error) {
-        console.error('Fehler beim Laden der Schraubendreher:', error);
-        const tableBody = document.getElementById('screwdriversTableBody');
-        if (tableBody) {
-            tableBody.innerHTML = `
-                <tr>
-                    <td colspan="7" class="text-center py-4 text-danger">
-                        <i class="bi bi-exclamation-circle me-2"></i>
-                        Fehler beim Laden der Schraubendreher: ${error.message}
-                    </td>
-                </tr>`;
-        }
+        console.error('Fehler:', error);
+        showError('Fehler beim Laden der Schraubendreher');
     }
 }
 
-// Status eines Schraubendrehers ändern
+let currentEditId = null;
+
+// Schraubendreher bearbeiten
+async function editScrewdriver(id) {
+    try {
+        const response = await fetch(`http://localhost:3000/api/screwdrivers/${id}`);
+        if (!response.ok) {
+            throw new Error('Fehler beim Laden des Schraubendrehers');
+        }
+        const screwdriver = await response.json();
+        
+        // Fill form fields
+        document.getElementById('editName').value = screwdriver.name;
+        document.getElementById('editDescription').value = screwdriver.description || '';
+        
+        // Store the ID for later use
+        document.getElementById('saveEditButton').dataset.screwdriverId = id;
+        
+        // Fill attribute values
+        const attributesContainer = document.getElementById('editAttributesContainer');
+        attributesContainer.innerHTML = ''; // Clear existing fields
+        
+        // Handle both old and new data structures
+        const attributes = screwdriver.Attributes || screwdriver.attributes || [];
+        
+        attributes.forEach(attribute => {
+            const value = attribute.ScrewdriverAttribute ? 
+                         attribute.ScrewdriverAttribute.value : 
+                         attribute.value;
+
+            const div = document.createElement('div');
+            div.className = 'mb-3';
+            
+            const inputType = getInputType(attribute.data_type);
+            const isRequired = attribute.is_required;
+            
+            // Handle date value conversion
+            let displayValue = value || '';
+            if (attribute.data_type === 'date' && value) {
+                // Convert DD/MM/YYYY to YYYY-MM-DD for the input
+                const [day, month, year] = value.split('/');
+                if (day && month && year) {
+                    displayValue = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+                }
+            }
+            
+            div.innerHTML = `
+                <label for="edit_attr_${attribute.id}" class="form-label">
+                    ${attribute.name}${isRequired ? '*' : ''}
+                    ${attribute.description ? `
+                        <i class="bi bi-info-circle ms-1" 
+                           data-bs-toggle="tooltip" 
+                           title="${attribute.description}"></i>
+                    ` : ''}
+                </label>
+                ${inputType === 'checkbox' ? `
+                    <div class="form-check">
+                        <input type="${inputType}" 
+                               class="form-check-input" 
+                               id="edit_attr_${attribute.id}"
+                               name="attr_${attribute.id}"
+                               ${value === 'true' ? 'checked' : ''}
+                               ${isRequired ? 'required' : ''}>
+                    </div>
+                ` : `
+                    <input type="${inputType}" 
+                           class="form-control" 
+                           id="edit_attr_${attribute.id}"
+                           name="attr_${attribute.id}"
+                           value="${displayValue}"
+                           ${inputType === 'date' ? 'min="1995-01-01" max="2050-12-31"' : ''}
+                           ${isRequired ? 'required' : ''}>
+                `}
+                <div class="invalid-feedback">
+                    ${attribute.data_type === 'date' ? 'Das Datum muss zwischen 1995 und 2050 liegen' : 'Dieses Feld ist erforderlich'}
+                </div>
+            `;
+            
+            attributesContainer.appendChild(div);
+        });
+        
+        // Initialize tooltips
+        const tooltips = [].slice.call(attributesContainer.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltips.map(el => new bootstrap.Tooltip(el));
+        
+        // Show modal
+        const modal = new bootstrap.Modal(document.getElementById('editScrewdriverModal'));
+        modal.show();
+    } catch (error) {
+        showError('Fehler beim Laden der Schraubendreher-Daten: ' + error.message);
+    }
+}
+
+async function submitEditForm() {
+    try {
+        const form = document.getElementById('editScrewdriverForm');
+        if (!form.checkValidity()) {
+            form.classList.add('was-validated');
+            return;
+        }
+
+        const id = document.getElementById('saveEditButton').dataset.screwdriverId;
+        const attributeValues = [];
+        const inputs = document.querySelectorAll('#editAttributesContainer input');
+        
+        inputs.forEach(input => {
+            const attrId = input.id.replace('edit_attr_', '');
+            let value = input.type === 'checkbox' ? input.checked.toString() : input.value;
+            
+            attributeValues.push({
+                attributeId: parseInt(attrId),
+                value: value
+            });
+        });
+
+        const data = {
+            name: document.getElementById('editName').value,
+            description: document.getElementById('editDescription').value,
+            attributes: attributeValues
+        };
+
+        const response = await fetch(`http://localhost:3000/api/screwdrivers/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Fehler beim Aktualisieren des Schraubendrehers');
+        }
+
+        // Close modal and refresh list
+        bootstrap.Modal.getInstance(document.getElementById('editScrewdriverModal')).hide();
+        await loadScrewdrivers();
+        showSuccess('Schraubendreher erfolgreich aktualisiert');
+    } catch (error) {
+        showError('Fehler beim Speichern der Änderungen: ' + error.message);
+    }
+}
+
+function getInputType(attributeType) {
+    switch (attributeType) {
+        case 'number':
+            return 'number';
+        case 'date':
+            return 'date';
+        case 'boolean':
+            return 'checkbox';
+        default:
+            return 'text';
+    }
+}
+
+// Status ändern
 async function toggleScrewdriverState(id, newState) {
     try {
         const response = await fetch(`http://localhost:3000/api/screwdrivers/${id}`, {
@@ -442,12 +568,6 @@ async function toggleScrewdriverState(id, newState) {
         console.error('Fehler:', error);
         showError(`Fehler beim Ändern des Status: ${error.message}`);
     }
-}
-
-// Schraubendreher bearbeiten
-function editScrewdriver(id) {
-    // TODO: Implementiere die Bearbeitung
-    console.log('Bearbeite Schraubendreher:', id);
 }
 
 // Datum formatieren
@@ -611,4 +731,133 @@ function displayAttributeValues(values) {
     submitButton.textContent = 'Speichern';
     submitButton.onclick = () => saveScrewdriverDetails(currentScrewdriverId);
     form.appendChild(submitButton);
+}
+
+// Function to display screwdrivers in the table
+async function displayScrewdrivers(screwdrivers) {
+    try {
+        // First, get all active attributes to create the table headers
+        const attributesResponse = await fetch('http://localhost:3000/api/attributes');
+        if (!attributesResponse.ok) {
+            throw new Error('Fehler beim Laden der Attribute');
+        }
+        const allAttributes = await attributesResponse.json();
+        const activeAttributes = allAttributes.filter(attr => attr.state === 'on');
+
+        // Create table header if it doesn't exist
+        const tableHeader = document.querySelector('#screwdriversTable thead');
+        if (tableHeader) {
+            tableHeader.innerHTML = `
+                <tr>
+                    <th>Name</th>
+                    <th>Beschreibung</th>
+                    ${activeAttributes.map(attr => `
+                        <th>
+                            ${attr.name}
+                            ${attr.is_required ? '<span class="text-danger">*</span>' : ''}
+                            ${attr.description ? `
+                                <i class="bi bi-info-circle ms-1" 
+                                   data-bs-toggle="tooltip" 
+                                   title="${attr.description}"></i>
+                            ` : ''}
+                        </th>
+                    `).join('')}
+                    <th>Erstellt am</th>
+                    <th>Aktionen</th>
+                </tr>
+            `;
+        }
+        
+        const tableBody = document.getElementById('screwdriversTableBody');
+        
+        if (!tableBody) {
+            console.error('Table body element not found');
+            return;
+        }
+        
+        if (screwdrivers.length === 0) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="${4 + activeAttributes.length}" class="text-center py-4">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Keine Schraubendreher gefunden
+                    </td>
+                </tr>`;
+            return;
+        }
+        
+        tableBody.innerHTML = screwdrivers.map(screwdriver => `
+            <tr>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-tools me-2"></i>
+                        ${screwdriver.name}
+                    </div>
+                </td>
+                <td>${screwdriver.description || '-'}</td>
+                ${activeAttributes.map(attr => {
+                    const attributeValue = screwdriver.attributes.find(a => a.attribute_id === attr.id)?.value;
+                    let displayValue = attributeValue || '-';
+                    
+                    // Format the value based on attribute type
+                    if (attr.data_type === 'date' && attributeValue) {
+                        displayValue = formatDateForDisplay(attributeValue);
+                    } else if (attr.data_type === 'boolean') {
+                        displayValue = attributeValue === 'true' ? 
+                            '<i class="bi bi-check-circle text-success"></i>' : 
+                            '<i class="bi bi-x-circle text-danger"></i>';
+                    }
+                    
+                    return `
+                        <td class="attribute-value" data-attribute-id="${attr.id}" data-type="${attr.data_type}">
+                            ${displayValue}
+                        </td>
+                    `;
+                }).join('')}
+                <td>${formatDateForDisplay(screwdriver.created_at)}</td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary edit-btn" data-id="${screwdriver.id}">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-outline-${screwdriver.state === 'on' ? 'danger' : 'success'} toggle-btn" 
+                                data-id="${screwdriver.id}"
+                                data-new-state="${screwdriver.state === 'on' ? 'off' : 'on'}">
+                            <i class="bi bi-${screwdriver.state === 'on' ? 'x-circle' : 'check-circle'}"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+
+        // Initialize tooltips
+        const tooltips = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltips.map(el => new bootstrap.Tooltip(el));
+
+        // Add event listeners to buttons
+        document.querySelectorAll('.edit-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                editScrewdriver(button.dataset.id);
+            });
+        });
+
+        document.querySelectorAll('.toggle-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                toggleScrewdriverState(button.dataset.id, button.dataset.newState);
+            });
+        });
+        
+    } catch (error) {
+        console.error('Fehler beim Anzeigen der Schraubendreher:', error);
+        const tableBody = document.getElementById('screwdriversTableBody');
+        if (tableBody) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="text-center py-4 text-danger">
+                        <i class="bi bi-exclamation-circle me-2"></i>
+                        Fehler beim Laden der Schraubendreher: ${error.message}
+                    </td>
+                </tr>`;
+        }
+    }
 } 
