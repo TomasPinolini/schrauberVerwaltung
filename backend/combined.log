@@ -361,3 +361,93 @@
 {"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T09:50:53.086Z"}
 {"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T09:50:53.112Z"}
 {"level":"info","message":"Incoming POST request to /api/attributes","timestamp":"2025-04-23T09:51:03.789Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-04-23T09:54:29.903Z"}
+{"level":"info","message":"Database connection test initiated...","timestamp":"2025-04-23T09:54:29.905Z"}
+{"level":"info","message":"Database connection established successfully","timestamp":"2025-04-23T09:54:29.947Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T09:54:32.547Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T09:54:32.571Z"}
+{"level":"info","message":"Incoming POST request to /api/attributes","timestamp":"2025-04-23T09:54:48.648Z"}
+{"level":"info","message":"Request body: {\n  \"name\": \"IP Adress\",\n  \"description\": \"IPv4\",\n  \"data_type\": \"string\",\n  \"validation_pattern\": \"\\\\b(?:\\\\d{1,3}\\\\.){3}\\\\d{1,3}\\\\b\",\n  \"is_required\": true\n}","timestamp":"2025-04-23T09:54:48.649Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T09:54:48.674Z"}
+{"level":"info","message":"Incoming PUT request to /api/attributes/17","timestamp":"2025-04-23T09:54:58.039Z"}
+{"level":"info","message":"Request body: {\n  \"name\": \"IP Adress\",\n  \"description\": \"IPv4\",\n  \"data_type\": \"string\",\n  \"validation_pattern\": \"\\\\b(?:\\\\d{1,3}\\\\.){3}\\\\d{1,3}\\\\b\",\n  \"is_required\": false\n}","timestamp":"2025-04-23T09:54:58.039Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T09:54:58.058Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T09:55:01.086Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T09:55:01.087Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T09:55:01.100Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T09:55:01.105Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T09:55:03.460Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T09:55:03.470Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T09:55:06.089Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T09:55:06.090Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T09:55:06.099Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T09:55:06.102Z"}
+{"level":"info","message":"Incoming POST request to /api/screwdrivers","timestamp":"2025-04-23T09:55:24.723Z"}
+{"level":"info","message":"Request body: {\n  \"name\": \"OnlyIP\",\n  \"description\": \"IPPPPPPPPPPPPPPPP\",\n  \"attributes\": [\n    {\n      \"attributeId\": 17,\n      \"value\": \"0.0.0.0\"\n    }\n  ]\n}","timestamp":"2025-04-23T09:55:24.724Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T09:55:24.756Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T09:55:29.739Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T09:55:29.748Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T09:55:31.648Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T09:55:31.649Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T09:55:31.660Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T09:55:31.664Z"}
+{"level":"info","message":"Incoming POST request to /api/screwdrivers","timestamp":"2025-04-23T09:55:40.019Z"}
+{"level":"info","message":"Request body: {\n  \"name\": \"NoIP\",\n  \"description\": \"sadsa\",\n  \"attributes\": [\n    {\n      \"attributeId\": 17,\n      \"value\": \"\"\n    }\n  ]\n}","timestamp":"2025-04-23T09:55:40.019Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T09:55:40.036Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T09:55:42.955Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T09:55:42.966Z"}
+{"level":"info","message":"Incoming PUT request to /api/attributes/17","timestamp":"2025-04-23T09:55:47.519Z"}
+{"level":"info","message":"Request body: {\n  \"name\": \"IP Adress\",\n  \"description\": \"IPv4\",\n  \"data_type\": \"string\",\n  \"validation_pattern\": \"\\\\b(?:\\\\d{1,3}\\\\.){3}\\\\d{1,3}\\\\b\",\n  \"is_required\": true\n}","timestamp":"2025-04-23T09:55:47.519Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T09:55:47.533Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T09:55:48.647Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T09:55:48.648Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T09:55:48.655Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T09:55:48.673Z"}
+{"level":"info","message":"Incoming PUT request to /api/screwdrivers/15","timestamp":"2025-04-23T09:55:55.162Z"}
+{"level":"info","message":"Request body: {\n  \"name\": \"NoIP\",\n  \"description\": \"sadsa\",\n  \"attributes\": [\n    {\n      \"attributeId\": 17,\n      \"value\": \"0.0.0.1\"\n    }\n  ]\n}","timestamp":"2025-04-23T09:55:55.163Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T09:55:55.184Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T09:56:02.281Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T09:56:02.288Z"}
+{"level":"info","message":"Incoming POST request to /api/attributes","timestamp":"2025-04-23T09:56:25.043Z"}
+{"level":"info","message":"Request body: {\n  \"name\": \"MAC Adress\",\n  \"description\": \"MACA\",\n  \"data_type\": \"string\",\n  \"validation_pattern\": \"\\\\b(?:[0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}\\\\b\",\n  \"is_required\": true\n}","timestamp":"2025-04-23T09:56:25.043Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T09:56:25.057Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T09:56:27.675Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T09:56:27.676Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T09:56:27.685Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T09:56:27.686Z"}
+{"level":"info","message":"Incoming PUT request to /api/screwdrivers/15","timestamp":"2025-04-23T09:57:53.961Z"}
+{"level":"info","message":"Request body: {\n  \"name\": \"NoIP\",\n  \"description\": \"sadsa\",\n  \"attributes\": [\n    {\n      \"attributeId\": 17,\n      \"value\": \"0.0.0.1\"\n    },\n    {\n      \"attributeId\": 18,\n      \"value\": \"00:1A:2B:3C:4D:5E\"\n    }\n  ]\n}","timestamp":"2025-04-23T09:57:53.961Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T09:57:53.992Z"}
+{"level":"info","message":"Incoming PUT request to /api/screwdrivers/14","timestamp":"2025-04-23T09:57:59.782Z"}
+{"level":"info","message":"Request body: {\n  \"name\": \"OnlyIP\",\n  \"description\": \"IPPPPPPPPPPPPPPPP\",\n  \"attributes\": [\n    {\n      \"attributeId\": 17,\n      \"value\": \"0.0.0.0\"\n    },\n    {\n      \"attributeId\": 18,\n      \"value\": \"00:1A:2B:3C:4D:00\"\n    }\n  ]\n}","timestamp":"2025-04-23T09:57:59.782Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T09:57:59.806Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T09:58:18.056Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T09:58:18.067Z"}
+{"level":"info","message":"Incoming PUT request to /api/attributes/17","timestamp":"2025-04-23T09:58:19.658Z"}
+{"level":"info","message":"Request body: {\n  \"id\": 17,\n  \"name\": \"IP Adress\",\n  \"description\": \"IPv4\",\n  \"data_type\": \"string\",\n  \"validation_pattern\": \"\\\\b(?:\\\\d{1,3}\\\\.){3}\\\\d{1,3}\\\\b\",\n  \"is_required\": true,\n  \"state\": \"off\",\n  \"created_at\": \"2025-04-23T09:54:48.000Z\",\n  \"updated_at\": \"2025-04-23T09:55:47.000Z\"\n}","timestamp":"2025-04-23T09:58:19.658Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T09:58:19.678Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T09:58:21.220Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T09:58:21.221Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T09:58:21.232Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T09:58:21.234Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T09:58:24.280Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T09:58:24.288Z"}
+{"level":"info","message":"Incoming PUT request to /api/attributes/18","timestamp":"2025-04-23T09:58:26.169Z"}
+{"level":"info","message":"Request body: {\n  \"id\": 18,\n  \"name\": \"MAC Adress\",\n  \"description\": \"MACA\",\n  \"data_type\": \"string\",\n  \"validation_pattern\": \"\\\\b(?:[0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}\\\\b\",\n  \"is_required\": true,\n  \"state\": \"off\",\n  \"created_at\": \"2025-04-23T09:56:25.000Z\",\n  \"updated_at\": \"2025-04-23T09:56:25.000Z\"\n}","timestamp":"2025-04-23T09:58:26.170Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T09:58:26.189Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T09:58:27.132Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T09:58:27.133Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T09:58:27.140Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T09:58:27.144Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T09:58:28.320Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T09:58:28.329Z"}
+{"level":"info","message":"Incoming PUT request to /api/attributes/17","timestamp":"2025-04-23T09:58:29.142Z"}
+{"level":"info","message":"Request body: {\n  \"id\": 17,\n  \"name\": \"IP Adress\",\n  \"description\": \"IPv4\",\n  \"data_type\": \"string\",\n  \"validation_pattern\": \"\\\\b(?:\\\\d{1,3}\\\\.){3}\\\\d{1,3}\\\\b\",\n  \"is_required\": true,\n  \"state\": \"on\",\n  \"created_at\": \"2025-04-23T09:54:48.000Z\",\n  \"updated_at\": \"2025-04-23T09:58:19.000Z\"\n}","timestamp":"2025-04-23T09:58:29.142Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T09:58:29.160Z"}
+{"level":"info","message":"Incoming PUT request to /api/attributes/18","timestamp":"2025-04-23T09:58:29.814Z"}
+{"level":"info","message":"Request body: {\n  \"id\": 18,\n  \"name\": \"MAC Adress\",\n  \"description\": \"MACA\",\n  \"data_type\": \"string\",\n  \"validation_pattern\": \"\\\\b(?:[0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}\\\\b\",\n  \"is_required\": true,\n  \"state\": \"on\",\n  \"created_at\": \"2025-04-23T09:56:25.000Z\",\n  \"updated_at\": \"2025-04-23T09:58:26.000Z\"\n}","timestamp":"2025-04-23T09:58:29.814Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T09:58:29.828Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T09:58:32.521Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T09:58:32.522Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T09:58:32.532Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T09:58:32.533Z"}
