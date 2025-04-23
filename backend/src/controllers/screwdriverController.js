@@ -13,6 +13,7 @@ const create = async (req, res, next) => {
         const attributesData = screwdriverData.attributes || [];
 
         if (!screwdriverData.name) {
+            await t.rollback();
             return res.status(400).json({ error: 'Name is required' });
         }
 
@@ -35,8 +36,6 @@ const create = async (req, res, next) => {
             await ScrewdriverAttribute.bulkCreate(attributeValues, { transaction: t });
         }
 
-        await t.commit();
-
         // Fetch the created screwdriver with its attributes
         const createdScrewdriver = await Screwdriver.findByPk(screwdriver.id, {
             include: [{
@@ -54,6 +53,7 @@ const create = async (req, res, next) => {
             }]
         });
 
+        await t.commit();
         logger.info(`Created new screwdriver with ID ${screwdriver.id}`);
         res.status(201).json(createdScrewdriver);
     } catch (error) {
@@ -136,12 +136,14 @@ const update = async (req, res) => {
         });
 
         if (!screwdriver) {
+            await t.rollback();
             logger.warn(`Screwdriver with ID ${req.params.id} not found`);
             return res.status(404).json({ error: 'Screwdriver not found' });
         }
 
         // Validate state if provided
         if (state && !['on', 'off'].includes(state)) {
+            await t.rollback();
             return res.status(400).json({ error: 'Invalid state. Must be either "on" or "off"' });
         }
 
@@ -163,33 +165,35 @@ const update = async (req, res) => {
 
             // Add new attribute values
             for (const attr of attributes) {
+                const attributeId = attr.attributeId || attr.id; // Handle both formats
+                const value = attr.value;
+
                 const attribute = await Attribute.findOne({
                     where: {
-                        id: attr.attributeId,
+                        id: attributeId,
                         state: 'on'
                     }
                 });
 
                 if (!attribute) {
-                    throw new Error(`Attribute with id ${attr.attributeId} not found or inactive`);
+                    await t.rollback();
+                    throw new Error(`Attribute with id ${attributeId} not found or inactive`);
                 }
 
                 // Basic validation based on data type
-                const value = attr.value.toString().trim();
                 if (!value && attribute.is_required) {
+                    await t.rollback();
                     throw new Error(`Value for attribute ${attribute.name} cannot be empty`);
                 }
 
                 await ScrewdriverAttribute.create({
                     screwdriver_id: screwdriver.id,
-                    attribute_id: attr.attributeId,
+                    attribute_id: attributeId,
                     value: value,
                     state: 'on'
                 }, { transaction: t });
             }
         }
-
-        await t.commit();
 
         // Fetch the updated screwdriver with its attributes
         const result = await Screwdriver.findOne({
@@ -199,10 +203,12 @@ const update = async (req, res) => {
                 through: { 
                     attributes: ['value', 'state'],
                     where: { state: 'on' }
-                }
+                },
+                attributes: ['id', 'name', 'description', 'data_type', 'is_required', 'is_parent', 'state']
             }]
         });
 
+        await t.commit();
         logger.info(`Updated screwdriver with ID ${screwdriver.id}`);
         res.json(result);
     } catch (error) {
@@ -322,7 +328,7 @@ const getAllWithValues = async (req, res, next) => {
             where: includeInactive ? {} : { state: 'on' }
           },
           required: false,
-          attributes: ['id', 'name', 'description', 'data_type', 'is_required', 'state']
+          attributes: ['id', 'name', 'description', 'data_type', 'is_required', 'is_parent', 'state']
         }
       ],
       order: [['name', 'ASC']],
@@ -339,6 +345,7 @@ const getAllWithValues = async (req, res, next) => {
           description: attr.description,
           data_type: attr.data_type,
           is_required: attr.is_required,
+          is_parent: attr.is_parent,
           state: attr.state,
           value: attr.ScrewdriverAttribute?.value
         }))
@@ -352,6 +359,28 @@ const getAllWithValues = async (req, res, next) => {
   }
 };
 
+// Get distinct values for a parent attribute
+const getAttributeValues = async (req, res) => {
+    try {
+        const { attributeId } = req.params;
+        
+        const values = await ScrewdriverAttribute.findAll({
+            attributes: ['value'],
+            where: {
+                attribute_id: attributeId,
+                state: 'on'
+            },
+            group: ['value'],
+            raw: true
+        });
+
+        const distinctValues = values.map(v => v.value).filter(Boolean);
+        res.json(distinctValues);
+    } catch (error) {
+        logger.error('Error in getAttributeValues:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
 
 module.exports = {
     create,
@@ -360,5 +389,6 @@ module.exports = {
     update,
     remove,
     filterByAttributes,
-    getAllWithValues
+    getAllWithValues,
+    getAttributeValues
 }; 

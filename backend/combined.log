@@ -451,3 +451,317 @@
 {"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T09:58:32.522Z"}
 {"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T09:58:32.532Z"}
 {"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T09:58:32.533Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all?include_inactive=true","timestamp":"2025-04-23T10:00:22.598Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all?include_inactive=true","timestamp":"2025-04-23T10:00:25.301Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T10:02:52.996Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T10:02:53.018Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T10:03:36.980Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T10:03:36.981Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T10:03:36.995Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T10:03:36.997Z"}
+{"level":"info","message":"Incoming PUT request to /api/screwdrivers/15","timestamp":"2025-04-23T10:10:08.502Z"}
+{"level":"info","message":"Request body: {\n  \"state\": \"off\"\n}","timestamp":"2025-04-23T10:10:08.503Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T10:10:08.528Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all?include_inactive=true","timestamp":"2025-04-23T10:10:11.929Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T10:10:42.514Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T10:10:42.525Z"}
+{"level":"info","message":"Incoming PUT request to /api/attributes/17","timestamp":"2025-04-23T10:35:54.393Z"}
+{"level":"info","message":"Request body: {\n  \"name\": \"IP Adress\",\n  \"description\": \"IPv4\",\n  \"data_type\": \"string\",\n  \"validation_pattern\": \"\\\\b(?:\\\\d{1,3}\\\\.){3}\\\\d{1,3}\\\\b\",\n  \"is_required\": true\n}","timestamp":"2025-04-23T10:35:54.394Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T10:35:54.408Z"}
+{"level":"info","message":"Incoming PUT request to /api/attributes/17","timestamp":"2025-04-23T10:35:57.292Z"}
+{"level":"info","message":"Request body: {\n  \"id\": 17,\n  \"name\": \"IP Adress\",\n  \"description\": \"IPv4\",\n  \"data_type\": \"string\",\n  \"validation_pattern\": \"\\\\b(?:\\\\d{1,3}\\\\.){3}\\\\d{1,3}\\\\b\",\n  \"is_required\": true,\n  \"state\": \"off\",\n  \"created_at\": \"2025-04-23T09:54:48.000Z\",\n  \"updated_at\": \"2025-04-23T09:58:29.000Z\"\n}","timestamp":"2025-04-23T10:35:57.292Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T10:35:57.308Z"}
+{"level":"info","message":"Incoming PUT request to /api/attributes/17","timestamp":"2025-04-23T10:35:58.363Z"}
+{"level":"info","message":"Request body: {\n  \"id\": 17,\n  \"name\": \"IP Adress\",\n  \"description\": \"IPv4\",\n  \"data_type\": \"string\",\n  \"validation_pattern\": \"\\\\b(?:\\\\d{1,3}\\\\.){3}\\\\d{1,3}\\\\b\",\n  \"is_required\": true,\n  \"state\": \"on\",\n  \"created_at\": \"2025-04-23T09:54:48.000Z\",\n  \"updated_at\": \"2025-04-23T10:35:57.000Z\"\n}","timestamp":"2025-04-23T10:35:58.363Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T10:35:58.382Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-04-23T10:37:07.615Z"}
+{"level":"info","message":"Database connection test initiated...","timestamp":"2025-04-23T10:37:07.617Z"}
+{"level":"info","message":"Database connection established successfully","timestamp":"2025-04-23T10:37:07.661Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T10:37:09.299Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T10:37:09.348Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T10:37:50.702Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T10:37:50.731Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T10:37:55.194Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T10:37:55.218Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T10:38:04.478Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T10:38:04.479Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T10:38:04.497Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T10:38:04.500Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all?include_inactive=true","timestamp":"2025-04-23T10:38:08.114Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T10:39:04.588Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T10:39:04.589Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T10:39:04.609Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T10:39:04.612Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T10:39:06.977Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T10:39:07.002Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T10:40:05.714Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T10:40:05.744Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T10:52:03.028Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T10:52:03.056Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T10:52:13.016Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T10:52:13.037Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T10:52:21.029Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T10:53:08.028Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T10:53:08.066Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T10:53:16.029Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T10:53:18.233Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T10:53:18.257Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T10:54:24.036Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T10:54:24.069Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T10:54:28.052Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T10:55:10.521Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-04-23T11:35:59.704Z"}
+{"level":"info","message":"Database connection test initiated...","timestamp":"2025-04-23T11:35:59.707Z"}
+{"level":"info","message":"Database connection established successfully","timestamp":"2025-04-23T11:35:59.756Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T11:36:42.812Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T11:36:42.839Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T11:37:42.319Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T11:37:42.320Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T11:37:42.342Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T11:37:42.346Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all?include_inactive=true","timestamp":"2025-04-23T11:37:45.911Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T12:10:28.946Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T12:10:28.959Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T12:15:58.518Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T12:16:01.150Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T12:16:02.742Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T12:16:02.750Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T12:16:07.466Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T12:16:07.475Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:16:29.574Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:16:29.576Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:16:29.592Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:16:29.596Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:16:47.120Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:16:47.121Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:16:47.136Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:16:47.138Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:16:54.570Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:16:54.571Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:16:54.580Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:16:54.584Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T12:16:59.590Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T12:16:59.598Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T12:17:22.493Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T12:17:22.504Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:17:25.333Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:17:25.334Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:17:25.347Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:17:25.350Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T12:18:07.992Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T12:18:08.003Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T12:22:25.646Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T12:22:25.656Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T12:23:26.271Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T12:23:32.224Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T12:23:32.232Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T12:23:32.987Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T12:23:32.994Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T12:23:39.800Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T12:23:39.808Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:23:40.654Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:23:40.655Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:23:40.668Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:23:40.669Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T12:23:44.655Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T12:23:44.663Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T12:26:09.018Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T12:26:36.013Z"}
+{"level":"info","message":"Incoming POST request to /api/attributes","timestamp":"2025-04-23T12:29:32.542Z"}
+{"level":"info","message":"Request body: {\n  \"name\": \"Abteilung\",\n  \"description\": \"ABC123\",\n  \"data_type\": \"string\",\n  \"validation_pattern\": \"\\\\b[A-Za-z]{3}\\\\d{3}\\\\b\",\n  \"is_required\": false,\n  \"is_parent\": 0\n}","timestamp":"2025-04-23T12:29:32.543Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T12:29:32.560Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:29:49.962Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:29:49.963Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:29:49.975Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:29:49.979Z"}
+{"level":"info","message":"Incoming POST request to /api/screwdrivers","timestamp":"2025-04-23T12:30:06.508Z"}
+{"level":"info","message":"Request body: {\n  \"name\": \"1\",\n  \"description\": \"1\",\n  \"attributes\": [\n    {\n      \"attributeId\": 19,\n      \"value\": \"asd123\"\n    }\n  ]\n}","timestamp":"2025-04-23T12:30:06.508Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-04-23T12:30:59.961Z"}
+{"level":"info","message":"Database connection test initiated...","timestamp":"2025-04-23T12:30:59.963Z"}
+{"level":"info","message":"Database connection established successfully","timestamp":"2025-04-23T12:31:00.005Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:31:05.020Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:31:05.024Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:31:05.053Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:31:05.059Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all?include_inactive=true","timestamp":"2025-04-23T12:31:25.504Z"}
+{"level":"info","message":"Incoming PUT request to /api/screwdrivers/16","timestamp":"2025-04-23T12:31:26.306Z"}
+{"level":"info","message":"Request body: {\n  \"state\": \"off\"\n}","timestamp":"2025-04-23T12:31:26.307Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-04-23T12:32:18.389Z"}
+{"level":"info","message":"Database connection test initiated...","timestamp":"2025-04-23T12:32:18.392Z"}
+{"level":"info","message":"Database connection established successfully","timestamp":"2025-04-23T12:32:18.432Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:32:19.862Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:32:19.872Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:32:19.886Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:32:19.894Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all?include_inactive=true","timestamp":"2025-04-23T12:32:23.158Z"}
+{"level":"info","message":"Incoming PUT request to /api/screwdrivers/16","timestamp":"2025-04-23T12:32:24.120Z"}
+{"level":"info","message":"Request body: {\n  \"state\": \"on\"\n}","timestamp":"2025-04-23T12:32:24.121Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:39:50.457Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:39:50.458Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:39:50.474Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:39:50.476Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T12:39:53.372Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T12:39:53.381Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:39:56.864Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:39:56.865Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:39:56.874Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:39:56.877Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:40:02.316Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:40:02.317Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:40:02.329Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:40:02.330Z"}
+{"level":"info","message":"Incoming POST request to /api/screwdrivers","timestamp":"2025-04-23T12:42:11.782Z"}
+{"level":"info","message":"Request body: {\n  \"name\": \"tefotno\",\n  \"description\": \"21321\",\n  \"attributes\": [\n    {\n      \"attributeId\": 19,\n      \"value\": \"acs123\"\n    }\n  ]\n}","timestamp":"2025-04-23T12:42:11.782Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-04-23T12:45:48.984Z"}
+{"level":"info","message":"Database connection test initiated...","timestamp":"2025-04-23T12:45:48.986Z"}
+{"level":"info","message":"Database connection established successfully","timestamp":"2025-04-23T12:45:49.026Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:46:05.942Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:46:05.953Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:46:05.974Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:46:05.978Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-04-23T12:46:31.532Z"}
+{"level":"info","message":"Database connection test initiated...","timestamp":"2025-04-23T12:46:31.535Z"}
+{"level":"info","message":"Database connection established successfully","timestamp":"2025-04-23T12:46:31.578Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:46:35.846Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:46:35.849Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:46:35.873Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:46:35.878Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all?include_inactive=true","timestamp":"2025-04-23T12:46:46.634Z"}
+{"level":"info","message":"Incoming PUT request to /api/screwdrivers/16","timestamp":"2025-04-23T12:46:50.235Z"}
+{"level":"info","message":"Request body: {\n  \"state\": \"on\"\n}","timestamp":"2025-04-23T12:46:50.236Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:48:28.910Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:48:28.911Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:48:28.925Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:48:28.927Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all?include_inactive=true","timestamp":"2025-04-23T12:48:32.294Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:49:25.241Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:49:25.243Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:49:25.257Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:49:25.258Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-04-23T12:49:37.507Z"}
+{"level":"info","message":"Database connection test initiated...","timestamp":"2025-04-23T12:49:37.510Z"}
+{"level":"info","message":"Database connection established successfully","timestamp":"2025-04-23T12:49:37.551Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:49:40.889Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:49:40.892Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:49:40.914Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:49:40.918Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all?include_inactive=true","timestamp":"2025-04-23T12:49:43.297Z"}
+{"level":"info","message":"Incoming PUT request to /api/screwdrivers/16","timestamp":"2025-04-23T12:49:44.199Z"}
+{"level":"info","message":"Request body: {\n  \"state\": \"on\"\n}","timestamp":"2025-04-23T12:49:44.200Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all?include_inactive=true","timestamp":"2025-04-23T12:49:44.230Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all?include_inactive=true","timestamp":"2025-04-23T12:49:46.047Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T12:50:39.267Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T12:50:39.284Z"}
+{"level":"info","message":"Incoming PUT request to /api/attributes/19","timestamp":"2025-04-23T12:50:42.642Z"}
+{"level":"info","message":"Request body: {\n  \"name\": \"Abteilung\",\n  \"description\": \"ABC123\",\n  \"data_type\": \"string\",\n  \"validation_pattern\": \"\\\\b[A-Za-z]{3}\\\\d{3}\\\\b\",\n  \"is_required\": false,\n  \"is_parent\": 1\n}","timestamp":"2025-04-23T12:50:42.643Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-23T12:50:42.660Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:50:46.045Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:50:46.046Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:50:46.055Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:50:46.059Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:54:02.391Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:54:02.393Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:59:22.968Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:59:22.971Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:59:22.998Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:59:23.003Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:59:35.013Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:59:35.016Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:59:35.045Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:59:35.051Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-04-23T12:59:44.515Z"}
+{"level":"info","message":"Database connection test initiated...","timestamp":"2025-04-23T12:59:44.531Z"}
+{"level":"info","message":"Database connection established successfully","timestamp":"2025-04-23T12:59:44.714Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:59:49.332Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:59:49.352Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:59:49.380Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:59:49.406Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:59:51.878Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:59:51.887Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T12:59:51.919Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T12:59:51.929Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T13:00:59.033Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T13:00:59.037Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T17:38:01.475Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T17:38:01.490Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T17:38:01.520Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T17:38:01.526Z"}
+{"level":"info","message":"Incoming PUT request to /api/screwdrivers/16","timestamp":"2025-04-23T17:40:47.138Z"}
+{"level":"info","message":"Request body: {\n  \"name\": \"1\",\n  \"description\": \"1\",\n  \"attributes\": [\n    {\n      \"attributeId\": 19,\n      \"value\": \"asd123\"\n    }\n  ]\n}","timestamp":"2025-04-23T17:40:47.139Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T17:40:47.224Z"}
+{"level":"info","message":"Incoming POST request to /api/screwdrivers","timestamp":"2025-04-23T17:43:45.802Z"}
+{"level":"info","message":"Request body: {\n  \"name\": \"another one\",\n  \"description\": \"123\",\n  \"attributes\": [\n    {\n      \"attributeId\": 19,\n      \"value\": \"asc321\"\n    }\n  ]\n}","timestamp":"2025-04-23T17:43:45.803Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T17:43:45.857Z"}
+{"level":"info","message":"Incoming POST request to /api/screwdrivers","timestamp":"2025-04-23T17:43:52.944Z"}
+{"level":"info","message":"Request body: {\n  \"name\": \"321321\",\n  \"description\": \"321321\",\n  \"attributes\": [\n    {\n      \"attributeId\": 19,\n      \"value\": \"fdf221\"\n    }\n  ]\n}","timestamp":"2025-04-23T17:43:52.945Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T17:43:52.977Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T17:44:32.448Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T17:44:32.450Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T17:44:32.481Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T17:44:32.524Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-04-23T17:55:02.038Z"}
+{"level":"info","message":"Database connection test initiated...","timestamp":"2025-04-23T17:55:02.044Z"}
+{"level":"info","message":"Database connection established successfully","timestamp":"2025-04-23T17:55:02.133Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes","timestamp":"2025-04-23T17:55:15.751Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers","timestamp":"2025-04-23T17:55:15.760Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T17:55:15.764Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes","timestamp":"2025-04-23T17:55:15.984Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T17:55:16.009Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers","timestamp":"2025-04-23T17:55:16.058Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes","timestamp":"2025-04-23T17:55:21.074Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers","timestamp":"2025-04-23T17:55:21.077Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T17:55:21.079Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes","timestamp":"2025-04-23T17:55:21.110Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers","timestamp":"2025-04-23T17:55:21.138Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T17:55:21.149Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T17:56:25.865Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T17:56:25.868Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T17:56:25.896Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T17:56:25.932Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T17:56:55.032Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T17:56:55.034Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T18:11:28.056Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T18:11:28.058Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T18:11:28.087Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T18:11:28.130Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T18:13:31.619Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T18:13:31.621Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T18:13:41.712Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T18:13:41.715Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T18:13:41.744Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T18:13:41.774Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T18:15:12.024Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T18:15:12.026Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T18:15:47.025Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T18:15:47.027Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T18:19:07.189Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T18:19:07.195Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T18:19:07.217Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T18:19:07.255Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T18:19:24.751Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T18:19:24.753Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T18:19:42.543Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T18:19:42.545Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T18:20:32.018Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T18:20:32.020Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T18:20:45.033Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T18:20:45.035Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T18:21:39.029Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T18:21:39.031Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T18:24:27.031Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T18:24:27.034Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T18:24:28.517Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T18:24:28.522Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T18:24:28.541Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T18:24:28.576Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-04-23T18:24:50.405Z"}
+{"level":"info","message":"Database connection test initiated...","timestamp":"2025-04-23T18:24:50.411Z"}
+{"level":"info","message":"Database connection established successfully","timestamp":"2025-04-23T18:24:50.495Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T18:24:57.801Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T18:24:57.807Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T18:24:57.849Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T18:24:57.876Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T18:26:01.128Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T18:26:01.131Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes/active","timestamp":"2025-04-23T18:39:35.030Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers/with-values/all","timestamp":"2025-04-23T18:39:35.033Z"}

@@ -8,6 +8,8 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: 'attribute_id',
                 otherKey: 'screwdriver_id'
             });
+
+
         }
     }
 
@@ -34,6 +36,10 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true
         },
         is_required: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
+        },
+        is_parent: {
             type: DataTypes.BOOLEAN,
             defaultValue: false
         },

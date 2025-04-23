@@ -13,4 +13,7 @@ router.delete('/:id', screwdriverController.remove);
 router.get('/filter/by-attributes', screwdriverController.filterByAttributes);
 router.get('/with-values/all', screwdriverController.getAllWithValues);
 
+// New route for attribute values
+router.get('/attribute-values/:attributeId', screwdriverController.getAttributeValues);
+
 module.exports = router; 

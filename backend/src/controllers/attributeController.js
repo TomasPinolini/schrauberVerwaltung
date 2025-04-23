@@ -1,6 +1,7 @@
 const { Attribute } = require('../models');
 const { sequelize, Sequelize } = require('../config/database');
 const logger = require('../config/logger');
+const { Op } = require('sequelize');
 
 // Get all attributes with optional filtering
 const getAllAttributes = async (req, res) => {
@@ -69,7 +70,7 @@ const createAttribute = async (req, res) => {
         logger.info('POST /api/attributes request received');
         logger.info(`Request body: ${JSON.stringify(req.body, null, 2)}`);
 
-        const { name, description, data_type, validation_pattern, is_required } = req.body;
+        const { name, description, data_type, validation_pattern, is_required, is_parent } = req.body;
 
         if (!name || !data_type) {
             await t.rollback();
@@ -88,7 +89,8 @@ const createAttribute = async (req, res) => {
             description,
             data_type,
             validation_pattern,
-            is_required: !!is_required,
+            is_required,
+            is_parent,
             state: 'on'
         }, { transaction: t });
 
@@ -121,7 +123,7 @@ const updateAttribute = async (req, res) => {
             return res.status(404).json({ error: 'Attribute not found' });
         }
 
-        const { name, description, data_type, validation_pattern, is_required, state } = req.body;
+        const { name, description, data_type, validation_pattern, is_required, is_parent } = req.body;
 
         // Validate data_type if provided
         if (data_type) {
@@ -132,8 +134,8 @@ const updateAttribute = async (req, res) => {
         }
 
         // Validate state if provided
-        if (state && !['on', 'off'].includes(state)) {
-            return res.status(400).json({ error: 'Invalid state. Must be either "on" or "off"' });
+        if (attribute.state !== 'on') {
+            return res.status(400).json({ error: 'Attribute must be in "on" state to be updated' });
         }
 
         await attribute.update({
@@ -142,7 +144,8 @@ const updateAttribute = async (req, res) => {
             data_type: data_type || attribute.data_type,
             validation_pattern: validation_pattern !== undefined ? validation_pattern : attribute.validation_pattern,
             is_required: is_required !== undefined ? !!is_required : attribute.is_required,
-            state: state || attribute.state
+            is_parent: is_parent !== undefined ? !!is_parent : attribute.is_parent,
+            state: 'on'
         }, { transaction: t });
 
         await t.commit();
