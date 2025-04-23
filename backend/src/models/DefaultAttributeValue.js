@@ -1,37 +1,52 @@
-const pool = require('../config/database');
+const { Model } = require('sequelize');
 
-class DefaultAttributeValue {
-    static async create(attributeId, value, description = null) {
-        const [result] = await pool.query(
-            'INSERT INTO default_attribute_values (attribute_id, value, description) VALUES (?, ?, ?)',
-            [attributeId, value, description]
-        );
-        return result.insertId;
+module.exports = (sequelize, DataTypes) => {
+    class DefaultAttributeValue extends Model {
+        static associate(models) {
+            DefaultAttributeValue.belongsTo(models.Attribute, {
+                foreignKey: 'attribute_id',
+                constraints: false
+            });
+        }
     }
 
-    static async findByAttributeId(attributeId) {
-        const [rows] = await pool.query(
-            'SELECT * FROM default_attribute_values WHERE attribute_id = ? AND state = "on"',
-            [attributeId]
-        );
-        return rows;
-    }
+    DefaultAttributeValue.init({
+        id: {
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+            autoIncrement: true
+        },
+        attribute_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'attributes',
+                key: 'id'
+            }
+        },
+        value: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        description: {
+            type: DataTypes.TEXT,
+            allowNull: true
+        },
+        state: {
+            type: DataTypes.ENUM('on', 'off'),
+            defaultValue: 'on'
+        }
+    }, {
+        sequelize,
+        modelName: 'DefaultAttributeValue',
+        tableName: 'default_attribute_values',
+        timestamps: true,
+        underscored: true,
+        paranoid: true,
+        createdAt: 'created_at',
+        updatedAt: 'updated_at',
+        deletedAt: 'deleted_at'
+    });
 
-    static async update(id, value, description) {
-        await pool.query(
-            'UPDATE default_attribute_values SET value = ?, description = ? WHERE id = ?',
-            [value, description, id]
-        );
-        return true;
-    }
-
-    static async delete(id) {
-        await pool.query(
-            'UPDATE default_attribute_values SET state = "off" WHERE id = ?',
-            [id]
-        );
-        return true;
-    }
-}
-
-module.exports = DefaultAttributeValue; 
+    return DefaultAttributeValue;
+}; 
