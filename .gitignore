@@ -9,6 +9,9 @@ node_modules/
 # Production
 /build
 /dist
+/log
+combined.log
+error.log
 
 # Environment files
 .env.local

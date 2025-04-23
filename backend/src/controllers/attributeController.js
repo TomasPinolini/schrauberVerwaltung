@@ -1,5 +1,5 @@
 const { Attribute } = require('../models');
-const sequelize = require('../config/database');
+const { sequelize, Sequelize } = require('../config/database');
 const logger = require('../config/logger');
 
 // Get all attributes with optional filtering
@@ -72,12 +72,14 @@ const createAttribute = async (req, res) => {
         const { name, description, data_type, validation_pattern, is_required } = req.body;
 
         if (!name || !data_type) {
+            await t.rollback();
             return res.status(400).json({ error: 'Name and data type are required' });
         }
 
         // Validate data_type enum
         const validTypes = ['string', 'number', 'boolean', 'date'];
         if (!validTypes.includes(data_type)) {
+            await t.rollback();
             return res.status(400).json({ error: 'Invalid data type. Must be one of: ' + validTypes.join(', ') });
         }
 

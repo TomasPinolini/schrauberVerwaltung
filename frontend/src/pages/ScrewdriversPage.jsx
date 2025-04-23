@@ -7,31 +7,49 @@ const ScrewdriversPage = () => {
   const [formData, setFormData] = useState({ name: '', description: '', attributes: [] });
   const [editingId, setEditingId] = useState(null);
   const [errors, setErrors] = useState({});
-  const [filter, setFilter] = useState('active'); // ✅ filter state added
+  const [filter, setFilter] = useState('active');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    axios.get('/api/attributes/active').then(res => setAttributes(res.data));
+    const fetchAttributes = async () => {
+      try {
+        const res = await axios.get('/api/attributes/active');
+        setAttributes(res.data);
+      } catch (err) {
+        setError('Fehler beim Laden der Attribute. Bitte versuchen Sie es später erneut.');
+        console.error('Error fetching attributes:', err);
+      }
+    };
+    fetchAttributes();
   }, []);
 
-  const fetchScrewdrivers = () => {
-    let url = '/api/screwdrivers/with-values/all';
+  const fetchScrewdrivers = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      let url = '/api/screwdrivers/with-values/all';
 
-    if (filter === 'all') {
-      url += '?include_inactive=true';
-    } else if (filter === 'inactive') {
-      url += '?include_inactive=true'; // fetch all, filter manually
-    }
+      if (filter === 'all') {
+        url += '?include_inactive=true';
+      } else if (filter === 'inactive') {
+        url += '?include_inactive=true';
+      }
 
-    axios.get(url).then(res => {
+      const res = await axios.get(url);
       const filtered = filter === 'inactive'
         ? res.data.filter(s => s.state === 'off')
         : filter === 'active'
         ? res.data.filter(s => s.state === 'on')
         : res.data;
       setScrewdrivers(filtered);
-    });
+    } catch (err) {
+      setError('Fehler beim Laden der Schrauber. Bitte versuchen Sie es später erneut.');
+      console.error('Error fetching screwdrivers:', err);
+    } finally {
+      setLoading(false);
+    }
   };
-
 
   useEffect(() => {
     fetchScrewdrivers();
@@ -47,6 +65,7 @@ const ScrewdriversPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors({});
+    setError(null);
     const newErrors = {};
     const data = formData;
 
@@ -54,13 +73,13 @@ const ScrewdriversPage = () => {
       const input = data.attributes.find(a => a.attributeId === attr.id);
       const val = input?.value?.toString() ?? '';
       if (attr.is_required && !val.trim()) {
-        newErrors[attr.id] = 'This field is required';
+        newErrors[attr.id] = 'Dieses Feld ist erforderlich';
         continue;
       }
       if (attr.validation_pattern && val.trim()) {
         const regex = new RegExp(attr.validation_pattern);
         if (!regex.test(val.trim())) {
-          newErrors[attr.id] = `Invalid format. Must match: ${attr.validation_pattern}`;
+          newErrors[attr.id] = `Ungültiges Format. Muss übereinstimmen mit: ${attr.validation_pattern}`;
         }
       }
     }
@@ -70,15 +89,19 @@ const ScrewdriversPage = () => {
       return;
     }
 
-    if (editingId) {
-      await axios.put(`/api/screwdrivers/${editingId}`, data);
-    } else {
-      await axios.post('/api/screwdrivers', data);
+    try {
+      if (editingId) {
+        await axios.put(`/api/screwdrivers/${editingId}`, data);
+      } else {
+        await axios.post('/api/screwdrivers', data);
+      }
+      setFormData({ name: '', description: '', attributes: [] });
+      setEditingId(null);
+      await fetchScrewdrivers();
+    } catch (err) {
+      setError('Fehler beim Speichern des Schraubers. Bitte versuchen Sie es später erneut.');
+      console.error('Error saving screwdriver:', err);
     }
-
-    setFormData({ name: '', description: '', attributes: [] });
-    setEditingId(null);
-    fetchScrewdrivers();
   };
 
   const handleEdit = (screw) => {
@@ -92,42 +115,61 @@ const ScrewdriversPage = () => {
       }))
     });
     setErrors({});
+    setError(null);
   };
 
   const handleDelete = async (id) => {
-    const confirm = window.confirm("Are you sure you want to deactivate this screwdriver?");
+    const confirm = window.confirm("Sind Sie sicher, dass Sie diesen Schrauber deaktivieren möchten?");
     if (!confirm) return;
 
     try {
       await axios.delete(`/api/screwdrivers/${id}`);
-      fetchScrewdrivers();
+      await fetchScrewdrivers();
     } catch (err) {
-      alert("Failed to deactivate screwdriver.");
-      console.error(err);
+      setError("Fehler beim Deaktivieren des Schraubers. Bitte versuchen Sie es später erneut.");
+      console.error('Error deactivating screwdriver:', err);
+    }
+  };
+
+  const handleToggleState = async (screw) => {
+    try {
+      const newState = screw.state === 'on' ? 'off' : 'on';
+      await axios.put(`/api/screwdrivers/${screw.id}`, {
+        state: newState
+      });
+      await fetchScrewdrivers();
+    } catch (err) {
+      setError(`Fehler beim ${screw.state === 'on' ? 'Deaktivieren' : 'Aktivieren'} des Schraubers. Bitte versuchen Sie es später erneut.`);
+      console.error('Error toggling screwdriver state:', err);
     }
   };
 
   const filteredScrewdrivers = screwdrivers.filter(s => {
     if (filter === 'active') return s.state === 'on';
     if (filter === 'inactive') return s.state === 'off';
-    return true; // all
+    return true;
   });
-
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-6 space-y-8">
-      <h2 className="text-2xl font-semibold">{editingId ? 'Edit' : 'Add'} Screwdriver</h2>
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+          <span className="block sm:inline">{error}</span>
+        </div>
+      )}
+
+      <h2 className="text-2xl font-semibold">{editingId ? 'Schrauber bearbeiten' : 'Neuen Schrauber hinzufügen'}</h2>
 
       <form onSubmit={handleSubmit} className="space-y-4 p-4 bg-white rounded shadow max-w-2xl">
         <input
           className="w-full border p-2 rounded"
-          placeholder="Screwdriver Name"
+          placeholder="Name des Schraubers"
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
         />
         <input
           className="w-full border p-2 rounded"
-          placeholder="Description"
+          placeholder="Beschreibung"
           value={formData.description}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
         />
@@ -144,9 +186,9 @@ const ScrewdriversPage = () => {
                   value={existing}
                   onChange={e => handleAttrChange(attr.id, e.target.value)}
                 >
-                  <option value="">Select</option>
-                  <option value="true">True</option>
-                  <option value="false">False</option>
+                  <option value="">Auswählen</option>
+                  <option value="true">Ja</option>
+                  <option value="false">Nein</option>
                 </select>
               ) : (
                 <input
@@ -160,67 +202,80 @@ const ScrewdriversPage = () => {
             </div>
           );
         })}
-        <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded">
-          {editingId ? 'Update' : 'Create'}
+        <button 
+          type="submit" 
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+          disabled={loading}
+        >
+          {loading ? 'Wird gespeichert...' : (editingId ? 'Aktualisieren' : 'Erstellen')}
         </button>
       </form>
 
-      <h2 className="text-2xl font-semibold mt-10">Screwdrivers</h2>
+      <h2 className="text-2xl font-semibold mt-10">Schrauber</h2>
 
       <div className="flex items-center gap-2">
-        <label className="font-medium">Filter by State:</label>
+        <label className="font-medium">Filter nach Status:</label>
         <select
           className="border p-2 rounded"
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
         >
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
-          <option value="all">All</option>
+          <option value="active">Aktiv</option>
+          <option value="inactive">Inaktiv</option>
+          <option value="all">Alle</option>
         </select>
       </div>
-      <table className="min-w-full text-sm border mt-2">
-        <thead className="bg-gray-200">
-          <tr>
-            <th className="p-2 border">Name</th>
-            <th className="p-2 border">Description</th>
-            {attributes.map(attr => (
-              <th key={attr.id} className="p-2 border">{attr.name}</th>
-            ))}
-            <th className="p-2 border">Edit</th>
-            <th className="p-2 border">State</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredScrewdrivers.map(screw => (
-            <tr key={screw.id} className="bg-white border-b">
-              <td className="p-2 border">{screw.name}</td>
-              <td className="p-2 border">{screw.description}</td>
-              {attributes.map(attr => {
-              const match = (screw.attributes || []).find(a => a.id === attr.id);
-                return <td key={attr.id} className="p-2 border">{match?.value ?? '-'}</td>;
-                console.log('Rendering screwdriver:', screw.name, screw.state);
 
-              })}
+      {loading ? (
+        <div className="text-center py-4">Wird geladen...</div>
+      ) : (
+        <table className="min-w-full text-sm border mt-2">
+          <thead className="bg-gray-200">
+            <tr>
+              <th className="p-2 border">Name</th>
+              <th className="p-2 border">Beschreibung</th>
+              {attributes.map(attr => (
+                <th key={attr.id} className="p-2 border">{attr.name}</th>
+              ))}
+              <th className="p-2 border">Bearbeiten</th>
+              <th className="p-2 border">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredScrewdrivers.map(screw => (
+              <tr key={screw.id} className="bg-white border-b">
+                <td className="p-2 border">{screw.name}</td>
+                <td className="p-2 border">{screw.description}</td>
+                {attributes.map(attr => {
+                  const match = (screw.attributes || []).find(a => a.id === attr.id);
+                  return <td key={attr.id} className="p-2 border">{match?.value ?? '-'}</td>;
+                })}
                 <td className="p-2 border">
-                  <button onClick={() => handleEdit(screw)} className="px-2 py-1 bg-yellow-500 text-white rounded">Edit</button>
+                  <button 
+                    onClick={() => handleEdit(screw)} 
+                    className="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+                  >
+                    Bearbeiten
+                  </button>
                 </td>
                 <td className="p-2 border">
                   <span className={screw.state === 'on' ? 'text-green-600' : 'text-red-600'}>
-                    {screw.state === 'on' ? '🟢 Active' : '🔴 Inactive'}
+                    {screw.state === 'on' ? '🟢 Aktiv' : '🔴 Inaktiv'}
                   </span>
                   <button
                     onClick={() => handleToggleState(screw)}
-                    className={`ml-2 px-2 py-1 rounded ${screw.state === 'on' ? 'bg-red-600' : 'bg-green-600'} text-white`}
+                    className={`ml-2 px-2 py-1 rounded ${
+                      screw.state === 'on' ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'
+                    } text-white`}
                   >
-                    {screw.state === 'on' ? 'Deactivate' : 'Activate'}
+                    {screw.state === 'on' ? 'Deaktivieren' : 'Aktivieren'}
                   </button>
                 </td>
-
-            </tr>
-          ))}
-        </tbody>
-      </table>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 };
