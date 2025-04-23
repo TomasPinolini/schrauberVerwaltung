@@ -1,20 +1,25 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class DefaultAttributeValue extends Model {
+    class ScrewdriverAttribute extends Model {
         static associate(models) {
-            DefaultAttributeValue.belongsTo(models.Attribute, {
-                foreignKey: 'attribute_id',
-                constraints: false
-            });
+            // Associations are defined in the index.js file
         }
     }
 
-    DefaultAttributeValue.init({
+    ScrewdriverAttribute.init({
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true
+        },
+        screwdriver_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'screwdrivers',
+                key: 'id'
+            }
         },
         attribute_id: {
             type: DataTypes.INTEGER,
@@ -28,25 +33,28 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false
         },
-        description: {
-            type: DataTypes.TEXT,
-            allowNull: true
-        },
         state: {
             type: DataTypes.ENUM('on', 'off'),
+            allowNull: false,
             defaultValue: 'on'
         }
     }, {
         sequelize,
-        modelName: 'DefaultAttributeValue',
-        tableName: 'default_attribute_values',
+        modelName: 'ScrewdriverAttribute',
+        tableName: 'screwdriver_attributes',
         timestamps: true,
         underscored: true,
-        paranoid: true,
         createdAt: 'created_at',
         updatedAt: 'updated_at',
-        deletedAt: 'deleted_at'
+        indexes: [
+            {
+                fields: ['screwdriver_id', 'attribute_id']
+            },
+            {
+                fields: ['state']
+            }
+        ]
     });
 
-    return DefaultAttributeValue;
+    return ScrewdriverAttribute;
 }; 
