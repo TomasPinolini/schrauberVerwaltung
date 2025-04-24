@@ -1,8 +1,9 @@
-const { Screwdriver, Attribute, ScrewdriverAttribute } = require('../models');
+const { Screwdriver, Attribute, ScrewdriverAttribute, AttributeValue } = require('../models');
 const { Op } = require('sequelize');
 const sequelize = require('../config/database');
+const logger = require('../config/logger');
 
-// Validate a value based on its attribute's data type and pattern
+// Validate a value based on its attribute's pattern
 const validateValue = async (attributeId, value) => {
     const attribute = await Attribute.findOne({
         where: { 
@@ -27,49 +28,12 @@ const validateValue = async (attributeId, value) => {
     // Convert value to string for validation
     const stringValue = String(value).trim();
 
-    switch (attribute.data_type) {
-        case 'string':
-            if (attribute.validation_pattern) {
-                const regex = new RegExp(attribute.validation_pattern);
-                if (!regex.test(stringValue)) {
-                    throw new Error(`Value for "${attribute.name}" does not match the required pattern: ${attribute.validation_pattern}`);
-                }
-            }
-            break;
-
-        case 'number':
-            if (isNaN(Number(stringValue))) {
-                throw new Error(`Value for "${attribute.name}" must be a number`);
-            }
-            if (attribute.validation_pattern) {
-                const numberRegex = new RegExp(attribute.validation_pattern);
-                if (!numberRegex.test(stringValue)) {
-                    throw new Error(`Number for "${attribute.name}" does not match the required pattern: ${attribute.validation_pattern}`);
-                }
-            }
-            break;
-
-        case 'boolean':
-            if (!['true', 'false', '0', '1'].includes(stringValue.toLowerCase())) {
-                throw new Error(`Value for "${attribute.name}" must be a boolean (true/false)`);
-            }
-            break;
-
-        case 'date':
-            const dateValue = new Date(stringValue);
-            if (isNaN(dateValue.getTime())) {
-                throw new Error(`Invalid date format for "${attribute.name}"`);
-            }
-            if (attribute.validation_pattern) {
-                const dateRegex = new RegExp(attribute.validation_pattern);
-                if (!dateRegex.test(stringValue)) {
-                    throw new Error(`Date for "${attribute.name}" does not match the required pattern: ${attribute.validation_pattern}`);
-                }
-            }
-            break;
-
-        default:
-            throw new Error(`Unsupported data type: ${attribute.data_type}`);
+    // Validate pattern if exists
+    if (attribute.validation_pattern) {
+        const regex = new RegExp(attribute.validation_pattern);
+        if (!regex.test(stringValue)) {
+            throw new Error(`Value for "${attribute.name}" does not match the required pattern: ${attribute.validation_pattern}`);
+        }
     }
 
     return true;
@@ -78,124 +42,217 @@ const validateValue = async (attributeId, value) => {
 // Get all attribute values for a screwdriver
 const getAttributeValues = async (req, res) => {
     try {
-        const screwdriver = await Screwdriver.findOne({
+        const { screwdriverId } = req.params;
+        
+        const values = await ScrewdriverAttribute.findAll({
             where: {
-                id: req.params.screwdriverId
+                screwdriver_id: screwdriverId,
+                is_current: true,
+                state: 'on'
             },
             include: [{
                 model: Attribute,
-                through: {
-                    attributes: ['value', 'state'],
-                    where: { state: 'on' }
-                },
-                where: {
-                    state: 'on'
-                },
-                required: false
-            }],
-            paranoid: true
+                where: { state: 'on' }
+            }]
         });
 
-        if (!screwdriver) {
-            return res.status(404).json({ error: 'Screwdriver not found' });
-        }
-
-        const formattedValues = screwdriver.Attributes.map(attr => ({
-            id: attr.id,
-            name: attr.name,
-            description: attr.description,
-            data_type: attr.data_type,
-            validation_pattern: attr.validation_pattern,
-            is_required: attr.is_required,
-            value: attr.ScrewdriverAttribute.value,
-            state: attr.ScrewdriverAttribute.state
-        }));
-
-        res.json(formattedValues);
+        res.json(values);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        logger.error('Error getting attribute values:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
 };
 
 // Update attribute values for a screwdriver
 const updateAttributeValues = async (req, res) => {
-    const t = await sequelize.transaction();
     try {
         const { screwdriverId } = req.params;
-        const values = req.body;
+        const { values } = req.body;
 
-        // Check if screwdriver exists
-        const screwdriver = await Screwdriver.findOne({
-            where: { id: screwdriverId },
-            paranoid: true
-        });
-
-        if (!screwdriver) {
-            throw new Error('Screwdriver not found');
-        }
-
-        // Get all active attributes
-        const activeAttributes = await Attribute.findAll({
-            where: { 
-                state: 'on'
-            },
-            paranoid: true
-        });
-
-        // Create a map for quick lookup
-        const attributeMap = new Map(activeAttributes.map(attr => [attr.id, attr]));
-
-        // Validate required attributes
-        const missingRequired = activeAttributes
-            .filter(attr => attr.is_required)
-            .filter(attr => !values.some(v => v.attributeId === attr.id && v.value?.trim()));
-
-        if (missingRequired.length > 0) {
-            throw new Error(`Missing required attributes: ${missingRequired.map(attr => attr.name).join(', ')}`);
-        }
-
-        // Set all current values to inactive
+        // Mark all current values as not current
         await ScrewdriverAttribute.update(
-            { state: 'off' },
-            { 
-                where: { screwdriver_id: screwdriverId },
-                transaction: t 
+            { is_current: false },
+            {
+                where: {
+                    screwdriver_id: screwdriverId,
+                    is_current: true
+                }
             }
         );
 
-        // Process each value
-        const results = [];
-        for (const value of values) {
-            // Validate the value
-            await validateValue(value.attributeId, value.value);
+        // Create new values
+        const newValues = await Promise.all(
+            values.map(value => 
+                ScrewdriverAttribute.create({
+                    screwdriver_id: screwdriverId,
+                    attribute_id: value.attribute_id,
+                    value: value.value,
+                    is_current: true,
+                    state: 'on'
+                })
+            )
+        );
 
-            // Create new attribute value
-            const attributeValue = await ScrewdriverAttribute.create({
-                screwdriver_id: screwdriverId,
-                attribute_id: value.attributeId,
-                value: value.value.trim(),
+        res.json(newValues);
+    } catch (error) {
+        logger.error('Error updating attribute values:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+// Get all values for a parent attribute
+const getParentAttributeValues = async (req, res) => {
+    try {
+        const { attributeId } = req.params;
+
+        const attribute = await Attribute.findOne({
+            where: { 
+                id: attributeId,
                 state: 'on'
-            }, { transaction: t });
+            }
+        });
 
-            results.push({
-                attribute: attributeMap.get(value.attributeId)?.name,
-                value: value.value,
-                status: 'success'
-            });
+        if (!attribute) {
+            return res.status(404).json({ error: 'Attribute not found' });
         }
 
-        await t.commit();
-        res.json({
-            message: 'Attribute values updated successfully',
-            results
+        const values = await AttributeValue.findAll({
+            where: {
+                attribute_id: attributeId,
+                state: 'on'
+            }
         });
+
+        res.json(values);
     } catch (error) {
-        await t.rollback();
-        res.status(400).json({ error: error.message });
+        logger.error('Error getting parent attribute values:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+// Create a new value for a parent attribute
+const createParentAttributeValue = async (req, res) => {
+    try {
+        const { attributeId } = req.params;
+        const { value, description } = req.body;
+
+        const attribute = await Attribute.findOne({
+            where: { 
+                id: attributeId,
+                state: 'on'
+            }
+        });
+
+        if (!attribute) {
+            return res.status(404).json({ error: 'Attribute not found' });
+        }
+
+        // Check if value already exists
+        const existingValue = await AttributeValue.findOne({
+            where: {
+                attribute_id: attributeId,
+                value,
+                state: 'on'
+            }
+        });
+
+        if (existingValue) {
+            return res.status(400).json({ error: 'Value already exists for this attribute' });
+        }
+
+        const newValue = await AttributeValue.create({
+            attribute_id: attributeId,
+            value,
+            description,
+            state: 'on'
+        });
+
+        res.status(201).json(newValue);
+    } catch (error) {
+        logger.error('Error creating parent attribute value:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+// Update a parent attribute value
+const updateParentAttributeValue = async (req, res) => {
+    try {
+        const { attributeId, id } = req.params;
+        const { value, description } = req.body;
+
+        const attributeValue = await AttributeValue.findOne({
+            where: {
+                id,
+                attribute_id: attributeId,
+                state: 'on'
+            }
+        });
+
+        if (!attributeValue) {
+            return res.status(404).json({ error: 'Attribute value not found' });
+        }
+
+        // Check if new value already exists (excluding current record)
+        const existingValue = await AttributeValue.findOne({
+            where: {
+                attribute_id: attributeId,
+                value,
+                id: { [Op.ne]: id },
+                state: 'on'
+            }
+        });
+
+        if (existingValue) {
+            return res.status(400).json({ error: 'Value already exists for this attribute' });
+        }
+
+        await attributeValue.update({
+            value,
+            description
+        });
+
+        res.json(attributeValue);
+    } catch (error) {
+        logger.error('Error updating parent attribute value:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+// Delete a parent attribute value
+const deleteParentAttributeValue = async (req, res) => {
+    try {
+        const { attributeId, id } = req.params;
+
+        const attributeValue = await AttributeValue.findOne({
+            where: {
+                id,
+                attribute_id: attributeId,
+                state: 'on'
+            }
+        });
+
+        if (!attributeValue) {
+            return res.status(404).json({ error: 'Attribute value not found' });
+        }
+
+        // First mark as inactive
+        await attributeValue.update({ state: 'off' });
+        
+        // Then soft delete
+        await attributeValue.destroy();
+
+        res.status(204).send();
+    } catch (error) {
+        logger.error('Error deleting parent attribute value:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
 };
 
 module.exports = {
     getAttributeValues,
-    updateAttributeValues
+    updateAttributeValues,
+    getParentAttributeValues,
+    createParentAttributeValue,
+    updateParentAttributeValue,
+    deleteParentAttributeValue
 }; 

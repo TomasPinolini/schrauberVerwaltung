@@ -1,14 +1,23 @@
 const express = require('express');
 const router = express.Router();
-const { getAttributeValues, updateAttributeValues } = require('../controllers/attributeValueController');
+const { 
+    getAttributeValues, 
+    updateAttributeValues,
+    getParentAttributeValues,
+    createParentAttributeValue,
+    updateParentAttributeValue,
+    deleteParentAttributeValue
+} = require('../controllers/attributeValueController');
 
-// Get all attribute values for a screwdriver
+// Routes for screwdriver attribute values
 router.get('/screwdriver/:screwdriverId/values', getAttributeValues);
-
-// Create new attribute values for a screwdriver
 router.post('/screwdriver/:screwdriverId/values', updateAttributeValues);
-
-// Update attribute values for a screwdriver
 router.put('/screwdriver/:screwdriverId/values', updateAttributeValues);
+
+// Routes for parent attribute values
+router.get('/parent/:attributeId/values', getParentAttributeValues);
+router.post('/parent/:attributeId/values', createParentAttributeValue);
+router.put('/parent/:attributeId/values/:id', updateParentAttributeValue);
+router.delete('/parent/:attributeId/values/:id', deleteParentAttributeValue);
 
 module.exports = router; 

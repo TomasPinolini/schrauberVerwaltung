@@ -1,23 +1,30 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class Attribute extends Model {
+    class AttributeValue extends Model {
         static associate(models) {
-            Attribute.belongsToMany(models.Screwdriver, {
-                through: models.ScrewdriverAttribute,
+            AttributeValue.belongsTo(models.Attribute, {
                 foreignKey: 'attribute_id',
-                otherKey: 'screwdriver_id'
+                as: 'Attribute'
             });
         }
     }
 
-    Attribute.init({
+    AttributeValue.init({
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true
         },
-        name: {
+        attribute_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'attributes',
+                key: 'id'
+            }
+        },
+        value: {
             type: DataTypes.STRING,
             allowNull: false
         },
@@ -25,26 +32,14 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.TEXT,
             allowNull: true
         },
-        validation_pattern: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-        is_required: {
-            type: DataTypes.BOOLEAN,
-            defaultValue: false
-        },
-        is_parent: {
-            type: DataTypes.BOOLEAN,
-            defaultValue: false
-        },
         state: {
             type: DataTypes.ENUM('on', 'off'),
             defaultValue: 'on'
         }
     }, {
         sequelize,
-        modelName: 'Attribute',
-        tableName: 'attributes',
+        modelName: 'AttributeValue',
+        tableName: 'attribute_values',
         timestamps: true,
         paranoid: true,
         underscored: true,
@@ -52,6 +47,9 @@ module.exports = (sequelize, DataTypes) => {
         updatedAt: 'updated_at',
         deletedAt: 'deleted_at',
         indexes: [
+            {
+                fields: ['attribute_id']
+            },
             {
                 fields: ['state']
             },
@@ -61,5 +59,5 @@ module.exports = (sequelize, DataTypes) => {
         ]
     });
 
-    return Attribute;
+    return AttributeValue;
 }; 

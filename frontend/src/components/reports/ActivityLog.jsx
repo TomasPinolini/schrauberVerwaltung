@@ -13,16 +13,16 @@ const formatDateTime = (dateString) => {
 };
 
 const getActionType = (log) => {
-  if (!log.previous_value) return 'Neu';
-  if (log.previous_value === 'on' || log.previous_value === 'off') return 'Status';
+  if (!log.is_current && !log.previous_value) return 'Neu';
+  if (log.state === 'off' || log.state === 'on') return 'Status';
   return 'Update';
 };
 
 const getActionDetails = (log) => {
-  if (!log.previous_value) return 'Neue Konfiguration erstellt';
-  if (log.previous_value === 'on') return 'Aktiv → Inaktiv';
-  if (log.previous_value === 'off') return 'Inaktiv → Aktiv';
-  return `${log.attribute_name}: ${log.previous_value} → ${log.new_value}`;
+  if (!log.is_current && !log.previous_value) return 'Neue Konfiguration erstellt';
+  if (log.state === 'off') return 'Aktiv → Inaktiv';
+  if (log.state === 'on') return 'Inaktiv → Aktiv';
+  return `${log.attribute_name}: ${log.value}`;
 };
 
 const ActivityLog = ({ logs, loading }) => {
@@ -86,8 +86,9 @@ ActivityLog.propTypes = {
     created_at: PropTypes.string.isRequired,
     screwdriver_name: PropTypes.string.isRequired,
     attribute_name: PropTypes.string,
-    previous_value: PropTypes.string,
-    new_value: PropTypes.string
+    value: PropTypes.string,
+    is_current: PropTypes.bool,
+    state: PropTypes.oneOf(['on', 'off'])
   })).isRequired,
   loading: PropTypes.bool.isRequired
 };

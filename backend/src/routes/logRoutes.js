@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { ScrewdriverAttribute, Screwdriver, Attribute } = require('../models');
 const { Op } = require('sequelize');
+const logger = require('../utils/logger');
 
 // Get all screwdriver logs (changes in screwdriver_attributes)
 router.get('/screwdriver-logs', async (req, res) => {
@@ -40,7 +41,7 @@ router.get('/screwdriver-logs', async (req, res) => {
 
     res.json(transformedLogs);
   } catch (error) {
-    console.error('Error fetching screwdriver logs:', error);
+    logger.error('Error fetching screwdriver logs:', error);
     res.status(500).json({ message: 'Error fetching screwdriver logs' });
   }
 });

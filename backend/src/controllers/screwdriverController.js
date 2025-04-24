@@ -144,9 +144,8 @@ const update = async (req, res) => {
                 model: Attribute,
                 through: {
                     model: ScrewdriverAttribute,
-                    attributes: ['value', 'is_current', 'state', 'updated_at'],
+                    attributes: ['value', 'is_current', 'updated_at'],
                     where: {
-                        state: 'on',
                         is_current: true
                     }
                 }
@@ -171,10 +170,7 @@ const update = async (req, res) => {
         if (attributes && attributes.length > 0) {
             // Set existing attribute values to not current
             await ScrewdriverAttribute.update(
-                { 
-                    is_current: false,
-                    state: 'off'
-                },
+                { is_current: false },
                 { 
                     where: { 
                         screwdriver_id: screwdriver.id,
@@ -210,8 +206,7 @@ const update = async (req, res) => {
                     screwdriver_id: screwdriver.id,
                     attribute_id: attributeId,
                     value: value,
-                    is_current: true,
-                    state: 'on'
+                    is_current: true
                 }, { transaction: t });
             }
         }
@@ -222,13 +217,12 @@ const update = async (req, res) => {
             include: [{
                 model: Attribute,
                 through: { 
-                    attributes: ['value', 'is_current', 'state', 'updated_at'],
+                    attributes: ['value', 'is_current', 'updated_at'],
                     where: { 
-                        state: 'on',
                         is_current: true
                     }
                 },
-                attributes: ['id', 'name', 'description', 'data_type', 'is_required', 'is_parent', 'state']
+                attributes: ['id', 'name', 'description', 'validation_pattern', 'is_required', 'is_parent', 'state']
             }]
         });
 
@@ -332,50 +326,50 @@ const filterByAttributes = async (req, res, next) => {
 };
 
 const getAllWithValues = async (req, res, next) => {
-  try {
-    const includeInactive = req.query.include_inactive === 'true';
+    try {
+        const includeInactive = req.query.include_inactive === 'true';
 
-    const screwdrivers = await Screwdriver.findAll({
-      where: includeInactive ? {} : { state: 'on' },
-      include: [
-        {
-          model: Attribute,
-          through: {
-            model: ScrewdriverAttribute,
-            attributes: ['value', 'state', 'is_current'],
-            where: includeInactive ? { is_current: true } : { state: 'on', is_current: true }
-          },
-          required: false,
-          attributes: ['id', 'name', 'description', 'data_type', 'is_required', 'is_parent', 'state']
-        }
-      ],
-      order: [['name', 'ASC']],
-      attributes: ['id', 'name', 'description', 'state', 'created_at', 'updated_at']
-    });
+        const screwdrivers = await Screwdriver.findAll({
+            where: includeInactive ? {} : { state: 'on' },
+            include: [
+                {
+                    model: Attribute,
+                    through: {
+                        model: ScrewdriverAttribute,
+                        attributes: ['value', 'is_current'],
+                        where: { is_current: true }
+                    },
+                    required: false,
+                    attributes: ['id', 'name', 'description', 'validation_pattern', 'is_required', 'is_parent', 'state']
+                }
+            ],
+            order: [['name', 'ASC']],
+            attributes: ['id', 'name', 'description', 'state', 'created_at', 'updated_at']
+        });
 
-    const transformed = screwdrivers.map(screwdriver => {
-      const plain = screwdriver.get({ plain: true });
-      return {
-        ...plain,
-        attributes: plain.Attributes.map(attr => ({
-          id: attr.id,
-          name: attr.name,
-          description: attr.description,
-          data_type: attr.data_type,
-          is_required: attr.is_required,
-          is_parent: attr.is_parent,
-          state: attr.state,
-          value: attr.ScrewdriverAttribute?.value,
-          is_current: attr.ScrewdriverAttribute?.is_current
-        }))
-      };
-    });
+        const transformed = screwdrivers.map(screwdriver => {
+            const plain = screwdriver.get({ plain: true });
+            return {
+                ...plain,
+                attributes: plain.Attributes.map(attr => ({
+                    id: attr.id,
+                    name: attr.name,
+                    description: attr.description,
+                    validation_pattern: attr.validation_pattern,
+                    is_required: attr.is_required,
+                    is_parent: attr.is_parent,
+                    state: attr.state,
+                    value: attr.ScrewdriverAttribute?.value,
+                    is_current: attr.ScrewdriverAttribute?.is_current
+                }))
+            };
+        });
 
-    res.json(transformed);
-  } catch (error) {
-    console.error('Error getting all screwdrivers with values:', error);
-    next(error);
-  }
+        res.json(transformed);
+    } catch (error) {
+        console.error('Error getting all screwdrivers with values:', error);
+        next(error);
+    }
 };
 
 // Get distinct values for a parent attribute
@@ -387,7 +381,7 @@ const getAttributeValues = async (req, res) => {
             attributes: ['value'],
             where: {
                 attribute_id: attributeId,
-                state: 'on'
+                is_current: true
             },
             group: ['value'],
             raw: true

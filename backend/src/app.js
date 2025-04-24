@@ -4,46 +4,10 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const session = require('express-session');
-const winston = require('winston');
 const path = require('path');
 const { errorHandler } = require('./middleware/errorHandler');
 const { sequelize } = require('./config/database');
-
-// Configure Winston logger with custom format
-const logger = winston.createLogger({
-    level: process.env.LOG_LEVEL || 'info',
-    format: winston.format.combine(
-        winston.format.timestamp(),
-        winston.format.printf(({ timestamp, level, message }) => {
-            return `[${timestamp}] ${level.toUpperCase()}: ${message}`;
-        })
-    ),
-    transports: [
-        new winston.transports.Console({
-            format: winston.format.combine(
-                winston.format.colorize(),
-                winston.format.printf(({ timestamp, level, message }) => {
-                    return `[${timestamp}] ${level}: ${message}`;
-                })
-            )
-        }),
-        new winston.transports.File({ 
-            filename: 'error.log', 
-            level: 'error',
-            format: winston.format.combine(
-                winston.format.timestamp(),
-                winston.format.json()
-            )
-        }),
-        new winston.transports.File({ 
-            filename: 'combined.log',
-            format: winston.format.combine(
-                winston.format.timestamp(),
-                winston.format.json()
-            )
-        })
-    ]
-});
+const logger = require('./utils/logger');
 
 // Custom morgan format for HTTP requests
 morgan.token('body', (req) => {
@@ -164,6 +128,7 @@ app.use((req, res) => {
     });
 });
 
+// Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     logger.info(`Server is running on port ${PORT}`);

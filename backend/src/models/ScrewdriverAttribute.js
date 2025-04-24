@@ -45,11 +45,6 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: true
         },
-        state: {
-            type: DataTypes.ENUM('on', 'off'),
-            allowNull: false,
-            defaultValue: 'on'
-        },
         updated_at: {
             type: DataTypes.DATE,
             allowNull: false,

@@ -21,7 +21,6 @@ const getAllAttributes = async (req, res) => {
                 'id', 
                 'name', 
                 'description', 
-                'data_type', 
                 'validation_pattern', 
                 'is_required', 
                 'state',
@@ -70,24 +69,16 @@ const createAttribute = async (req, res) => {
         logger.info('POST /api/attributes request received');
         logger.info(`Request body: ${JSON.stringify(req.body, null, 2)}`);
 
-        const { name, description, data_type, validation_pattern, is_required, is_parent } = req.body;
+        const { name, description, validation_pattern, is_required, is_parent } = req.body;
 
-        if (!name || !data_type) {
+        if (!name) {
             await t.rollback();
-            return res.status(400).json({ error: 'Name and data type are required' });
-        }
-
-        // Validate data_type enum
-        const validTypes = ['string', 'number', 'boolean', 'date'];
-        if (!validTypes.includes(data_type)) {
-            await t.rollback();
-            return res.status(400).json({ error: 'Invalid data type. Must be one of: ' + validTypes.join(', ') });
+            return res.status(400).json({ error: 'Name is required' });
         }
 
         const attribute = await Attribute.create({
             name,
             description,
-            data_type,
             validation_pattern,
             is_required,
             is_parent,
@@ -123,15 +114,7 @@ const updateAttribute = async (req, res) => {
             return res.status(404).json({ error: 'Attribute not found' });
         }
 
-        const { name, description, data_type, validation_pattern, is_required, is_parent } = req.body;
-
-        // Validate data_type if provided
-        if (data_type) {
-            const validTypes = ['string', 'number', 'boolean', 'date'];
-            if (!validTypes.includes(data_type)) {
-                return res.status(400).json({ error: 'Invalid data type. Must be one of: ' + validTypes.join(', ') });
-            }
-        }
+        const { name, description, validation_pattern, is_required, is_parent } = req.body;
 
         // Validate state if provided
         if (attribute.state !== 'on') {
@@ -141,7 +124,6 @@ const updateAttribute = async (req, res) => {
         await attribute.update({
             name: name || attribute.name,
             description: description !== undefined ? description : attribute.description,
-            data_type: data_type || attribute.data_type,
             validation_pattern: validation_pattern !== undefined ? validation_pattern : attribute.validation_pattern,
             is_required: is_required !== undefined ? !!is_required : attribute.is_required,
             is_parent: is_parent !== undefined ? !!is_parent : attribute.is_parent,
@@ -205,7 +187,6 @@ const getActiveAttributes = async (req, res) => {
                 'id', 
                 'name', 
                 'description', 
-                'data_type', 
                 'validation_pattern', 
                 'is_required'
             ]
