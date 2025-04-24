@@ -10,4 +10,7 @@ router.get('/:id', attributeController.getAttribute);
 router.put('/:id', attributeController.updateAttribute);
 router.delete('/:id', attributeController.deleteAttribute);
 
+// Toggle attribute state
+router.patch('/:id/toggle-state', attributeController.toggleAttributeState);
+
 module.exports = router; 

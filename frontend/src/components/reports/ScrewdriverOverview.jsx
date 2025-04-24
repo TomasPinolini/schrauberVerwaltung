@@ -1,5 +1,25 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import axios from 'axios';
+import { Bar } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+} from 'chart.js';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const StatCard = ({ title, value, className }) => (
   <div className={`bg-white rounded-lg shadow p-4 ${className}`}>
@@ -10,38 +30,160 @@ const StatCard = ({ title, value, className }) => (
   </div>
 );
 
+const ScrewdriverOverview = ({ 
+  totalCount, 
+  activeCount, 
+  inactiveCount
+}) => {
+  const [parentAttributes, setParentAttributes] = useState([]);
+  const [selectedAttribute, setSelectedAttribute] = useState(null);
+  const [distribution, setDistribution] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchParentAttributes = async () => {
+      try {
+        const response = await axios.get('/api/screwdrivers/parent-attributes');
+        setParentAttributes(response.data);
+        if (response.data.length > 0) {
+          setSelectedAttribute(response.data[0].id);
+        }
+      } catch (err) {
+        setError('Fehler beim Laden der Attribute');
+        console.error('Error fetching parent attributes:', err);
+      }
+    };
+
+    fetchParentAttributes();
+  }, []);
+
+  useEffect(() => {
+    const fetchDistribution = async () => {
+      if (!selectedAttribute) return;
+
+      setLoading(true);
+      try {
+        const response = await axios.get(`/api/screwdrivers/parent-attributes/${selectedAttribute}/distribution`);
+        setDistribution(response.data);
+        setError(null);
+      } catch (err) {
+        setError('Fehler beim Laden der Verteilung');
+        console.error('Error fetching distribution:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDistribution();
+  }, [selectedAttribute]);
+
+  const chartData = distribution ? {
+    labels: distribution.distribution.map(item => item.value),
+    datasets: [
+      {
+        label: distribution.attributeName,
+        data: distribution.distribution.map(item => item.count),
+        backgroundColor: 'rgba(59, 130, 246, 0.5)',
+        borderColor: 'rgb(59, 130, 246)',
+        borderWidth: 1
+      }
+    ]
+  } : {
+    labels: [],
+    datasets: []
+  };
+
+  const chartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      title: {
+        display: true,
+        text: distribution ? `Verteilung nach ${distribution.attributeName}` : 'Verteilung'
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          stepSize: 1
+        }
+      }
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Basic stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <StatCard 
+          title="Gesamtanzahl Schraubendreher" 
+          value={totalCount}
+          className="border-l-4 border-blue-500"
+        />
+        <StatCard 
+          title="Aktive Schraubendreher" 
+          value={activeCount}
+          className="border-l-4 border-green-500"
+        />
+        <StatCard 
+          title="Inaktive Schraubendreher" 
+          value={inactiveCount}
+          className="border-l-4 border-red-500"
+        />
+      </div>
+
+      {/* Attribute Selection and Bar Chart */}
+      <div className="bg-white rounded-lg shadow p-4">
+        <div className="mb-4">
+          <label htmlFor="attribute-select" className="block text-sm font-medium text-gray-700">
+            Attribut auswählen
+          </label>
+          <select
+            id="attribute-select"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            value={selectedAttribute || ''}
+            onChange={(e) => setSelectedAttribute(e.target.value)}
+          >
+            {parentAttributes.map(attr => (
+              <option key={attr.id} value={attr.id}>
+                {attr.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {error && (
+          <div className="mb-4 text-red-600 bg-red-50 p-2 rounded">
+            {error}
+          </div>
+        )}
+
+        {loading ? (
+          <div className="text-center py-4">
+            <p className="text-gray-600">Daten werden geladen...</p>
+          </div>
+        ) : (
+          distribution && <Bar options={chartOptions} data={chartData} />
+        )}
+      </div>
+    </div>
+  );
+};
+
 StatCard.propTypes = {
   title: PropTypes.string.isRequired,
   value: PropTypes.number.isRequired,
   className: PropTypes.string,
 };
 
-const ScrewdriverOverview = ({ totalCount, activeCount, inactiveCount }) => {
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <StatCard 
-        title="Gesamtanzahl Schraubendreher" 
-        value={totalCount}
-        className="border-l-4 border-blue-500"
-      />
-      <StatCard 
-        title="Aktive Schraubendreher" 
-        value={activeCount}
-        className="border-l-4 border-green-500"
-      />
-      <StatCard 
-        title="Inaktive Schraubendreher" 
-        value={inactiveCount}
-        className="border-l-4 border-red-500"
-      />
-    </div>
-  );
-};
-
 ScrewdriverOverview.propTypes = {
   totalCount: PropTypes.number.isRequired,
   activeCount: PropTypes.number.isRequired,
-  inactiveCount: PropTypes.number.isRequired,
+  inactiveCount: PropTypes.number.isRequired
 };
 
-export default ScrewdriverOverview; 
+export default ScrewdriverOverview;

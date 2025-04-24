@@ -419,6 +419,146 @@ const getAttributeHistory = async (req, res) => {
     }
 };
 
+const getOverviewStatistics = async (req, res) => {
+    try {
+        // Get basic counts
+        const totalCount = await Screwdriver.count();
+        const activeCount = await Screwdriver.count({ where: { state: 'on' } });
+        const inactiveCount = await Screwdriver.count({ where: { state: 'off' } });
+
+        // Get recent activity
+        const recentActivity = await ScrewdriverAttribute.findAll({
+            limit: 5,
+            order: [['updated_at', 'DESC']],
+            include: [
+                {
+                    model: Screwdriver,
+                    as: 'Screwdriver',
+                    attributes: ['name']
+                }
+            ]
+        });
+
+        // Get attribute usage statistics
+        const attributeUsage = await ScrewdriverAttribute.findAll({
+            attributes: [
+                'attribute_id',
+                [sequelize.fn('COUNT', sequelize.col('screwdriver_id')), 'usage_count']
+            ],
+            where: { is_current: true },
+            include: [
+                {
+                    model: Attribute,
+                    as: 'Attribute',
+                    attributes: ['name']
+                }
+            ],
+            group: ['attribute_id', 'Attribute.id', 'Attribute.name', 'ScrewdriverAttribute.attribute_id'],
+            order: [[sequelize.fn('COUNT', sequelize.col('screwdriver_id')), 'DESC']],
+            limit: 5
+        });
+
+        // Get creation statistics for the last 7 days
+        const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+        const dailyCreation = await Screwdriver.findAll({
+            attributes: [
+                [sequelize.fn('DATE', sequelize.col('created_at')), 'date'],
+                [sequelize.fn('COUNT', sequelize.col('id')), 'count']
+            ],
+            where: {
+                created_at: {
+                    [Op.gte]: sevenDaysAgo
+                }
+            },
+            group: [sequelize.fn('DATE', sequelize.col('created_at'))],
+            order: [[sequelize.fn('DATE', sequelize.col('created_at')), 'ASC']]
+        });
+
+        res.json({
+            counts: {
+                total: totalCount,
+                active: activeCount,
+                inactive: inactiveCount
+            },
+            recentActivity: recentActivity.map(activity => ({
+                screwdriver: activity.Screwdriver.name,
+                timestamp: activity.updated_at
+            })),
+            topAttributes: attributeUsage.map(attr => ({
+                name: attr.Attribute.name,
+                count: parseInt(attr.dataValues.usage_count)
+            })),
+            dailyCreation: dailyCreation.map(day => ({
+                date: day.dataValues.date,
+                count: parseInt(day.dataValues.count)
+            }))
+        });
+    } catch (error) {
+        logger.error('Error getting overview statistics:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+const getParentAttributeDistribution = async (req, res) => {
+    try {
+        const { attributeId } = req.params;
+
+        // First verify this is a parent attribute
+        const parentAttribute = await Attribute.findOne({
+            where: {
+                id: attributeId,
+                is_parent: true
+            }
+        });
+
+        if (!parentAttribute) {
+            return res.status(404).json({ error: 'Parent attribute not found' });
+        }
+
+        // Get the distribution of values for this attribute
+        const distribution = await ScrewdriverAttribute.findAll({
+            attributes: [
+                'value',
+                [sequelize.fn('COUNT', sequelize.col('screwdriver_id')), 'count']
+            ],
+            where: {
+                attribute_id: attributeId,
+                is_current: true
+            },
+            group: ['value'],
+            order: [[sequelize.fn('COUNT', sequelize.col('screwdriver_id')), 'DESC']]
+        });
+
+        res.json({
+            attributeName: parentAttribute.name,
+            distribution: distribution.map(item => ({
+                value: item.value,
+                count: parseInt(item.dataValues.count)
+            }))
+        });
+    } catch (error) {
+        logger.error('Error getting attribute distribution:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+const getParentAttributes = async (req, res) => {
+    try {
+        const parentAttributes = await Attribute.findAll({
+            where: {
+                is_parent: true
+            },
+            attributes: ['id', 'name'],
+            order: [['name', 'ASC']]
+        });
+
+        res.json(parentAttributes);
+    } catch (error) {
+        logger.error('Error getting parent attributes:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
 module.exports = {
     create,
     getAll,
@@ -428,5 +568,8 @@ module.exports = {
     filterByAttributes,
     getAllWithValues,
     getAttributeValues,
-    getAttributeHistory
-}; 
+    getAttributeHistory,
+    getOverviewStatistics,
+    getParentAttributes,
+    getParentAttributeDistribution
+};

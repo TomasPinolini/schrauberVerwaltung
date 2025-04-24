@@ -8,7 +8,6 @@ const AttributesPage = () => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    data_type: '',
     validation_pattern: '',
     is_required: false,
     is_parent: false
@@ -97,7 +96,6 @@ const AttributesPage = () => {
     setFormData({
       name: '',
       description: '',
-      data_type: '',
       validation_pattern: '',
       is_required: false,
       is_parent: false
@@ -107,8 +105,8 @@ const AttributesPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.data_type) {
-      setError('Name und Datentyp sind erforderlich.');
+    if (!formData.name) {
+      setError('Name ist erforderlich.');
       return;
     }
 
@@ -121,7 +119,6 @@ const AttributesPage = () => {
       setFormData({
         name: '',
         description: '',
-        data_type: '',
         validation_pattern: '',
         is_required: false,
         is_parent: false
@@ -139,7 +136,6 @@ const AttributesPage = () => {
     setFormData({
       name: attribute.name,
       description: attribute.description || '',
-      data_type: attribute.data_type,
       validation_pattern: attribute.validation_pattern || '',
       is_required: attribute.is_required,
       is_parent: attribute.is_parent

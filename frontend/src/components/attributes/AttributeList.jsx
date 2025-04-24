@@ -1,27 +1,16 @@
 import PropTypes from 'prop-types';
 import { FaEdit, FaToggleOn, FaToggleOff, FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
-import React from 'react';
 
-const AttributeList = ({
-  attributes,
-  loading,
-  onSelect,
-  onUpdate,
-  onDelete,
-  selectedAttribute
-}) => {
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-48">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
+const AttributeList = ({ attributes, onEdit, onToggleState, onSort, sortConfig, onResetSort }) => {
+  const handleToggleClick = (attribute) => {
+    console.log('Toggle button clicked for attribute:', attribute);
+    onToggleState(attribute);
+  };
 
   if (!attributes.length) {
     return (
-      <div className="text-center py-8 bg-gray-50 rounded-lg">
-        <p className="text-gray-600">Keine Attribute vorhanden</p>
+      <div className="text-center py-8 bg-white rounded shadow">
+        <p className="text-gray-500">Keine Attribute gefunden.</p>
       </div>
     );
   }
@@ -48,88 +37,60 @@ const AttributeList = ({
   );
 
   return (
-    <div className="bg-white rounded-lg shadow">
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Name
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Typ
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
-              <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Aktionen
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {attributes.map((attribute) => (
-              <tr
-                key={attribute.id}
-                onClick={() => onSelect(attribute)}
-                className={`hover:bg-gray-50 cursor-pointer ${
-                  selectedAttribute?.id === attribute.id ? 'bg-blue-50' : ''
-                }`}
-              >
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center">
-                    <div className="text-sm font-medium text-gray-900">
-                      {attribute.name}
-                    </div>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
-                    {attribute.data_type}
-                    {attribute.is_parent && (
-                      <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        Parent
-                      </span>
+    <div className="overflow-x-auto bg-white rounded shadow">
+      <table className="min-w-full">
+        <thead className="bg-gray-100">
+          <tr>
+            {renderSortableHeader('name', 'Name')}
+            {renderSortableHeader('description', 'Beschreibung')}
+            {renderSortableHeader('data_type', 'Datentyp')}
+            {renderSortableHeader('validation_pattern', 'Validierung')}
+            {renderSortableHeader('is_required', 'Erforderlich')}
+            {renderSortableHeader('is_parent', 'Eltern')}
+            {renderSortableHeader('state', 'Status')}
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aktionen</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-200">
+          {attributes.map((attribute) => (
+            <tr key={attribute.id} className={attribute.state === 'off' ? 'bg-gray-50' : ''}>
+              <td className="px-6 py-4 whitespace-nowrap">{attribute.name}</td>
+              <td className="px-6 py-4 whitespace-nowrap">{attribute.description || '-'}</td>
+              <td className="px-6 py-4 whitespace-nowrap">{attribute.data_type}</td>
+              <td className="px-6 py-4 whitespace-nowrap">{attribute.validation_pattern || '-'}</td>
+              <td className="px-6 py-4 whitespace-nowrap">{attribute.is_required ? 'Ja' : 'Nein'}</td>
+              <td className="px-6 py-4 whitespace-nowrap">{attribute.is_parent ? 'Ja' : 'Nein'}</td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <div className="flex items-center">
+                  <button
+                    onClick={() => handleToggleClick(attribute)}
+                    className="text-2xl mr-2"
+                    title={attribute.state === 'on' ? 'Aktiv (Klicken zum Deaktivieren)' : 'Inaktiv (Klicken zum Aktivieren)'}
+                  >
+                    {attribute.state === 'on' ? (
+                      <FaToggleOn className="text-green-500" />
+                    ) : (
+                      <FaToggleOff className="text-red-500" />
                     )}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    attribute.state === 'on'
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-red-100 text-red-800'
-                  }`}>
+                  </button>
+                  <span className={`text-sm ${attribute.state === 'on' ? 'text-green-600' : 'text-red-600'}`}>
                     {attribute.state === 'on' ? 'Aktiv' : 'Inaktiv'}
                   </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onUpdate(attribute.id, {
-                        ...attribute,
-                        state: attribute.state === 'on' ? 'off' : 'on'
-                      });
-                    }}
-                    className="text-indigo-600 hover:text-indigo-900 mr-4"
-                  >
-                    {attribute.state === 'on' ? 'Deaktivieren' : 'Aktivieren'}
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onDelete(attribute.id);
-                    }}
-                    className="text-red-600 hover:text-red-900"
-                  >
-                    Löschen
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                </div>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <button
+                  onClick={() => onEdit(attribute)}
+                  className="text-blue-600 hover:text-blue-800"
+                  title="Bearbeiten"
+                >
+                  <FaEdit />
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
@@ -147,12 +108,10 @@ AttributeList.propTypes = {
       state: PropTypes.oneOf(['on', 'off']).isRequired,
     })
   ).isRequired,
-  onSelect: PropTypes.func.isRequired,
-  onUpdate: PropTypes.func.isRequired,
-  onDelete: PropTypes.func.isRequired,
-  selectedAttribute: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-  }),
+  onEdit: PropTypes.func.isRequired,
+  onToggleState: PropTypes.func.isRequired,
+  onSort: PropTypes.func.isRequired,
+  onResetSort: PropTypes.func.isRequired,
   sortConfig: PropTypes.shape({
     key: PropTypes.string,
     direction: PropTypes.oneOf(['asc', 'desc'])

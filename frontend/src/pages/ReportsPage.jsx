@@ -7,9 +7,14 @@ import ActivityLog from '../components/reports/ActivityLog';
 const ReportsPage = () => {
   const [error, setError] = useState(null);
   const [statistics, setStatistics] = useState({
-    total: 0,
-    active: 0,
-    inactive: 0
+    counts: {
+      total: 0,
+      active: 0,
+      inactive: 0
+    },
+    dailyCreation: [],
+    topAttributes: [],
+    recentActivity: []
   });
   const [activityLogs, setActivityLogs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -18,14 +23,8 @@ const ReportsPage = () => {
   useEffect(() => {
     const fetchStatistics = async () => {
       try {
-        const response = await axios.get('/api/screwdrivers?include_inactive=true');
-        const screwdrivers = response.data;
-        
-        setStatistics({
-          total: screwdrivers.length,
-          active: screwdrivers.filter(s => s.state === 'on').length,
-          inactive: screwdrivers.filter(s => s.state === 'off').length
-        });
+        const response = await axios.get('/api/screwdrivers/statistics/overview');
+        setStatistics(response.data);
       } catch (err) {
         setError('Fehler beim Laden der Statistiken. Bitte versuchen Sie es später erneut.');
         console.error('Error fetching statistics:', err);
@@ -50,6 +49,14 @@ const ReportsPage = () => {
     fetchActivityLogs();
   }, []);
 
+  if (error) {
+    return (
+      <div className="text-red-600 p-4 bg-red-50 rounded">
+        {error}
+      </div>
+    );
+  }
+
   return (
     <div className="w-full h-full">
       <div className="container w-full mx-auto px-4 py-5 max-w-full">
@@ -60,21 +67,16 @@ const ReportsPage = () => {
         )}
 
         <div className="grid grid-cols-1 gap-6">
-          <ReportDashboard title="Übersicht Schraubendreher">
+          <ReportDashboard title="Schraubendreher Übersicht">
             {loading ? (
               <p className="text-gray-600">Statistiken werden geladen...</p>
             ) : (
               <ScrewdriverOverview
-                totalCount={statistics.total}
-                activeCount={statistics.active}
-                inactiveCount={statistics.inactive}
+                totalCount={statistics.counts.total}
+                activeCount={statistics.counts.active}
+                inactiveCount={statistics.counts.inactive}
               />
             )}
-          </ReportDashboard>
-
-          <ReportDashboard title="Attribute Analyse">
-            {/* Attribute analysis will go here */}
-            <p className="text-gray-600">Analyse wird geladen...</p>
           </ReportDashboard>
 
           <ReportDashboard title="Aktivitätsprotokoll">
