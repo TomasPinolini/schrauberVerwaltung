@@ -79,8 +79,8 @@ const getAll = async (req, res, next) => {
                 model: Attribute,
                 through: {
                     model: ScrewdriverAttribute,
+                    attributes: ['value'],
                     where: { 
-                        state: 'on',
                         is_current: true
                     }
                 },
@@ -144,6 +144,7 @@ const update = async (req, res) => {
                 model: Attribute,
                 through: {
                     model: ScrewdriverAttribute,
+                    attributes: ['value', 'is_current', 'state', 'updated_at'],
                     where: {
                         state: 'on',
                         is_current: true
@@ -221,7 +222,7 @@ const update = async (req, res) => {
             include: [{
                 model: Attribute,
                 through: { 
-                    attributes: ['value', 'is_current', 'state'],
+                    attributes: ['value', 'is_current', 'state', 'updated_at'],
                     where: { 
                         state: 'on',
                         is_current: true

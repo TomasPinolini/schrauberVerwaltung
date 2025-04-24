@@ -3,7 +3,14 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
     class ScrewdriverAttribute extends Model {
         static associate(models) {
-            // Associations are defined in the index.js file
+            ScrewdriverAttribute.belongsTo(models.Screwdriver, {
+                foreignKey: 'screwdriver_id',
+                as: 'Screwdriver'
+            });
+            ScrewdriverAttribute.belongsTo(models.Attribute, {
+                foreignKey: 'attribute_id',
+                as: 'Attribute'
+            });
         }
     }
 
@@ -37,15 +44,23 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: true
+        },
+        state: {
+            type: DataTypes.ENUM('on', 'off'),
+            allowNull: false,
+            defaultValue: 'on'
+        },
+        updated_at: {
+            type: DataTypes.DATE,
+            allowNull: false,
+            defaultValue: DataTypes.NOW
         }
     }, {
         sequelize,
         modelName: 'ScrewdriverAttribute',
         tableName: 'screwdriver_attributes',
-        timestamps: true,
+        timestamps: false,
         underscored: true,
-        createdAt: false,
-        updatedAt: 'updated_at',
         indexes: [
             {
                 fields: ['screwdriver_id', 'attribute_id', 'is_current']

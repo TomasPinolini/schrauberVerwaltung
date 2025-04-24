@@ -111,11 +111,13 @@ app.use(session({
 const screwdriverRoutes = require('./routes/screwdriverRoutes');
 const attributeRoutes = require('./routes/attributeRoutes');
 const attributeValueRoutes = require('./routes/attributeValueRoutes');
+const logRoutes = require('./routes/logRoutes');
 
 // API Routes
 app.use('/api/screwdrivers', screwdriverRoutes);
 app.use('/api/attributes', attributeRoutes);
 app.use('/api/attribute-values', attributeValueRoutes);
+app.use('/api', logRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
