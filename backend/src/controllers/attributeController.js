@@ -198,11 +198,52 @@ const getActiveAttributes = async (req, res) => {
     }
 };
 
+const toggleAttributeState = async (req, res) => {
+    const t = await sequelize.transaction();
+    try {
+        logger.info(`PATCH /api/attributes/${req.params.id}/toggle-state request received`);
+
+        const attribute = await Attribute.findOne({
+            where: {
+                id: req.params.id
+            },
+            paranoid: true
+        });
+
+        if (!attribute) {
+            logger.warn(`Attribute with ID ${req.params.id} not found`);
+            return res.status(404).json({ error: 'Attribute not found' });
+        }
+
+        const newState = attribute.state === 'on' ? 'off' : 'on';
+        
+        await attribute.update({
+            state: newState
+        }, { transaction: t });
+
+        await t.commit();
+        
+        // Fetch the updated attribute to ensure we return the current state
+        const updatedAttribute = await Attribute.findOne({
+            where: { id: req.params.id },
+            paranoid: true
+        });
+
+        logger.info(`Toggled state of attribute with ID ${attribute.id} to ${newState}`);
+        res.json(updatedAttribute);
+    } catch (error) {
+        await t.rollback();
+        logger.error('Error in toggleAttributeState:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
 module.exports = {
     getAllAttributes,
     getAttribute,
     createAttribute,
     updateAttribute,
     deleteAttribute,
-    getActiveAttributes
+    getActiveAttributes,
+    toggleAttributeState
 }; 
