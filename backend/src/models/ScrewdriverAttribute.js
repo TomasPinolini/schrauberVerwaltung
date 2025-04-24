@@ -33,10 +33,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false
         },
-        state: {
-            type: DataTypes.ENUM('on', 'off'),
+        is_current: {
+            type: DataTypes.BOOLEAN,
             allowNull: false,
-            defaultValue: 'on'
+            defaultValue: true
         }
     }, {
         sequelize,
@@ -44,14 +44,11 @@ module.exports = (sequelize, DataTypes) => {
         tableName: 'screwdriver_attributes',
         timestamps: true,
         underscored: true,
-        createdAt: 'created_at',
+        createdAt: false,
         updatedAt: 'updated_at',
         indexes: [
             {
-                fields: ['screwdriver_id', 'attribute_id']
-            },
-            {
-                fields: ['state']
+                fields: ['screwdriver_id', 'attribute_id', 'is_current']
             }
         ]
     });

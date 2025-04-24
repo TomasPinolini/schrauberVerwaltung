@@ -16,4 +16,7 @@ router.get('/with-values/all', screwdriverController.getAllWithValues);
 // New route for attribute values
 router.get('/attribute-values/:attributeId', screwdriverController.getAttributeValues);
 
+// History routes
+router.get('/:screwdriverId/attributes/:attributeId/history', screwdriverController.getAttributeHistory);
+
 module.exports = router; 

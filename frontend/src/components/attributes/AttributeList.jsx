@@ -1,0 +1,116 @@
+import PropTypes from 'prop-types';
+import { FaEdit, FaToggleOn, FaToggleOff, FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
+
+const AttributeList = ({ attributes, onEdit, onToggleState, onSort, sortConfig, onResetSort }) => {
+  if (!attributes.length) {
+    return (
+      <div className="text-center py-8 bg-white rounded shadow">
+        <p className="text-gray-500">Keine Attribute gefunden.</p>
+      </div>
+    );
+  }
+
+  const getSortIcon = (columnName) => {
+    if (!sortConfig || sortConfig.key !== columnName) {
+      return <FaSort className="ml-1 text-gray-400" />;
+    }
+    return sortConfig.direction === 'asc' ? 
+      <FaSortUp className="ml-1 text-blue-600" /> : 
+      <FaSortDown className="ml-1 text-blue-600" />;
+  };
+
+  const renderSortableHeader = (columnName, displayName) => (
+    <th 
+      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-50"
+      onClick={() => onSort(columnName)}
+    >
+      <div className="flex items-center">
+        {displayName}
+        {getSortIcon(columnName)}
+      </div>
+    </th>
+  );
+
+  return (
+    <div className="overflow-x-auto bg-white rounded shadow">
+      <table className="min-w-full">
+        <thead className="bg-gray-100">
+          <tr>
+            {renderSortableHeader('name', 'Name')}
+            {renderSortableHeader('description', 'Beschreibung')}
+            {renderSortableHeader('data_type', 'Datentyp')}
+            {renderSortableHeader('validation_pattern', 'Validierung')}
+            {renderSortableHeader('is_required', 'Erforderlich')}
+            {renderSortableHeader('is_parent', 'Eltern')}
+            {renderSortableHeader('state', 'Status')}
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aktionen</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-200">
+          {attributes.map((attribute) => (
+            <tr key={attribute.id} className={attribute.state === 'off' ? 'bg-gray-50' : ''}>
+              <td className="px-6 py-4 whitespace-nowrap">{attribute.name}</td>
+              <td className="px-6 py-4 whitespace-nowrap">{attribute.description || '-'}</td>
+              <td className="px-6 py-4 whitespace-nowrap">{attribute.data_type}</td>
+              <td className="px-6 py-4 whitespace-nowrap">{attribute.validation_pattern || '-'}</td>
+              <td className="px-6 py-4 whitespace-nowrap">{attribute.is_required ? 'Ja' : 'Nein'}</td>
+              <td className="px-6 py-4 whitespace-nowrap">{attribute.is_parent ? 'Ja' : 'Nein'}</td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <div className="flex items-center">
+                  <button
+                    onClick={() => onToggleState(attribute)}
+                    className="text-2xl mr-2"
+                    title={attribute.state === 'on' ? 'Aktiv (Klicken zum Deaktivieren)' : 'Inaktiv (Klicken zum Aktivieren)'}
+                  >
+                    {attribute.state === 'on' ? (
+                      <FaToggleOn className="text-green-500" />
+                    ) : (
+                      <FaToggleOff className="text-red-500" />
+                    )}
+                  </button>
+                  <span className={`text-sm ${attribute.state === 'on' ? 'text-green-600' : 'text-red-600'}`}>
+                    {attribute.state === 'on' ? 'Aktiv' : 'Inaktiv'}
+                  </span>
+                </div>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <button
+                  onClick={() => onEdit(attribute)}
+                  className="text-blue-600 hover:text-blue-800"
+                  title="Bearbeiten"
+                >
+                  <FaEdit />
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+AttributeList.propTypes = {
+  attributes: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      name: PropTypes.string.isRequired,
+      description: PropTypes.string,
+      data_type: PropTypes.oneOf(['string', 'number', 'boolean', 'date']).isRequired,
+      validation_pattern: PropTypes.string,
+      is_required: PropTypes.bool.isRequired,
+      is_parent: PropTypes.bool.isRequired,
+      state: PropTypes.oneOf(['on', 'off']).isRequired,
+    })
+  ).isRequired,
+  onEdit: PropTypes.func.isRequired,
+  onToggleState: PropTypes.func.isRequired,
+  onSort: PropTypes.func.isRequired,
+  onResetSort: PropTypes.func.isRequired,
+  sortConfig: PropTypes.shape({
+    key: PropTypes.string,
+    direction: PropTypes.oneOf(['asc', 'desc'])
+  })
+};
+
+export default AttributeList; 

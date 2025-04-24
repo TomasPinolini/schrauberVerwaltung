@@ -30,20 +30,20 @@ const create = async (req, res, next) => {
                 screwdriver_id: screwdriver.id,
                 attribute_id: attr.attributeId,
                 value: attr.value,
-                state: 'on'
+                is_current: true
             }));
 
             await ScrewdriverAttribute.bulkCreate(attributeValues, { transaction: t });
         }
 
-        // Fetch the created screwdriver with its attributes
+        // Fetch the created screwdriver with its current attributes
         const createdScrewdriver = await Screwdriver.findByPk(screwdriver.id, {
             include: [{
                 model: Attribute,
                 through: {
                     model: ScrewdriverAttribute,
                     where: {
-                        state: 'on'
+                        is_current: true
                     }
                 },
                 required: false,
@@ -58,8 +58,8 @@ const create = async (req, res, next) => {
         res.status(201).json(createdScrewdriver);
     } catch (error) {
         await t.rollback();
-        logger.error('Error in createScrewdriver:', error);
-        next(error);
+        logger.error('Error creating screwdriver:', error);
+        return res.status(500).json({ error: 'Internal server error' });
     }
 };
 
@@ -79,9 +79,15 @@ const getAll = async (req, res, next) => {
                 model: Attribute,
                 through: {
                     model: ScrewdriverAttribute,
-                    where: { state: 'on' }
+                    where: { 
+                        state: 'on',
+                        is_current: true
+                    }
                 },
-                required: false
+                required: false,
+                where: {
+                    state: 'on'
+                }
             }],
             order: [['name', 'ASC']]
         });
@@ -103,9 +109,12 @@ const getById = async (req, res) => {
                 model: Attribute,
                 through: {
                     model: ScrewdriverAttribute,
-                    where: { state: 'on' }
+                    where: { is_current: true }
                 },
-                required: false
+                required: false,
+                where: {
+                    state: 'on'
+                }
             }]
         });
 
@@ -124,48 +133,59 @@ const getById = async (req, res) => {
 
 const update = async (req, res) => {
     const t = await sequelize.transaction();
+    
     try {
-        logger.info(`PUT /api/screwdrivers/${req.params.id} request received`);
-        logger.info(`Request body: ${JSON.stringify(req.body, null, 2)}`);
-
+        const { id } = req.params;
         const { name, description, attributes, state } = req.body;
+
         const screwdriver = await Screwdriver.findOne({
-            where: {
-                id: req.params.id
-            }
+            where: { id },
+            include: [{
+                model: Attribute,
+                through: {
+                    model: ScrewdriverAttribute,
+                    where: {
+                        state: 'on',
+                        is_current: true
+                    }
+                }
+            }]
         });
 
         if (!screwdriver) {
             await t.rollback();
-            logger.warn(`Screwdriver with ID ${req.params.id} not found`);
             return res.status(404).json({ error: 'Screwdriver not found' });
         }
 
-        // Validate state if provided
-        if (state && !['on', 'off'].includes(state)) {
-            await t.rollback();
-            return res.status(400).json({ error: 'Invalid state. Must be either "on" or "off"' });
+        // Update basic screwdriver info
+        const updateData = {};
+        if (name) updateData.name = name;
+        if (description !== undefined) updateData.description = description;
+        if (state !== undefined && ['on', 'off'].includes(state)) updateData.state = state;
+
+        if (Object.keys(updateData).length > 0) {
+            await screwdriver.update(updateData, { transaction: t });
         }
 
-        await screwdriver.update({
-            name: name || screwdriver.name,
-            description: description !== undefined ? description : screwdriver.description,
-            state: state || screwdriver.state
-        }, { transaction: t });
-
         if (attributes && attributes.length > 0) {
-            // Set existing attribute values to 'off' state
+            // Set existing attribute values to not current
             await ScrewdriverAttribute.update(
-                { state: 'off' },
                 { 
-                    where: { screwdriver_id: screwdriver.id },
+                    is_current: false,
+                    state: 'off'
+                },
+                { 
+                    where: { 
+                        screwdriver_id: screwdriver.id,
+                        is_current: true
+                    },
                     transaction: t 
                 }
             );
 
             // Add new attribute values
             for (const attr of attributes) {
-                const attributeId = attr.attributeId || attr.id; // Handle both formats
+                const attributeId = attr.attributeId || attr.id;
                 const value = attr.value;
 
                 const attribute = await Attribute.findOne({
@@ -180,7 +200,6 @@ const update = async (req, res) => {
                     throw new Error(`Attribute with id ${attributeId} not found or inactive`);
                 }
 
-                // Basic validation based on data type
                 if (!value && attribute.is_required) {
                     await t.rollback();
                     throw new Error(`Value for attribute ${attribute.name} cannot be empty`);
@@ -190,19 +209,23 @@ const update = async (req, res) => {
                     screwdriver_id: screwdriver.id,
                     attribute_id: attributeId,
                     value: value,
+                    is_current: true,
                     state: 'on'
                 }, { transaction: t });
             }
         }
 
-        // Fetch the updated screwdriver with its attributes
+        // Fetch the updated screwdriver with its current attributes
         const result = await Screwdriver.findOne({
             where: { id: screwdriver.id },
             include: [{
                 model: Attribute,
                 through: { 
-                    attributes: ['value', 'state'],
-                    where: { state: 'on' }
+                    attributes: ['value', 'is_current', 'state'],
+                    where: { 
+                        state: 'on',
+                        is_current: true
+                    }
                 },
                 attributes: ['id', 'name', 'description', 'data_type', 'is_required', 'is_parent', 'state']
             }]
@@ -213,8 +236,8 @@ const update = async (req, res) => {
         res.json(result);
     } catch (error) {
         await t.rollback();
-        logger.error('Error in updateScrewdriver:', error);
-        res.status(400).json({ error: error.message });
+        logger.error('Error updating screwdriver:', error);
+        return res.status(500).json({ error: error.message || 'Internal server error' });
     }
 };
 
@@ -238,14 +261,8 @@ const remove = async (req, res) => {
         // Set state to 'off' instead of deleting
         await screwdriver.update({ state: 'off' }, { transaction: t });
         
-        // Set all attribute values to 'off'
-        await ScrewdriverAttribute.update(
-            { state: 'off' },
-            { 
-                where: { screwdriver_id: screwdriver.id },
-                transaction: t 
-            }
-        );
+        // We don't need to modify the attribute values anymore
+        // They maintain their is_current status and history
 
         await t.commit();
         logger.info(`Soft deleted screwdriver with ID ${screwdriver.id}`);
@@ -285,7 +302,7 @@ const filterByAttributes = async (req, res, next) => {
                 through: {
                     model: ScrewdriverAttribute,
                     where: {
-                        state: 'on'
+                        is_current: true
                     }
                 },
                 where: {
@@ -324,8 +341,8 @@ const getAllWithValues = async (req, res, next) => {
           model: Attribute,
           through: {
             model: ScrewdriverAttribute,
-            attributes: ['value', 'state'],
-            where: includeInactive ? {} : { state: 'on' }
+            attributes: ['value', 'state', 'is_current'],
+            where: includeInactive ? { is_current: true } : { state: 'on', is_current: true }
           },
           required: false,
           attributes: ['id', 'name', 'description', 'data_type', 'is_required', 'is_parent', 'state']
@@ -347,7 +364,8 @@ const getAllWithValues = async (req, res, next) => {
           is_required: attr.is_required,
           is_parent: attr.is_parent,
           state: attr.state,
-          value: attr.ScrewdriverAttribute?.value
+          value: attr.ScrewdriverAttribute?.value,
+          is_current: attr.ScrewdriverAttribute?.is_current
         }))
       };
     });
@@ -382,6 +400,30 @@ const getAttributeValues = async (req, res) => {
     }
 };
 
+// Add a new method to get attribute history
+const getAttributeHistory = async (req, res) => {
+    try {
+        const { screwdriverId, attributeId } = req.params;
+
+        const history = await ScrewdriverAttribute.findAll({
+            where: {
+                screwdriver_id: screwdriverId,
+                attribute_id: attributeId
+            },
+            order: [['updated_at', 'DESC']],
+            include: [{
+                model: Attribute,
+                attributes: ['name', 'description']
+            }]
+        });
+
+        return res.json(history);
+    } catch (error) {
+        logger.error('Error fetching attribute history:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
 module.exports = {
     create,
     getAll,
@@ -390,5 +432,6 @@ module.exports = {
     remove,
     filterByAttributes,
     getAllWithValues,
-    getAttributeValues
+    getAttributeValues,
+    getAttributeHistory
 }; 

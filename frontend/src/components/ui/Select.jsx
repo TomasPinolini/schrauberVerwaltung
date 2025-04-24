@@ -1,8 +1,8 @@
-const Input = ({
-  type = 'text',
-  placeholder,
+const Select = ({
   value,
   onChange,
+  options,
+  placeholder = 'Auswählen',
   error,
   className = '',
   ...props
@@ -12,14 +12,19 @@ const Input = ({
 
   return (
     <div className="space-y-1">
-      <input
-        type={type}
-        placeholder={placeholder}
+      <select
         value={value}
         onChange={onChange}
         className={`${baseStyles} ${errorStyles} ${className}`}
         {...props}
-      />
+      >
+        <option value="">{placeholder}</option>
+        {options.map((option, index) => (
+          <option key={option.value || index} value={option.value || option}>
+            {option.label || option}
+          </option>
+        ))}
+      </select>
       {error && (
         <p className="text-sm text-red-600">{error}</p>
       )}
@@ -27,4 +32,4 @@ const Input = ({
   );
 };
 
-export default Input;
+export default Select; 
