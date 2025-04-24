@@ -14,6 +14,8 @@ const ScrewdriversPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState('active');
+  const [selectedParent, setSelectedParent] = useState('');
+  const [selectedChild, setSelectedChild] = useState('');
   const [sortConfig, setSortConfig] = useState(null);
   const [formErrors, setFormErrors] = useState({});
 
@@ -267,6 +269,29 @@ const ScrewdriversPage = () => {
     }
   };
 
+  const parentAttributes = attributes.filter(attr => attr.state === 'on' && attr.is_parent);
+  // derive child values from screwdrivers
+  const childOptions = selectedParent
+    ? Array.from(new Set(
+        screwdrivers.flatMap(sd =>
+          sd.Attributes
+            .filter(a => a.id === Number(selectedParent))
+            .map(a => a.ScrewdriverAttribute.value)
+        )
+      ))
+    : [];
+  const displayedScrewdrivers = screwdrivers
+    .filter(sd => {
+      if (filter === 'active') return sd.state === 'on';
+      if (filter === 'inactive') return sd.state === 'off';
+      return true;
+    })
+    .filter(sd => selectedParent ? sd.Attributes.some(a => a.id === Number(selectedParent)) : true)
+    .filter(sd => selectedChild
+      ? sd.Attributes.some(a => a.id === Number(selectedParent) && a.ScrewdriverAttribute.value === selectedChild)
+      : true
+    );
+
   if (loading && !screwdrivers.length) {
     return <div className="text-center py-4">Wird geladen...</div>;
   }
@@ -327,6 +352,34 @@ const ScrewdriversPage = () => {
                   </select>
                 </div>
 
+                <div className="flex items-center gap-2">
+                  <label className="font-medium whitespace-nowrap">Filter nach Elternattribut:</label>
+                  <select
+                    className="border p-2 rounded"
+                    value={selectedParent}
+                    onChange={(e) => setSelectedParent(e.target.value)}
+                  >
+                    <option value="">Alle</option>
+                    {parentAttributes.map(attr => (
+                      <option key={attr.id} value={attr.id}>{attr.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <label className="font-medium whitespace-nowrap">Filter nach Kindwert:</label>
+                  <select
+                    className="border p-2 rounded"
+                    value={selectedChild}
+                    onChange={e => setSelectedChild(e.target.value)}
+                  >
+                    <option value="">Alle</option>
+                    {childOptions.map(val => (
+                      <option key={val} value={val}>{val}</option>
+                    ))}
+                  </select>
+                </div>
+
                 <button
                   onClick={handleResetSort}
                   className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded border"
@@ -338,7 +391,7 @@ const ScrewdriversPage = () => {
             </div>
 
             <ScrewdriverList
-              screwdrivers={screwdrivers}
+              screwdrivers={displayedScrewdrivers}
               attributes={attributes}
               onEdit={handleEdit}
               onToggleState={handleToggleState}

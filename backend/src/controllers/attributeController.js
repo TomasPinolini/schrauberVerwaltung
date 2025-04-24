@@ -18,11 +18,12 @@ const getAllAttributes = async (req, res) => {
             where: whereClause,
             order: [['name', 'ASC']],
             attributes: [
-                'id', 
-                'name', 
-                'description', 
-                'validation_pattern', 
-                'is_required', 
+                'id',
+                'name',
+                'description',
+                'validation_pattern',
+                'is_required',
+                'is_parent',
                 'state',
                 'created_at',
                 'updated_at'
@@ -184,11 +185,12 @@ const getActiveAttributes = async (req, res) => {
             },
             order: [['name', 'ASC']],
             attributes: [
-                'id', 
-                'name', 
-                'description', 
-                'validation_pattern', 
-                'is_required'
+                'id',
+                'name',
+                'description',
+                'validation_pattern',
+                'is_required',
+                'is_parent'
             ]
         });
         
