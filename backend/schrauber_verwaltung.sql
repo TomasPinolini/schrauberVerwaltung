@@ -69,6 +69,7 @@ CREATE TABLE `attributes` (
   `description` text DEFAULT NULL,
   `validation_pattern` varchar(255) DEFAULT NULL,
   `is_required` tinyint(1) DEFAULT 0,
+  `unique` tinyint(1) DEFAULT 0,
   `state` enum('on','off') DEFAULT 'on',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
@@ -80,11 +81,11 @@ CREATE TABLE `attributes` (
 -- Volcado de datos para la tabla `attributes`
 --
 
-INSERT INTO `attributes` (`id`, `name`, `description`, `validation_pattern`, `is_required`, `state`, `created_at`, `updated_at`, `deleted_at`, `is_parent`) VALUES
-(19, 'Abteilung', 'ABC123', '\\b[A-Za-z]{3}\\d{3}\\b', 0, 'on', '2025-04-23 12:29:32', '2025-04-24 09:10:48', NULL, 1),
-(20, 'IP Adress', '192.168.0.1', '\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b', 1, 'on', '2025-04-24 05:55:20', '2025-04-25 05:12:39', NULL, 0),
-(21, 'MAC-Adress', '00:1A:2B:3C:4D:5E', '\\b(?:[0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}\\b', 1, 'on', '2025-04-24 06:13:10', '2025-04-24 06:20:41', NULL, 0),
-(22, 'Halle', 'Standort des Schraubers', '\\b([0-9]{1,3})\\b', 1, 'on', '2025-04-24 10:38:18', '2025-04-25 07:54:31', NULL, 1);
+INSERT INTO `attributes` (`id`, `name`, `description`, `validation_pattern`, `is_required`, `unique`, `state`, `created_at`, `updated_at`, `deleted_at`, `is_parent`) VALUES
+(19, 'Abteilung', 'ABC123', '\\b[A-Za-z]{3}\\d{3}\\b', 0, 0, 'on', '2025-04-23 12:29:32', '2025-04-24 09:10:48', NULL, 1),
+(20, 'IP Adress', '192.168.0.1', '\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b', 1, 0, 'on', '2025-04-24 05:55:20', '2025-04-25 05:12:39', NULL, 0),
+(21, 'MAC-Adress', '00:1A:2B:3C:4D:5E', '\\b(?:[0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}\\b', 1, 1, 'on', '2025-04-24 06:13:10', '2025-04-24 06:20:41', NULL, 0),
+(22, 'Halle', 'Standort des Schraubers', '\\b([0-9]{1,3})\\b', 1, 0, 'on', '2025-04-24 10:38:18', '2025-04-25 07:54:31', NULL, 1);
 
 -- --------------------------------------------------------
 

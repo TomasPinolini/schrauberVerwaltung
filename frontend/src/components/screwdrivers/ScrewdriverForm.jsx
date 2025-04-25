@@ -25,6 +25,8 @@ const ScrewdriverForm = ({
 
     const inputClassName = `w-full border p-2 rounded ${error ? 'border-red-500' : ''}`;
 
+    // Unique value validation will be handled in parent validation logic
+
     switch (attribute.data_type) {
       case 'boolean':
         return (
@@ -145,7 +147,8 @@ ScrewdriverForm.propTypes = {
       description: PropTypes.string,
       validation_pattern: PropTypes.string,
       is_required: PropTypes.bool.isRequired,
-      state: PropTypes.oneOf(['on', 'off']).isRequired
+      state: PropTypes.oneOf(['on', 'off']).isRequired,
+      unique: PropTypes.bool,
     })
   ).isRequired,
   onSubmit: PropTypes.func.isRequired,

@@ -37,6 +37,12 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.BOOLEAN,
             defaultValue: false
         },
+        unique: {
+            type: DataTypes.BOOLEAN,
+            allowNull: true,
+            defaultValue: false,
+            field: 'unique'
+        },
         state: {
             type: DataTypes.ENUM('on', 'off'),
             defaultValue: 'on'

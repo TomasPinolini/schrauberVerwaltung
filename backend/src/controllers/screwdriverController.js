@@ -585,7 +585,15 @@ const getParentAttributeDistribution = async (req, res) => {
             return res.status(404).json({ error: 'Parent attribute not found' });
         }
 
-        // Get the distribution of values for this attribute
+        // Get the distribution of values for this attribute, filtered by state if provided
+        const stateFilter = req.query.state;
+        let screwdriverWhere = { is_current: true };
+        if (stateFilter === 'active') {
+            screwdriverWhere['$Screwdriver.state$'] = 'on';
+        } else if (stateFilter === 'inactive') {
+            screwdriverWhere['$Screwdriver.state$'] = 'off';
+        }
+
         const distribution = await ScrewdriverAttribute.findAll({
             attributes: [
                 'value',
@@ -593,8 +601,15 @@ const getParentAttributeDistribution = async (req, res) => {
             ],
             where: {
                 attribute_id: attributeId,
-                is_current: true
+                ...screwdriverWhere
             },
+            include: [
+                {
+                    model: Screwdriver,
+                    as: 'Screwdriver', // Use the alias defined in the model
+                    attributes: [], // not needed in result
+                }
+            ],
             group: ['value'],
             order: [[sequelize.fn('COUNT', sequelize.col('screwdriver_id')), 'DESC']]
         });

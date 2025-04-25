@@ -49,14 +49,7 @@ const AttributeList = ({
             }
           }}
         />
-        <button
-          onClick={handleResetFilter}
-          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded border transition-colors mb-4"
-          title="Filter zurücksetzen"
-          disabled={!filterText}
-        >
-          <span>Filter zurücksetzen</span>
-        </button>
+
         <div className="text-gray-500">Keine Attribute gefunden.</div>
       </div>
     );
@@ -99,14 +92,7 @@ const AttributeList = ({
             }
           }}
         />
-        <button
-          onClick={handleResetFilter}
-          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded border transition-colors"
-          title="Filter zurücksetzen"
-          disabled={!filterText}
-        >
-          <span>Filter zurücksetzen</span>
-        </button>
+
       </div>
       <div className="overflow-x-auto bg-white rounded shadow">
         <table className="min-w-full">
@@ -117,6 +103,7 @@ const AttributeList = ({
               {renderSortableHeader('validation_pattern', 'Validierung')}
               {renderSortableHeader('is_required', 'Erforderlich')}
               {renderSortableHeader('is_parent', 'Eltern')}
+              {renderSortableHeader('unique', 'Eindeutig')}
               {renderSortableHeader('state', 'Status')}
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aktionen</th>
             </tr>
@@ -129,6 +116,7 @@ const AttributeList = ({
                 <td className="px-6 py-4 whitespace-nowrap">{attribute.validation_pattern || '-'}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{attribute.is_required ? 'Ja' : 'Nein'}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{attribute.is_parent ? 'Ja' : 'Nein'}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{Boolean(attribute.unique) ? 'Ja' : 'Nein'}</td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
                     <button
@@ -174,6 +162,7 @@ AttributeList.propTypes = {
       validation_pattern: PropTypes.string,
       is_required: PropTypes.bool.isRequired,
       is_parent: PropTypes.bool.isRequired,
+      unique: PropTypes.bool,
       state: PropTypes.oneOf(['on', 'off']).isRequired,
     })
   ).isRequired,

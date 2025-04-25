@@ -67,17 +67,33 @@ const ScrewdriversPage = () => {
     // Get active attributes
     const activeAttributes = attributes.filter(attr => attr.state === 'on');
     
-    // Validate required attributes
+    // Validate required and unique attributes
     activeAttributes.forEach(attr => {
+      const attributeValue = formData.attributes?.find(a => a.attributeId === attr.id)?.value;
       if (attr.is_required) {
-        const attributeValue = formData.attributes?.find(a => a.attributeId === attr.id)?.value;
-        
         if (!attributeValue || attributeValue.trim() === '') {
           errors[`attribute_${attr.id}`] = `${attr.name} ist erforderlich`;
           return;
         }
+      }
 
-        // Additional type-specific validation
+      // Unique validation
+      if (attr.unique) {
+        if (attributeValue && attributeValue.trim() !== '') {
+          // Check if value already exists in another screwdriver (excluding the one being edited)
+          const duplicate = screwdrivers.some(screwdriver => {
+            if (editingId && screwdriver.id === editingId) return false;
+            const found = screwdriver.Attributes?.find(a => a.id === attr.id);
+            return found && found.ScrewdriverAttribute?.value === attributeValue;
+          });
+          if (duplicate) {
+            errors[`attribute_${attr.id}`] = `${attr.name} muss eindeutig sein (bereits vergeben)`;
+          }
+        }
+      }
+
+      // Additional type-specific validation
+      if (attr.is_required && attributeValue && attributeValue.trim() !== '') {
         switch (attr.data_type) {
           case 'number':
             if (attr.validation_pattern) {
@@ -102,7 +118,7 @@ const ScrewdriversPage = () => {
             }
             break;
           case 'date':
-            if (!isNaN(Date.parse(attributeValue))) {
+            if (isNaN(Date.parse(attributeValue))) {
               errors[`attribute_${attr.id}`] = `${attr.name} muss ein gültiges Datum sein`;
             }
             break;

@@ -83,6 +83,16 @@ const AttributeForm = ({
           />
           <span className="text-sm font-medium text-gray-700">Elternattribut</span>
         </label>
+
+        <label className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={formData.unique || false}
+            onChange={(e) => onChange('unique', e.target.checked)}
+            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+          />
+          <span className="text-sm font-medium text-gray-700">Eindeutig (Unique)</span>
+        </label>
       </div>
 
       <button
@@ -103,6 +113,7 @@ AttributeForm.propTypes = {
     validation_pattern: PropTypes.string,
     is_required: PropTypes.bool,
     is_parent: PropTypes.bool,
+    unique: PropTypes.bool,
   }).isRequired,
   onSubmit: PropTypes.func.isRequired,
   onChange: PropTypes.func.isRequired,

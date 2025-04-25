@@ -30,14 +30,7 @@ const ScrewdriverList = ({ screwdrivers, attributes, onEdit, onToggleState, onSo
           value={filterText}
           onChange={e => setFilterText(e.target.value)}
         />
-        <button
-          onClick={handleResetFilter}
-          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded border transition-colors mb-4"
-          title="Filter zurücksetzen"
-          disabled={!filterText}
-        >
-          <span>Filter zurücksetzen</span>
-        </button>
+
         <div className="text-gray-500">Keine Schraubendreher gefunden.</div>
       </div>
     );
@@ -74,14 +67,6 @@ const ScrewdriverList = ({ screwdrivers, attributes, onEdit, onToggleState, onSo
           value={filterText}
           onChange={(e) => setFilterText(e.target.value)}
         />
-        <button
-          onClick={handleResetFilter}
-          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded border transition-colors"
-          title="Filter zurücksetzen"
-          disabled={!filterText}
-        >
-          <span>Filter zurücksetzen</span>
-        </button>
       </div>
       <div className="overflow-x-auto bg-white rounded shadow">
         <table className="min-w-full">

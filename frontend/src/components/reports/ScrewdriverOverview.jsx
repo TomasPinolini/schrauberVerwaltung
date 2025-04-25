@@ -40,6 +40,7 @@ const ScrewdriverOverview = ({
   const [distribution, setDistribution] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [stateFilter, setStateFilter] = useState('all');
 
   useEffect(() => {
     const fetchParentAttributes = async () => {
@@ -61,11 +62,17 @@ const ScrewdriverOverview = ({
   useEffect(() => {
     const fetchDistribution = async () => {
       if (!selectedAttribute) return;
-
       setLoading(true);
       try {
-        const response = await axios.get(`/api/screwdrivers/parent-attributes/${selectedAttribute}/distribution`);
-        setDistribution(response.data);
+        // Fetch for all, active, and inactive
+        const [activeRes, inactiveRes] = await Promise.all([
+          axios.get(`/api/screwdrivers/parent-attributes/${selectedAttribute}/distribution?state=active`),
+          axios.get(`/api/screwdrivers/parent-attributes/${selectedAttribute}/distribution?state=inactive`)
+        ]);
+        setDistribution({
+          active: activeRes.data,
+          inactive: inactiveRes.data
+        });
         setError(null);
       } catch (err) {
         setError('Fehler beim Laden der Verteilung');
@@ -74,18 +81,24 @@ const ScrewdriverOverview = ({
         setLoading(false);
       }
     };
-
     fetchDistribution();
   }, [selectedAttribute]);
 
   const chartData = distribution ? {
-    labels: distribution.distribution.map(item => item.value),
+    labels: distribution.active.distribution.map(item => item.value),
     datasets: [
       {
-        label: distribution.attributeName,
-        data: distribution.distribution.map(item => item.count),
-        backgroundColor: 'rgba(59, 130, 246, 0.5)',
-        borderColor: 'rgb(59, 130, 246)',
+        label: 'Aktiv',
+        data: distribution.active.distribution.map(item => item.count),
+        backgroundColor: 'rgba(34,197,94,0.7)',
+        borderColor: 'rgba(34,197,94,1)',
+        borderWidth: 1
+      },
+      {
+        label: 'Inaktiv',
+        data: distribution.inactive.distribution.map(item => item.count),
+        backgroundColor: 'rgba(239,68,68,0.7)',
+        borderColor: 'rgba(239,68,68,1)',
         borderWidth: 1
       }
     ]
@@ -102,7 +115,7 @@ const ScrewdriverOverview = ({
       },
       title: {
         display: true,
-        text: distribution ? `Verteilung nach ${distribution.attributeName}` : 'Verteilung'
+        text: distribution ? `Verteilung nach ${distribution.active.attributeName}` : 'Verteilung'
       }
     },
     scales: {
@@ -146,7 +159,7 @@ const ScrewdriverOverview = ({
             id="attribute-select"
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             value={selectedAttribute || ''}
-            onChange={(e) => setSelectedAttribute(e.target.value)}
+            onChange={e => setSelectedAttribute(e.target.value)}
           >
             {parentAttributes.map(attr => (
               <option key={attr.id} value={attr.id}>
@@ -167,7 +180,24 @@ const ScrewdriverOverview = ({
             <p className="text-gray-600">Daten werden geladen...</p>
           </div>
         ) : (
-          distribution && <Bar options={chartOptions} data={chartData} />
+          distribution && (
+            <div style={{ maxHeight: 420, minHeight: 250 }}>
+              <Bar options={{ ...chartOptions, maintainAspectRatio: false }} data={
+                stateFilter === 'all' ? chartData : {
+                  labels: distribution[stateFilter]?.distribution.map(item => item.value) || [],
+                  datasets: [
+                    {
+                      label: stateFilter === 'active' ? 'Aktiv' : 'Inaktiv',
+                      data: distribution[stateFilter]?.distribution.map(item => item.count) || [],
+                      backgroundColor: stateFilter === 'active' ? 'rgba(34,197,94,0.7)' : 'rgba(239,68,68,0.7)',
+                      borderColor: stateFilter === 'active' ? 'rgba(34,197,94,1)' : 'rgba(239,68,68,1)',
+                      borderWidth: 1
+                    }
+                  ]
+                }
+              } height={320} />
+            </div>
+          )
         )}
       </div>
     </div>

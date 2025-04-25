@@ -24,6 +24,7 @@ const getAllAttributes = async (req, res) => {
                 'validation_pattern',
                 'is_required',
                 'is_parent',
+                'unique',
                 'state',
                 'created_at',
                 'updated_at'
@@ -70,7 +71,7 @@ const createAttribute = async (req, res) => {
         logger.info('POST /api/attributes request received');
         logger.info(`Request body: ${JSON.stringify(req.body, null, 2)}`);
 
-        const { name, description, validation_pattern, is_required, is_parent } = req.body;
+        const { name, description, validation_pattern, is_required, is_parent, unique } = req.body;
 
         if (!name) {
             await t.rollback();
@@ -83,6 +84,7 @@ const createAttribute = async (req, res) => {
             validation_pattern,
             is_required,
             is_parent,
+            unique: unique !== undefined ? !!unique : false,
             state: 'on'
         }, { transaction: t });
 
@@ -124,7 +126,7 @@ const updateAttribute = async (req, res) => {
             return res.status(404).json({ error: 'Attribute not found' });
         }
 
-        const { name, description, validation_pattern, is_required, is_parent } = req.body;
+        const { name, description, validation_pattern, is_required, is_parent, unique } = req.body;
 
         // Validate state if provided
         if (attribute.state !== 'on') {
@@ -137,6 +139,7 @@ const updateAttribute = async (req, res) => {
             validation_pattern: validation_pattern !== undefined ? validation_pattern : attribute.validation_pattern,
             is_required: is_required !== undefined ? !!is_required : attribute.is_required,
             is_parent: is_parent !== undefined ? !!is_parent : attribute.is_parent,
+            unique: unique !== undefined ? !!unique : attribute.unique,
             state: 'on'
         }, { transaction: t });
 

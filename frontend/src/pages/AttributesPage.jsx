@@ -12,7 +12,8 @@ const AttributesPage = () => {
     description: '',
     validation_pattern: '',
     is_required: false,
-    is_parent: false
+    is_parent: false,
+    unique: false
   });
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -101,7 +102,8 @@ const AttributesPage = () => {
       description: '',
       validation_pattern: '',
       is_required: false,
-      is_parent: false
+      is_parent: false,
+      unique: false
     });
     setError(null);
   };
@@ -124,7 +126,8 @@ const AttributesPage = () => {
         description: '',
         validation_pattern: '',
         is_required: false,
-        is_parent: false
+        is_parent: false,
+        unique: false
       });
       setEditingId(null);
       await fetchAttributes();
@@ -141,7 +144,8 @@ const AttributesPage = () => {
       description: attribute.description || '',
       validation_pattern: attribute.validation_pattern || '',
       is_required: attribute.is_required,
-      is_parent: attribute.is_parent
+      is_parent: attribute.is_parent,
+      unique: attribute.unique || false
     });
     setError(null);
   };
@@ -219,19 +223,6 @@ const AttributesPage = () => {
                     ]}
                   />
                 </div>
-
-                <Button
-                  onClick={() => {
-                    setFilter('active');
-                    setSortConfig(null);
-                    setAttributeListFilterText('');
-                  }}
-                  className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded border transition-colors"
-                  title="Alle Filter zurücksetzen"
-                  type="button"
-                >
-                  <span>Alle Filter zurücksetzen</span>
-                </Button>
               </div>
             </div>
 
