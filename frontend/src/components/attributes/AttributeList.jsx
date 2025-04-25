@@ -43,7 +43,6 @@ const AttributeList = ({ attributes, onEdit, onToggleState, onSort, sortConfig, 
           <tr>
             {renderSortableHeader('name', 'Name')}
             {renderSortableHeader('description', 'Beschreibung')}
-            {renderSortableHeader('data_type', 'Datentyp')}
             {renderSortableHeader('validation_pattern', 'Validierung')}
             {renderSortableHeader('is_required', 'Erforderlich')}
             {renderSortableHeader('is_parent', 'Eltern')}
@@ -56,7 +55,6 @@ const AttributeList = ({ attributes, onEdit, onToggleState, onSort, sortConfig, 
             <tr key={attribute.id} className={attribute.state === 'off' ? 'bg-gray-50' : ''}>
               <td className="px-6 py-4 whitespace-nowrap">{attribute.name}</td>
               <td className="px-6 py-4 whitespace-nowrap">{attribute.description || '-'}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{attribute.data_type}</td>
               <td className="px-6 py-4 whitespace-nowrap">{attribute.validation_pattern || '-'}</td>
               <td className="px-6 py-4 whitespace-nowrap">{attribute.is_required ? 'Ja' : 'Nein'}</td>
               <td className="px-6 py-4 whitespace-nowrap">{attribute.is_parent ? 'Ja' : 'Nein'}</td>
@@ -101,7 +99,6 @@ AttributeList.propTypes = {
       id: PropTypes.number.isRequired,
       name: PropTypes.string.isRequired,
       description: PropTypes.string,
-      data_type: PropTypes.oneOf(['string', 'number', 'boolean', 'date']).isRequired,
       validation_pattern: PropTypes.string,
       is_required: PropTypes.bool.isRequired,
       is_parent: PropTypes.bool.isRequired,

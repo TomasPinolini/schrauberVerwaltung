@@ -17,7 +17,6 @@ const ReportsPage = () => {
     recentActivity: []
   });
   const [activityLogs, setActivityLogs] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [logsLoading, setLogsLoading] = useState(true);
 
   useEffect(() => {
@@ -29,13 +28,13 @@ const ReportsPage = () => {
         setError('Fehler beim Laden der Statistiken. Bitte versuchen Sie es später erneut.');
         console.error('Error fetching statistics:', err);
       } finally {
-        setLoading(false);
+        // setLoading(false); // Remove if not needed
       }
     };
 
     const fetchActivityLogs = async () => {
       try {
-        const response = await axios.get('/api/screwdriver-logs');
+        const response = await axios.get('/api/activity-logs');
         setActivityLogs(response.data);
       } catch (err) {
         setError('Fehler beim Laden der Aktivitäten. Bitte versuchen Sie es später erneut.');
@@ -68,14 +67,14 @@ const ReportsPage = () => {
 
         <div className="grid grid-cols-1 gap-6">
           <ReportDashboard title="Schraubendreher Übersicht">
-            {loading ? (
-              <p className="text-gray-600">Statistiken werden geladen...</p>
-            ) : (
+            {statistics.counts ? (
               <ScrewdriverOverview
                 totalCount={statistics.counts.total}
                 activeCount={statistics.counts.active}
                 inactiveCount={statistics.counts.inactive}
               />
+            ) : (
+              <p className="text-gray-600">Statistiken werden geladen...</p>
             )}
           </ReportDashboard>
 

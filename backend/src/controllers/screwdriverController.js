@@ -1,5 +1,5 @@
 const { Op } = require('sequelize');
-const { sequelize, Screwdriver, Attribute, ScrewdriverAttribute } = require('../models');
+const { sequelize, Screwdriver, Attribute, ScrewdriverAttribute, ActivityLog } = require('../models');
 const logger = require('../config/logger');
 
 const create = async (req, res, next) => {
@@ -52,6 +52,16 @@ const create = async (req, res, next) => {
                 }
             }]
         });
+
+        // Log the creation of the screwdriver
+        const logEntry = await ActivityLog.create({
+            type: 'screwdriver_create',
+            entity_id: screwdriver.id,
+            entity_type: 'screwdriver',
+            message: `Created screwdriver: ${screwdriver.name}`,
+            created_at: new Date()
+        }, { transaction: t });
+        logEntry.screwdriver_name = screwdriver.name;
 
         await t.commit();
         logger.info(`Created new screwdriver with ID ${screwdriver.id}`);
@@ -133,7 +143,6 @@ const getById = async (req, res) => {
 
 const update = async (req, res) => {
     const t = await sequelize.transaction();
-    
     try {
         const { id } = req.params;
         const { name, description, attributes, state } = req.body;
@@ -145,63 +154,70 @@ const update = async (req, res) => {
                 through: {
                     model: ScrewdriverAttribute,
                     attributes: ['value', 'is_current', 'updated_at'],
-                    where: {
-                        is_current: true
-                    }
+                    where: { is_current: true }
                 }
             }]
         });
-
         if (!screwdriver) {
             await t.rollback();
             return res.status(404).json({ error: 'Screwdriver not found' });
         }
 
-        // Update basic screwdriver info
-        const updateData = {};
-        if (name) updateData.name = name;
-        if (description !== undefined) updateData.description = description;
-        if (state !== undefined && ['on', 'off'].includes(state)) updateData.state = state;
+        // Capture original state before update
+        const originalState = screwdriver.state;
+        const originalName = screwdriver.name;
+        const originalDescription = screwdriver.description;
 
-        if (Object.keys(updateData).length > 0) {
-            await screwdriver.update(updateData, { transaction: t });
+        // Track what is being changed
+        let changed = false;
+        let details = [];
+        let stateChanged = false;
+
+        if (name && name !== originalName) {
+            screwdriver.name = name;
+            changed = true;
+            details.push(`Name changed to '${name}'`);
+        }
+        if (description !== undefined && description !== originalDescription) {
+            screwdriver.description = description;
+            changed = true;
+            details.push(`Description changed`);
+        }
+        if (state !== undefined && state !== originalState) {
+            screwdriver.state = state;
+            stateChanged = true;
+            details.push(`State changed to '${state}'`);
         }
 
+        // Attributes logic
+        let attributesChanged = false;
         if (attributes && attributes.length > 0) {
             // Set existing attribute values to not current
             await ScrewdriverAttribute.update(
                 { is_current: false },
-                { 
-                    where: { 
+                {
+                    where: {
                         screwdriver_id: screwdriver.id,
                         is_current: true
                     },
-                    transaction: t 
+                    transaction: t
                 }
             );
-
             // Add new attribute values
             for (const attr of attributes) {
                 const attributeId = attr.attributeId || attr.id;
                 const value = attr.value;
-
                 const attribute = await Attribute.findOne({
-                    where: {
-                        id: attributeId,
-                        state: 'on'
-                    }
+                    where: { id: attributeId, state: 'on' }
                 });
-
                 if (!attribute) {
                     await t.rollback();
                     throw new Error(`Attribute with id ${attributeId} not found or inactive`);
                 }
-
                 if (!value && attribute.is_required) {
                     await t.rollback();
                     throw new Error(`Value for attribute ${attribute.name} cannot be empty`);
                 }
-
                 await ScrewdriverAttribute.create({
                     screwdriver_id: screwdriver.id,
                     attribute_id: attributeId,
@@ -209,18 +225,62 @@ const update = async (req, res) => {
                     is_current: true
                 }, { transaction: t });
             }
+            // Collect attribute names for the update log
+            const attributeIds = attributes.map(attr => attr.attributeId || attr.id).filter(Boolean);
+            let attributeNames = [];
+            if (attributeIds.length > 0) {
+                const attrs = await Attribute.findAll({ where: { id: attributeIds }, attributes: ['name'] });
+                attributeNames = attrs.map(a => a.name);
+            }
+            if (attributeNames.length > 0) {
+                details.push(`Attributes updated: ${attributeNames.join(', ')}`);
+            } else {
+                details.push(`Attributes updated`);
+            }
+            attributesChanged = true;
+            changed = true;
         }
 
-        // Fetch the updated screwdriver with its current attributes
+        await screwdriver.save({ transaction: t });
+
+        // Now decide what to log
+        let logType = null, logMessage = null, logDetails = null;
+        // Pure state change (no other edits)
+        if (
+            stateChanged && !changed && !attributesChanged &&
+            !(name && name !== originalName) &&
+            !(description !== undefined && description !== originalDescription)
+        ) {
+            logType = state === 'on' ? 'screwdriver_activate' : 'screwdriver_deactivate';
+            logMessage = state === 'on'
+                ? `Activated screwdriver: ${screwdriver.name}`
+                : `Deactivated screwdriver: ${screwdriver.name}`;
+        } else if (changed || attributesChanged) {
+            logType = 'screwdriver_update';
+            logMessage = `Edited screwdriver: ${screwdriver.name}`;
+            logDetails = details.length > 0 ? details.join('; ') : undefined;
+        }
+
+        if (logType) {
+            const logEntry = await ActivityLog.create({
+                type: logType,
+                entity_id: screwdriver.id,
+                entity_type: 'screwdriver',
+                message: logMessage,
+                details: logDetails,
+                created_at: new Date()
+            }, { transaction: t });
+            logEntry.screwdriver_name = screwdriver.name;
+        }
+
+        // Fetch the updated screwdriver with its current attributes for response
         const result = await Screwdriver.findOne({
             where: { id: screwdriver.id },
             include: [{
                 model: Attribute,
-                through: { 
+                through: {
                     attributes: ['value', 'is_current', 'updated_at'],
-                    where: { 
-                        is_current: true
-                    }
+                    where: { is_current: true }
                 },
                 attributes: ['id', 'name', 'description', 'validation_pattern', 'is_required', 'is_parent', 'state']
             }]
@@ -256,6 +316,16 @@ const remove = async (req, res) => {
         // Set state to 'off' instead of deleting
         await screwdriver.update({ state: 'off' }, { transaction: t });
         
+        // Log deactivation
+        const logEntry = await ActivityLog.create({
+            type: 'screwdriver_deactivate',
+            entity_id: screwdriver.id,
+            entity_type: 'screwdriver',
+            message: `Deactivated screwdriver: ${screwdriver.name}`,
+            created_at: new Date()
+        }, { transaction: t });
+        logEntry.screwdriver_name = screwdriver.name;
+
         // We don't need to modify the attribute values anymore
         // They maintain their is_current status and history
 

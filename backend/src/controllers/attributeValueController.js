@@ -1,4 +1,4 @@
-const { Screwdriver, Attribute, ScrewdriverAttribute, AttributeValue } = require('../models');
+const { Screwdriver, Attribute, ScrewdriverAttribute, AttributeValue, ActivityLog } = require('../models');
 const { Op } = require('sequelize');
 const sequelize = require('../config/database');
 const logger = require('../config/logger');
@@ -82,15 +82,24 @@ const updateAttributeValues = async (req, res) => {
 
         // Create new values
         const newValues = await Promise.all(
-            values.map(value => 
-                ScrewdriverAttribute.create({
+            values.map(async value => {
+                const val = await ScrewdriverAttribute.create({
                     screwdriver_id: screwdriverId,
                     attribute_id: value.attribute_id,
                     value: value.value,
                     is_current: true,
                     state: 'on'
-                })
-            )
+                });
+                // Log creation
+                await ActivityLog.create({
+                    type: 'screwdriver_attribute_create',
+                    entity_id: val.id,
+                    entity_type: 'screwdriver_attribute',
+                    message: `Added attribute value for attribute ${value.attribute_id} to screwdriver ${screwdriverId}`,
+                    created_at: new Date()
+                });
+                return val;
+            })
         );
 
         res.json(newValues);

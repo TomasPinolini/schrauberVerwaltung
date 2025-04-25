@@ -5,6 +5,7 @@ const Screwdriver = require('./Screwdriver')(sequelize, require('sequelize').Dat
 const Attribute = require('./Attribute')(sequelize, require('sequelize').DataTypes);
 const ScrewdriverAttribute = require('./ScrewdriverAttribute')(sequelize, require('sequelize').DataTypes);
 const AttributeValue = require('./AttributeValue')(sequelize, require('sequelize').DataTypes);
+const ActivityLog = require('./ActivityLog')(sequelize, require('sequelize').DataTypes);
 
 // Set up associations
 Screwdriver.associate({ Attribute, ScrewdriverAttribute });
@@ -17,5 +18,6 @@ module.exports = {
     Screwdriver,
     Attribute,
     ScrewdriverAttribute,
-    AttributeValue
+    AttributeValue,
+    ActivityLog
 }; 

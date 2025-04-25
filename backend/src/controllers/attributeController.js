@@ -1,4 +1,4 @@
-const { Attribute } = require('../models');
+const { Attribute, ActivityLog } = require('../models');
 const { sequelize, Sequelize } = require('../config/database');
 const logger = require('../config/logger');
 const { Op } = require('sequelize');
@@ -86,6 +86,15 @@ const createAttribute = async (req, res) => {
             state: 'on'
         }, { transaction: t });
 
+        // Log creation
+        await ActivityLog.create({
+            type: 'attribute_create',
+            entity_id: attribute.id,
+            entity_type: 'attribute',
+            message: `Created attribute: ${attribute.name}`,
+            created_at: new Date()
+        }, { transaction: t });
+
         await t.commit();
         logger.info(`Created new attribute with ID ${attribute.id}`);
         res.status(201).json(attribute);
@@ -129,6 +138,15 @@ const updateAttribute = async (req, res) => {
             is_required: is_required !== undefined ? !!is_required : attribute.is_required,
             is_parent: is_parent !== undefined ? !!is_parent : attribute.is_parent,
             state: 'on'
+        }, { transaction: t });
+
+        // Log update
+        await ActivityLog.create({
+            type: 'attribute_update',
+            entity_id: attribute.id,
+            entity_type: 'attribute',
+            message: `Updated attribute: ${attribute.name}`,
+            created_at: new Date()
         }, { transaction: t });
 
         await t.commit();
@@ -221,6 +239,15 @@ const toggleAttributeState = async (req, res) => {
         
         await attribute.update({
             state: newState
+        }, { transaction: t });
+
+        // Log state toggle
+        await ActivityLog.create({
+            type: 'attribute_toggle_state',
+            entity_id: attribute.id,
+            entity_type: 'attribute',
+            message: `Attribute ${attribute.name} state changed to ${newState}`,
+            created_at: new Date()
         }, { transaction: t });
 
         await t.commit();
