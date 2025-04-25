@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import ScrewdriverForm from '../components/screwdrivers/ScrewdriverForm';
 import ScrewdriverList from '../components/screwdrivers/ScrewdriverList';
+import Button from '../components/ui/Button';
+import Select from '../components/ui/Select';
 
 const ScrewdriversPage = () => {
   const [screwdrivers, setScrewdrivers] = useState([]);
@@ -18,6 +20,7 @@ const ScrewdriversPage = () => {
   const [selectedChild, setSelectedChild] = useState('');
   const [sortConfig, setSortConfig] = useState(null);
   const [formErrors, setFormErrors] = useState({});
+  const [screwdriverListFilterText, setScrewdriverListFilterText] = useState({});
 
   const sortScrewdrivers = (items, config) => {
     if (!config) return items;
@@ -330,12 +333,12 @@ const ScrewdriversPage = () => {
 
             {editingId && (
               <div className="mt-4">
-                <button
+                <Button
                   onClick={handleCancel}
                   className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
                 >
                   Abbrechen
-                </button>
+                </Button>
               </div>
             )}
           </div>
@@ -347,52 +350,57 @@ const ScrewdriversPage = () => {
               <div className="flex items-center gap-4 w-full sm:w-auto flex-wrap justify-end">
                 <div className="flex items-center gap-2">
                   <label className="font-medium whitespace-nowrap">Filter nach Status:</label>
-                  <select
+                  <Select
                     className="border p-2 rounded"
                     value={filter}
                     onChange={(e) => setFilter(e.target.value)}
-                  >
-                    <option value="active">Aktiv</option>
-                    <option value="inactive">Inaktiv</option>
-                    <option value="all">Alle</option>
-                  </select>
+                    options={[
+                      { value: 'all', label: 'Alle' },
+                      { value: 'active', label: 'Aktiv' },
+                      { value: 'inactive', label: 'Inaktiv' }
+                    ]}
+                  />
                 </div>
 
                 <div className="flex items-center gap-2">
                   <label className="font-medium whitespace-nowrap">Filter nach Elternattribut:</label>
-                  <select
+                  <Select
                     className="border p-2 rounded"
                     value={selectedParent}
                     onChange={(e) => setSelectedParent(e.target.value)}
-                  >
-                    <option value="">Alle</option>
-                    {parentAttributes.map(attr => (
-                      <option key={attr.id} value={attr.id}>{attr.name}</option>
-                    ))}
-                  </select>
+                    options={[
+                      { value: '', label: 'Alle' },
+                      ...parentAttributes.map(attr => ({ value: attr.id, label: attr.name }))
+                    ]}
+                  />
                 </div>
 
                 <div className="flex items-center gap-2">
                   <label className="font-medium whitespace-nowrap">Filter nach Kindwert:</label>
-                  <select
+                  <Select
                     className="border p-2 rounded"
                     value={selectedChild}
                     onChange={e => setSelectedChild(e.target.value)}
-                  >
-                    <option value="">Alle</option>
-                    {childOptions.map(val => (
-                      <option key={val} value={val}>{val}</option>
-                    ))}
-                  </select>
+                    options={[
+                      { value: '', label: 'Alle' },
+                      ...childOptions.map(val => ({ value: val, label: val }))
+                    ]}
+                  />
                 </div>
-
-                <button
-                  onClick={handleResetFilters}
-                  className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded border"
+                <Button
+                  onClick={() => {
+                    setFilter('all');
+                    setSelectedParent('');
+                    setSelectedChild('');
+                    setSortConfig(null);
+                    setScrewdriverListFilterText('');
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded border transition-colors"
                   title="Alle Filter zurücksetzen"
+                  type="button"
                 >
-                  <span>Filter zurücksetzen</span>
-                </button>
+                  <span>Alle Filter zurücksetzen</span>
+                </Button>
               </div>
             </div>
 
@@ -404,6 +412,8 @@ const ScrewdriversPage = () => {
               onSort={handleSort}
               onResetSort={handleResetSort}
               sortConfig={sortConfig}
+              filterText={screwdriverListFilterText}
+              setFilterText={setScrewdriverListFilterText}
             />
           </div>
         </div>

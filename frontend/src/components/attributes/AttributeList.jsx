@@ -2,8 +2,26 @@ import PropTypes from 'prop-types';
 import { FaEdit, FaToggleOn, FaToggleOff, FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
 import { useState } from 'react';
 
-const AttributeList = ({ attributes, onEdit, onToggleState, onSort, sortConfig, onResetSort }) => {
-  const [filterText, setFilterText] = useState('');
+const AttributeList = ({ 
+  attributes, 
+  onEdit, 
+  onToggleState, 
+  onSort, 
+  sortConfig, 
+  onResetSort, 
+  filterText: propsFilterText, 
+  setFilterText: propsSetFilterText 
+}) => {
+  const [filterText, setFilterText] = useState(propsFilterText !== undefined ? propsFilterText : '');
+  const [internalFilterText, internalSetFilterText] = useState('');
+
+  const handleResetFilter = () => {
+    if (propsSetFilterText !== undefined) {
+      propsSetFilterText('');
+    } else {
+      internalSetFilterText('');
+    }
+  };
 
   const filteredAttributes = attributes.filter(attr => 
     attr.name.toLowerCase().includes(filterText.toLowerCase()) ||
@@ -17,8 +35,29 @@ const AttributeList = ({ attributes, onEdit, onToggleState, onSort, sortConfig, 
 
   if (!filteredAttributes.length) {
     return (
-      <div className="text-center py-8 bg-white rounded shadow">
-        <p className="text-gray-500">Keine Attribute gefunden.</p>
+      <div className="p-4">
+        <input
+          type="text"
+          placeholder="Filter attributes..."
+          className="px-3 py-2 border rounded w-64 mb-4"
+          value={filterText}
+          onChange={e => {
+            if (propsSetFilterText !== undefined) {
+              propsSetFilterText(e.target.value);
+            } else {
+              internalSetFilterText(e.target.value);
+            }
+          }}
+        />
+        <button
+          onClick={handleResetFilter}
+          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded border transition-colors mb-4"
+          title="Filter zurücksetzen"
+          disabled={!filterText}
+        >
+          <span>Filter zurücksetzen</span>
+        </button>
+        <div className="text-gray-500">Keine Attribute gefunden.</div>
       </div>
     );
   }
@@ -52,8 +91,22 @@ const AttributeList = ({ attributes, onEdit, onToggleState, onSort, sortConfig, 
           placeholder="Filter attributes..."
           className="px-3 py-2 border rounded w-64"
           value={filterText}
-          onChange={(e) => setFilterText(e.target.value)}
+          onChange={e => {
+            if (propsSetFilterText !== undefined) {
+              propsSetFilterText(e.target.value);
+            } else {
+              internalSetFilterText(e.target.value);
+            }
+          }}
         />
+        <button
+          onClick={handleResetFilter}
+          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded border transition-colors"
+          title="Filter zurücksetzen"
+          disabled={!filterText}
+        >
+          <span>Filter zurücksetzen</span>
+        </button>
       </div>
       <div className="overflow-x-auto bg-white rounded shadow">
         <table className="min-w-full">
@@ -131,7 +184,9 @@ AttributeList.propTypes = {
   sortConfig: PropTypes.shape({
     key: PropTypes.string,
     direction: PropTypes.oneOf(['asc', 'desc'])
-  })
+  }),
+  filterText: PropTypes.string,
+  setFilterText: PropTypes.func
 };
 
 export default AttributeList; 

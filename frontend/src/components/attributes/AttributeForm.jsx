@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import Input from '../ui/input';
 
 const AttributeForm = ({
   formData,
@@ -20,11 +21,13 @@ const AttributeForm = ({
           Name
           <span className="text-red-500 ml-1">*</span>
         </label>
-        <input
-          className="w-full border p-2 rounded"
-          placeholder="Name des Attributs"
+        <Input
+          type="text"
+          className={`w-full border p-2 rounded ${errors.name ? 'border-red-500' : ''}`}
           value={formData.name}
           onChange={(e) => onChange('name', e.target.value)}
+          placeholder="Name des Attributs"
+          error={errors.name}
         />
         {errors.name && (
           <p className="text-red-500 text-sm">{errors.name}</p>
@@ -35,11 +38,12 @@ const AttributeForm = ({
         <label className="block text-sm font-medium text-gray-700">
           Beschreibung
         </label>
-        <input
+        <Input
+          type="text"
           className="w-full border p-2 rounded"
-          placeholder="Beschreibung des Attributs"
           value={formData.description || ''}
           onChange={(e) => onChange('description', e.target.value)}
+          placeholder="Beschreibung (optional)"
         />
       </div>
 
@@ -47,11 +51,12 @@ const AttributeForm = ({
         <label className="block text-sm font-medium text-gray-700">
           Validierungsmuster
         </label>
-        <input
+        <Input
+          type="text"
           className="w-full border p-2 rounded"
-          placeholder="Regulärer Ausdruck für die Validierung"
           value={formData.validation_pattern || ''}
           onChange={(e) => onChange('validation_pattern', e.target.value)}
+          placeholder="Validierungsmuster (optional)"
         />
         {errors.validation_pattern && (
           <p className="text-red-500 text-sm">{errors.validation_pattern}</p>

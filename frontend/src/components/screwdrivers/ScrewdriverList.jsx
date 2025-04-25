@@ -5,6 +5,8 @@ import { FaEdit, FaToggleOn, FaToggleOff, FaSort, FaSortUp, FaSortDown } from 'r
 const ScrewdriverList = ({ screwdrivers, attributes, onEdit, onToggleState, onSort, sortConfig, onResetSort }) => {
   const [filterText, setFilterText] = useState('');
 
+  const handleResetFilter = () => setFilterText('');
+
   // Filter only active attributes
   const activeAttributes = attributes.filter(attr => attr.state === 'on');
 
@@ -17,10 +19,26 @@ const ScrewdriverList = ({ screwdrivers, attributes, onEdit, onToggleState, onSo
     return nameMatch || attributeMatch;
   });
 
+  // Show a message if no results but keep input visible
   if (!filteredScrewdrivers.length) {
     return (
-      <div className="text-center py-8 bg-white rounded shadow">
-        <p className="text-gray-500">Keine Schraubendreher gefunden.</p>
+      <div className="p-4">
+        <input
+          type="text"
+          placeholder="Filter Schraubendreher..."
+          className="px-3 py-2 border rounded w-64 mb-4"
+          value={filterText}
+          onChange={e => setFilterText(e.target.value)}
+        />
+        <button
+          onClick={handleResetFilter}
+          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded border transition-colors mb-4"
+          title="Filter zurücksetzen"
+          disabled={!filterText}
+        >
+          <span>Filter zurücksetzen</span>
+        </button>
+        <div className="text-gray-500">Keine Schraubendreher gefunden.</div>
       </div>
     );
   }
@@ -56,12 +74,8 @@ const ScrewdriverList = ({ screwdrivers, attributes, onEdit, onToggleState, onSo
           value={filterText}
           onChange={(e) => setFilterText(e.target.value)}
         />
-        <button 
-          onClick={() => {
-            console.log('Resetting filter, current value:', filterText);
-            setFilterText('');
-            console.log('Filter reset');
-          }}
+        <button
+          onClick={handleResetFilter}
           className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded border transition-colors"
           title="Filter zurücksetzen"
           disabled={!filterText}

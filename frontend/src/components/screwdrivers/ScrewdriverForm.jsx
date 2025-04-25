@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import Input from '../ui/input';
 
 const ScrewdriverForm = ({
   formData,
@@ -68,12 +69,14 @@ const ScrewdriverForm = ({
       default: // string
         return (
           <div className="space-y-1">
-            <input
+            <Input
               type="text"
               className={inputClassName}
               value={value}
               onChange={(e) => onAttributeChange(attribute.id, e.target.value)}
               pattern={attribute.validation_pattern}
+              placeholder={attribute.name}
+              error={error}
             />
             {error && <p className="text-red-500 text-sm">{error}</p>}
           </div>
@@ -88,12 +91,13 @@ const ScrewdriverForm = ({
           Name
           <span className="text-red-500 ml-1">*</span>
         </label>
-        <input
+        <Input
           type="text"
           className={`w-full border p-2 rounded ${errors.name ? 'border-red-500' : ''}`}
           value={formData.name}
           onChange={(e) => onChange('name', e.target.value)}
           placeholder="Name des Schraubendrehers"
+          error={errors.name}
         />
         {errors.name && (
           <p className="text-red-500 text-sm">{errors.name}</p>
@@ -139,7 +143,6 @@ ScrewdriverForm.propTypes = {
       id: PropTypes.number.isRequired,
       name: PropTypes.string.isRequired,
       description: PropTypes.string,
-      data_type: PropTypes.oneOf(['string', 'number', 'boolean', 'date']).isRequired,
       validation_pattern: PropTypes.string,
       is_required: PropTypes.bool.isRequired,
       state: PropTypes.oneOf(['on', 'off']).isRequired

@@ -31,35 +31,37 @@ schrauber_verwaltung/
 ## Features
 
 ### 1. Screwdriver Management
-- **Real-time Data Processing**: Capture and process screwdriver data in real-time
-- **Data Validation**: Validate screwdriver data against predefined patterns
-- **State Management**: Track active/inactive status of screwdrivers
-- **Detailed Information**: Store comprehensive screwdriver details including:
-  - IP Address
-  - MAC Address
-  - Department information
-  - Custom attributes
+- **List, Filter, and Sort**: View all screwdrivers, filter by active/inactive/all, and sort by name or any attribute.
+- **Add & Edit**: Add new screwdrivers or edit existing ones, including dynamic, attribute-driven forms.
+- **State Management**: Activate/deactivate screwdrivers (soft delete).
+- **Validation**: Advanced form validation for required fields and attribute types.
+- **Attribute History**: Track and view the full change history for each screwdriver’s attributes.
 
 ### 2. Attribute Management
-- **Dynamic Attributes**: Create and manage custom attributes with a streamlined interface
-- **Validation Patterns**: Define optional regex patterns for data validation
-- **State Control**: Toggle attribute states (active/inactive) with visual feedback
-- **Required Fields**: Mark attributes as mandatory or optional
-- **Parent Attributes**: Designate attributes as parents for hierarchical organization
-- **Description Support**: Add detailed descriptions for better user understanding
-- **Consistent UI**: Unified design patterns across attribute and screwdriver forms
+- **Dynamic Attributes**: Create, edit, and manage custom attributes (with name, description, regex validation, required flag, and parent/child relationships).
+- **Toggle State**: Activate/deactivate attributes.
+- **Parent Attributes**: Hierarchical attribute organization and parent attribute value management.
+- **Attribute Value Management**: Add, edit, and remove possible values for parent attributes.
 
-### 3. Reporting System
-- **Comprehensive Reports**: Generate detailed reports on screwdriver data
-- **Custom Filters**: Filter reports by various criteria
-- **Export Capabilities**: Export reports in multiple formats
-- **Historical Data**: Track and analyze historical screwdriver data
+### 3. Reporting & Statistics
+- **Dashboard**: Overview with total, active, and inactive screwdriver counts.
+- **Daily Creation Stats**: Visualize screwdriver creation over time.
+- **Top Attributes**: See most-used attributes in the system.
+- **Activity Log**: Full audit trail of all significant actions (create, update, delete, toggle) for screwdrivers and attributes.
+- **Attribute Distribution**: Analyze value distributions for parent attributes.
 
-### 4. Data Management
-- **Structured Storage**: Organized data storage in one_payload and all_data directories
-- **Data Validation**: Ensure data integrity through validation patterns
-- **State Tracking**: Monitor and manage screwdriver states
-- **Historical Records**: Maintain complete history of screwdriver data
+### 4. Data Integrity & History
+- **Structured Storage**: Organized storage in `one_payload` and `all_data` directories.
+- **Validation Patterns**: Enforce data integrity with regex patterns on attributes.
+- **Historical Records**: Maintain complete attribute and screwdriver change history.
+
+### 5. User Experience
+- **Modern React UI**: Responsive, consistent design with loading indicators and error handling.
+- **Comprehensive Error Handling**: Clear feedback for all async and validation errors.
+
+### 6. API & Extensibility
+- **RESTful API**: Full-featured backend for CRUD operations, statistics, and reporting.
+- **Extensible Models**: Easily add new attributes or extend screwdriver data model.
 
 ## Setup Instructions
 
@@ -150,4 +152,4 @@ The application will be available at:
 
 ## License
 
-[Add your license information here] 
+[Add your license information here]

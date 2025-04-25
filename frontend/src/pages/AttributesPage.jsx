@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import AttributeForm from '../components/attributes/AttributeForm';
 import AttributeList from '../components/attributes/AttributeList';
+import Button from '../components/ui/Button';
+import Select from '../components/ui/Select';
 
 const AttributesPage = () => {
   const [attributes, setAttributes] = useState([]);
@@ -17,6 +19,7 @@ const AttributesPage = () => {
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState('active');
   const [sortConfig, setSortConfig] = useState(null);
+  const [attributeListFilterText, setAttributeListFilterText] = useState('');
 
   const sortAttributes = (attrs, config) => {
     if (!config) return attrs;
@@ -188,12 +191,12 @@ const AttributesPage = () => {
 
             {editingId && (
               <div className="mt-4">
-                <button
+                <Button
                   onClick={handleCancel}
                   className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
                 >
                   Abbrechen
-                </button>
+                </Button>
               </div>
             )}
           </div>
@@ -206,24 +209,29 @@ const AttributesPage = () => {
               <div className="flex items-center gap-4 w-full sm:w-auto flex-wrap justify-end">
                 <div className="flex items-center gap-2">
                   <label className="font-medium whitespace-nowrap">Filter nach Status:</label>
-                  <select
+                  <Select
                     className="border p-2 rounded"
                     value={filter}
                     onChange={(e) => setFilter(e.target.value)}
-                  >
-                    <option value="active">Aktiv</option>
-                    <option value="inactive">Inaktiv</option>
-                    <option value="all">Alle</option>
-                  </select>
+                    options={[
+                      { value: 'active', label: 'Aktiv' },
+                      { value: 'inactive', label: 'Inaktiv' },
+                    ]}
+                  />
                 </div>
 
-                <button
-                  onClick={handleResetSort}
-                  className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded border"
-                  title="Sortierung zurücksetzen"
+                <Button
+                  onClick={() => {
+                    setFilter('active');
+                    setSortConfig(null);
+                    setAttributeListFilterText('');
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded border transition-colors"
+                  title="Alle Filter zurücksetzen"
+                  type="button"
                 >
-                  <span>Zurücksetzen</span>
-                </button>
+                  <span>Alle Filter zurücksetzen</span>
+                </Button>
               </div>
             </div>
 
@@ -234,6 +242,8 @@ const AttributesPage = () => {
               onSort={handleSort}
               onResetSort={handleResetSort}
               sortConfig={sortConfig}
+              filterText={attributeListFilterText}
+              setFilterText={setAttributeListFilterText}
             />
           </div>
         </div>

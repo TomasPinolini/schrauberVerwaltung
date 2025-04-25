@@ -4156,3 +4156,14 @@
 {"level":"info","message":"GET /api/screwdrivers request received","service":"schrauber-verwaltung","timestamp":"2025-04-25 08:37:39"}
 {"level":"info","message":"Query parameters: {\n  \"include_inactive\": \"true\"\n}","service":"schrauber-verwaltung","timestamp":"2025-04-25 08:37:39"}
 {"level":"info","message":"Found 4 screwdrivers","service":"schrauber-verwaltung","timestamp":"2025-04-25 08:37:39"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-04-25T06:47:49.889Z"}
+{"level":"info","message":"Database connection test initiated...","timestamp":"2025-04-25T06:47:49.891Z"}
+{"level":"info","message":"Database connection established successfully","timestamp":"2025-04-25T06:47:49.929Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-25T06:47:54.101Z"}
+{"level":"info","message":"GET /api/attributes request received","service":"schrauber-verwaltung","timestamp":"2025-04-25 08:47:54"}
+{"level":"info","message":"Query parameters: {\n  \"include_inactive\": \"true\"\n}","service":"schrauber-verwaltung","timestamp":"2025-04-25 08:47:54"}
+{"level":"info","message":"Found 4 attributes","service":"schrauber-verwaltung","timestamp":"2025-04-25 08:47:54"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-04-25T06:47:54.123Z"}
+{"level":"info","message":"GET /api/attributes request received","service":"schrauber-verwaltung","timestamp":"2025-04-25 08:47:54"}
+{"level":"info","message":"Query parameters: {\n  \"include_inactive\": \"true\"\n}","service":"schrauber-verwaltung","timestamp":"2025-04-25 08:47:54"}
+{"level":"info","message":"Found 4 attributes","service":"schrauber-verwaltung","timestamp":"2025-04-25 08:47:54"}
