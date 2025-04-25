@@ -292,6 +292,12 @@ const ScrewdriversPage = () => {
       : true
     );
 
+  const handleResetFilters = () => {
+    setFilter('all'); 
+    setSelectedParent('');
+    setSelectedChild('');
+  };
+
   if (loading && !screwdrivers.length) {
     return <div className="text-center py-4">Wird geladen...</div>;
   }
@@ -381,11 +387,11 @@ const ScrewdriversPage = () => {
                 </div>
 
                 <button
-                  onClick={handleResetSort}
+                  onClick={handleResetFilters}
                   className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded border"
-                  title="Sortierung zurücksetzen"
+                  title="Alle Filter zurücksetzen"
                 >
-                  <span>Zurücksetzen</span>
+                  <span>Filter zurücksetzen</span>
                 </button>
               </div>
             </div>

@@ -1,13 +1,21 @@
 import PropTypes from 'prop-types';
 import { FaEdit, FaToggleOn, FaToggleOff, FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
+import { useState } from 'react';
 
 const AttributeList = ({ attributes, onEdit, onToggleState, onSort, sortConfig, onResetSort }) => {
+  const [filterText, setFilterText] = useState('');
+
+  const filteredAttributes = attributes.filter(attr => 
+    attr.name.toLowerCase().includes(filterText.toLowerCase()) ||
+    (attr.description && attr.description.toLowerCase().includes(filterText.toLowerCase()))
+  );
+
   const handleToggleClick = (attribute) => {
     console.log('Toggle button clicked for attribute:', attribute);
     onToggleState(attribute);
   };
 
-  if (!attributes.length) {
+  if (!filteredAttributes.length) {
     return (
       <div className="text-center py-8 bg-white rounded shadow">
         <p className="text-gray-500">Keine Attribute gefunden.</p>
@@ -37,58 +45,69 @@ const AttributeList = ({ attributes, onEdit, onToggleState, onSort, sortConfig, 
   );
 
   return (
-    <div className="overflow-x-auto bg-white rounded shadow">
-      <table className="min-w-full">
-        <thead className="bg-gray-100">
-          <tr>
-            {renderSortableHeader('name', 'Name')}
-            {renderSortableHeader('description', 'Beschreibung')}
-            {renderSortableHeader('validation_pattern', 'Validierung')}
-            {renderSortableHeader('is_required', 'Erforderlich')}
-            {renderSortableHeader('is_parent', 'Eltern')}
-            {renderSortableHeader('state', 'Status')}
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aktionen</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-200">
-          {attributes.map((attribute) => (
-            <tr key={attribute.id} className={attribute.state === 'off' ? 'bg-gray-50' : ''}>
-              <td className="px-6 py-4 whitespace-nowrap">{attribute.name}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{attribute.description || '-'}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{attribute.validation_pattern || '-'}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{attribute.is_required ? 'Ja' : 'Nein'}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{attribute.is_parent ? 'Ja' : 'Nein'}</td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <div className="flex items-center">
-                  <button
-                    onClick={() => handleToggleClick(attribute)}
-                    className="text-2xl mr-2"
-                    title={attribute.state === 'on' ? 'Aktiv (Klicken zum Deaktivieren)' : 'Inaktiv (Klicken zum Aktivieren)'}
-                  >
-                    {attribute.state === 'on' ? (
-                      <FaToggleOn className="text-green-500" />
-                    ) : (
-                      <FaToggleOff className="text-red-500" />
-                    )}
-                  </button>
-                  <span className={`text-sm ${attribute.state === 'on' ? 'text-green-600' : 'text-red-600'}`}>
-                    {attribute.state === 'on' ? 'Aktiv' : 'Inaktiv'}
-                  </span>
-                </div>
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <button
-                  onClick={() => onEdit(attribute)}
-                  className="text-blue-600 hover:text-blue-800"
-                  title="Bearbeiten"
-                >
-                  <FaEdit />
-                </button>
-              </td>
+    <div className="mb-4">
+      <div className="flex justify-between items-center mb-2">
+        <input
+          type="text"
+          placeholder="Filter attributes..."
+          className="px-3 py-2 border rounded w-64"
+          value={filterText}
+          onChange={(e) => setFilterText(e.target.value)}
+        />
+      </div>
+      <div className="overflow-x-auto bg-white rounded shadow">
+        <table className="min-w-full">
+          <thead className="bg-gray-100">
+            <tr>
+              {renderSortableHeader('name', 'Name')}
+              {renderSortableHeader('description', 'Beschreibung')}
+              {renderSortableHeader('validation_pattern', 'Validierung')}
+              {renderSortableHeader('is_required', 'Erforderlich')}
+              {renderSortableHeader('is_parent', 'Eltern')}
+              {renderSortableHeader('state', 'Status')}
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aktionen</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {filteredAttributes.map((attribute) => (
+              <tr key={attribute.id} className={attribute.state === 'off' ? 'bg-gray-50' : ''}>
+                <td className="px-6 py-4 whitespace-nowrap">{attribute.name}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{attribute.description || '-'}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{attribute.validation_pattern || '-'}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{attribute.is_required ? 'Ja' : 'Nein'}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{attribute.is_parent ? 'Ja' : 'Nein'}</td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="flex items-center">
+                    <button
+                      onClick={() => handleToggleClick(attribute)}
+                      className="text-2xl mr-2"
+                      title={attribute.state === 'on' ? 'Aktiv (Klicken zum Deaktivieren)' : 'Inaktiv (Klicken zum Aktivieren)'}
+                    >
+                      {attribute.state === 'on' ? (
+                        <FaToggleOn className="text-green-500" />
+                      ) : (
+                        <FaToggleOff className="text-red-500" />
+                      )}
+                    </button>
+                    <span className={`text-sm ${attribute.state === 'on' ? 'text-green-600' : 'text-red-600'}`}>
+                      {attribute.state === 'on' ? 'Aktiv' : 'Inaktiv'}
+                    </span>
+                  </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <button
+                    onClick={() => onEdit(attribute)}
+                    className="text-blue-600 hover:text-blue-800"
+                    title="Bearbeiten"
+                  >
+                    <FaEdit />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

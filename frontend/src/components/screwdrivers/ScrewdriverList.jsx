@@ -1,11 +1,23 @@
 import PropTypes from 'prop-types';
+import { useState } from 'react';
 import { FaEdit, FaToggleOn, FaToggleOff, FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
 
 const ScrewdriverList = ({ screwdrivers, attributes, onEdit, onToggleState, onSort, sortConfig, onResetSort }) => {
+  const [filterText, setFilterText] = useState('');
+
   // Filter only active attributes
   const activeAttributes = attributes.filter(attr => attr.state === 'on');
 
-  if (!screwdrivers.length) {
+  const filteredScrewdrivers = screwdrivers.filter(screwdriver => {
+    const nameMatch = screwdriver.name.toLowerCase().includes(filterText.toLowerCase());
+    const attributeMatch = activeAttributes.some(attr => {
+      const attrValue = screwdriver.Attributes?.find(a => a.id === attr.id)?.ScrewdriverAttribute?.value || '';
+      return attrValue.toLowerCase().includes(filterText.toLowerCase());
+    });
+    return nameMatch || attributeMatch;
+  });
+
+  if (!filteredScrewdrivers.length) {
     return (
       <div className="text-center py-8 bg-white rounded shadow">
         <p className="text-gray-500">Keine Schraubendreher gefunden.</p>
@@ -35,70 +47,93 @@ const ScrewdriverList = ({ screwdrivers, attributes, onEdit, onToggleState, onSo
   );
 
   return (
-    <div className="overflow-x-auto bg-white rounded shadow">
-      <table className="min-w-full">
-        <thead className="bg-gray-100">
-          <tr>
-            {renderSortableHeader('name', 'Name')}
-            {activeAttributes.map(attr => (
-              <th 
-                key={attr.id} 
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-50"
-                onClick={() => onSort(`attribute_${attr.id}`)}
-              >
-                <div className="flex items-center">
-                  {attr.name}
-                  {getSortIcon(`attribute_${attr.id}`)}
-                </div>
-              </th>
-            ))}
-            {renderSortableHeader('state', 'Status')}
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aktionen</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-200">
-          {screwdrivers.map((screwdriver) => (
-            <tr key={screwdriver.id} className={screwdriver.state === 'off' ? 'bg-gray-50' : ''}>
-              <td className="px-6 py-4 whitespace-nowrap">{screwdriver.name}</td>
-              {activeAttributes.map(attr => {
-                const attributeValue = screwdriver.Attributes?.find(a => a.id === attr.id)?.ScrewdriverAttribute?.value || '-';
-                return (
-                  <td key={attr.id} className="px-6 py-4 whitespace-nowrap">
-                    {attributeValue}
-                  </td>
-                );
-              })}
-              <td className="px-6 py-4 whitespace-nowrap">
-                <div className="flex items-center">
-                  <button
-                    onClick={() => onToggleState(screwdriver)}
-                    className="text-2xl mr-2"
-                    title={screwdriver.state === 'on' ? 'Aktiv (Klicken zum Deaktivieren)' : 'Inaktiv (Klicken zum Aktivieren)'}
-                  >
-                    {screwdriver.state === 'on' ? (
-                      <FaToggleOn className="text-green-500" />
-                    ) : (
-                      <FaToggleOff className="text-red-500" />
-                    )}
-                  </button>
-                  <span className={`text-sm ${screwdriver.state === 'on' ? 'text-green-600' : 'text-red-600'}`}>
-                    {screwdriver.state === 'on' ? 'Aktiv' : 'Inaktiv'}
-                  </span>
-                </div>
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <button
-                  onClick={() => onEdit(screwdriver)}
-                  className="text-blue-600 hover:text-blue-800"
-                  title="Bearbeiten"
+    <div className="mb-4">
+      <div className="flex justify-between items-center mb-2">
+        <input
+          type="text"
+          placeholder="Filter Schraubendreher..."
+          className="px-3 py-2 border rounded w-64"
+          value={filterText}
+          onChange={(e) => setFilterText(e.target.value)}
+        />
+        <button 
+          onClick={() => {
+            console.log('Resetting filter, current value:', filterText);
+            setFilterText('');
+            console.log('Filter reset');
+          }}
+          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded border transition-colors"
+          title="Filter zurücksetzen"
+          disabled={!filterText}
+        >
+          <span>Filter zurücksetzen</span>
+        </button>
+      </div>
+      <div className="overflow-x-auto bg-white rounded shadow">
+        <table className="min-w-full">
+          <thead className="bg-gray-100">
+            <tr>
+              {renderSortableHeader('name', 'Name')}
+              {activeAttributes.map(attr => (
+                <th 
+                  key={attr.id} 
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-50"
+                  onClick={() => onSort(`attribute_${attr.id}`)}
                 >
-                  <FaEdit />
-                </button>
-              </td>
+                  <div className="flex items-center">
+                    {attr.name}
+                    {getSortIcon(`attribute_${attr.id}`)}
+                  </div>
+                </th>
+              ))}
+              {renderSortableHeader('state', 'Status')}
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aktionen</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {filteredScrewdrivers.map((screwdriver) => (
+              <tr key={screwdriver.id} className={screwdriver.state === 'off' ? 'bg-gray-50' : ''}>
+                <td className="px-6 py-4 whitespace-nowrap">{screwdriver.name}</td>
+                {activeAttributes.map(attr => {
+                  const attributeValue = screwdriver.Attributes?.find(a => a.id === attr.id)?.ScrewdriverAttribute?.value || '-';
+                  return (
+                    <td key={attr.id} className="px-6 py-4 whitespace-nowrap">
+                      {attributeValue}
+                    </td>
+                  );
+                })}
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="flex items-center">
+                    <button
+                      onClick={() => onToggleState(screwdriver)}
+                      className="text-2xl mr-2"
+                      title={screwdriver.state === 'on' ? 'Aktiv (Klicken zum Deaktivieren)' : 'Inaktiv (Klicken zum Aktivieren)'}
+                    >
+                      {screwdriver.state === 'on' ? (
+                        <FaToggleOn className="text-green-500" />
+                      ) : (
+                        <FaToggleOff className="text-red-500" />
+                      )}
+                    </button>
+                    <span className={`text-sm ${screwdriver.state === 'on' ? 'text-green-600' : 'text-red-600'}`}>
+                      {screwdriver.state === 'on' ? 'Aktiv' : 'Inaktiv'}
+                    </span>
+                  </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <button
+                    onClick={() => onEdit(screwdriver)}
+                    className="text-blue-600 hover:text-blue-800"
+                    title="Bearbeiten"
+                  >
+                    <FaEdit />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
