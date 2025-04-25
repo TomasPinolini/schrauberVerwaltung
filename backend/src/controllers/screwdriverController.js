@@ -170,23 +170,19 @@ const update = async (req, res) => {
 
         // Track what is being changed
         let changed = false;
-        let details = [];
         let stateChanged = false;
 
         if (name && name !== originalName) {
             screwdriver.name = name;
             changed = true;
-            details.push(`Name changed to '${name}'`);
         }
         if (description !== undefined && description !== originalDescription) {
             screwdriver.description = description;
             changed = true;
-            details.push(`Description changed`);
         }
         if (state !== undefined && state !== originalState) {
             screwdriver.state = state;
             stateChanged = true;
-            details.push(`State changed to '${state}'`);
         }
 
         // Attributes logic
@@ -225,18 +221,6 @@ const update = async (req, res) => {
                     is_current: true
                 }, { transaction: t });
             }
-            // Collect attribute names for the update log
-            const attributeIds = attributes.map(attr => attr.attributeId || attr.id).filter(Boolean);
-            let attributeNames = [];
-            if (attributeIds.length > 0) {
-                const attrs = await Attribute.findAll({ where: { id: attributeIds }, attributes: ['name'] });
-                attributeNames = attrs.map(a => a.name);
-            }
-            if (attributeNames.length > 0) {
-                details.push(`Attributes updated: ${attributeNames.join(', ')}`);
-            } else {
-                details.push(`Attributes updated`);
-            }
             attributesChanged = true;
             changed = true;
         }
@@ -244,7 +228,7 @@ const update = async (req, res) => {
         await screwdriver.save({ transaction: t });
 
         // Now decide what to log
-        let logType = null, logMessage = null, logDetails = null;
+        let logType = null, logMessage = null;
         // Pure state change (no other edits)
         if (
             stateChanged && !changed && !attributesChanged &&
@@ -258,7 +242,6 @@ const update = async (req, res) => {
         } else if (changed || attributesChanged) {
             logType = 'screwdriver_update';
             logMessage = `Edited screwdriver: ${screwdriver.name}`;
-            logDetails = details.length > 0 ? details.join('; ') : undefined;
         }
 
         if (logType) {
@@ -267,7 +250,6 @@ const update = async (req, res) => {
                 entity_id: screwdriver.id,
                 entity_type: 'screwdriver',
                 message: logMessage,
-                details: logDetails,
                 created_at: new Date()
             }, { transaction: t });
             logEntry.screwdriver_name = screwdriver.name;

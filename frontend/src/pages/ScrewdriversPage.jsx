@@ -359,7 +359,7 @@ const ScrewdriversPage = () => {
             )}
           </div>
 
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 flex flex-col">
             <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
               <h2 className="text-2xl font-semibold">Schraubendreher</h2>
               
@@ -419,18 +419,22 @@ const ScrewdriversPage = () => {
                 </Button>
               </div>
             </div>
-
-            <ScrewdriverList
-              screwdrivers={displayedScrewdrivers}
-              attributes={attributes}
-              onEdit={handleEdit}
-              onToggleState={handleToggleState}
-              onSort={handleSort}
-              onResetSort={handleResetSort}
-              sortConfig={sortConfig}
-              filterText={screwdriverListFilterText}
-              setFilterText={setScrewdriverListFilterText}
-            />
+            <div className="flex-1 min-h-0 flex flex-col">
+              <ScrewdriverList
+                screwdrivers={displayedScrewdrivers}
+                attributes={attributes}
+                onEdit={handleEdit}
+                onToggleState={handleToggleState}
+                onSort={handleSort}
+                onResetSort={handleResetSort}
+                sortConfig={sortConfig}
+                filterText={screwdriverListFilterText}
+                setFilterText={setScrewdriverListFilterText}
+                tableClassName="min-w-full w-full table-fixed text-sm"
+                cellClassName="px-2 py-2 whitespace-nowrap"
+                headerClassName="px-2 py-2 text-left font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap"
+              />
+            </div>
           </div>
         </div>
       </div>

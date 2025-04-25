@@ -25,17 +25,17 @@ const getActionEntity = (log) => {
 
 const getActionDetails = (log) => {
   if (getActionEntity(log) === 'attribute') {
-    if (log.type === 'attribute_create') return `Attribut erstellt: ${log.attribute_name}`;
-    if (log.type === 'attribute_update') return `Attribut geändert: ${log.attribute_name} (${log.previous_value} → ${log.new_value})`;
-    if (log.type === 'attribute_delete') return `Attribut gelöscht: ${log.attribute_name}`;
-    return log.attribute_name ? `Attribut: ${log.attribute_name}` : '';
+    if (log.type === 'attribute_create') return `Erstellt: ${log.attribute_name}`;
+    if (log.type === 'attribute_update') return `Geändert: ${log.previous_value} → ${log.new_value}`;
+    if (log.type === 'attribute_delete') return `Gelöscht: ${log.attribute_name}`;
+    return log.attribute_name ? log.attribute_name : '';
   }
   // screwdriver actions
-  if (log.type === 'screwdriver_create') return `Schraubendreher erstellt: ${log.screwdriver_name}`;
-  if (log.type === 'screwdriver_update') return `Schraubendreher geändert: ${log.screwdriver_name}`;
-  if (log.type === 'screwdriver_delete') return `Schraubendreher gelöscht: ${log.screwdriver_name}`;
-  if (log.type === 'screwdriver_activate') return `Schraubendreher aktiviert: ${log.screwdriver_name}`;
-  if (log.type === 'screwdriver_deactivate') return `Schraubendreher deaktiviert: ${log.screwdriver_name}`;
+  if (log.type === 'screwdriver_create') return '';
+  if (log.type === 'screwdriver_update') return log.attribute_name && log.previous_value != null ? `${log.attribute_name}: ${log.previous_value} → ${log.new_value}` : '';
+  if (log.type === 'screwdriver_delete') return '';
+  if (log.type === 'screwdriver_activate') return '';
+  if (log.type === 'screwdriver_deactivate') return '';
   if (log.previous_value == null && log.new_value) return `Initialwert: ${log.new_value}`;
   if (log.attribute_name && log.previous_value != null) return `${log.attribute_name}: ${log.previous_value} → ${log.new_value}`;
   return '';
@@ -130,68 +130,34 @@ const ActivityLog = ({ logs, loading }) => {
   }
 
   return (
-    <div>
-      <div className="flex flex-col sm:flex-row sm:items-center mb-2 gap-2">
-        <input
-          type="text"
-          className="border rounded px-2 py-1 text-sm w-full sm:w-64"
-          placeholder="Suche nach Name, Attribut oder Aktion..."
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-        />
-        <div className="flex gap-2">
-          <button
-            className={`text-xs px-2 py-1 rounded border ${sortBy==='created_at' ? 'bg-blue-100 border-blue-400' : 'bg-gray-100 border-gray-300'}`}
-            onClick={() => setSortBy('created_at')}
-          >
-            Nach Zeit
-          </button>
-          <button
-            className={`text-xs px-2 py-1 rounded border ${sortBy==='screwdriver_name' ? 'bg-blue-100 border-blue-400' : 'bg-gray-100 border-gray-300'}`}
-            onClick={() => setSortBy('screwdriver_name')}
-          >
-            Nach Name
-          </button>
-          <button
-            className={`text-xs px-1 py-1 rounded border ${sortDir==='desc' ? 'bg-blue-50 border-blue-400' : 'bg-gray-100 border-gray-300'}`}
-            title="Absteigend"
-            onClick={() => setSortDir('desc')}
-          >↓</button>
-          <button
-            className={`text-xs px-1 py-1 rounded border ${sortDir==='asc' ? 'bg-blue-50 border-blue-400' : 'bg-gray-100 border-gray-300'}`}
-            title="Aufsteigend"
-            onClick={() => setSortDir('asc')}
-          >↑</button>
-        </div>
-      </div>
+    <div className="flex flex-col gap-6 w-full h-full">
       {/* Schraubendreher Aktionen */}
-      <div className="mb-6">
+      <div className="flex-1 flex flex-col min-h-0">
         <h3 className="text-lg font-semibold mb-2 text-blue-700 flex items-center gap-2">
           <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6 6M8.464 6.464a5 5 0 017.072 7.072l-7.072-7.072z" /></svg>
           Schraubendreher-Aktionen
         </h3>
-        <div className="overflow-x-auto rounded border border-blue-100 bg-blue-50">
-          <table className="min-w-full divide-y divide-gray-200">
+        <div className="overflow-x-auto rounded border border-blue-100 bg-blue-50 flex-1 min-h-0">
+          <table className="min-w-full w-full table-fixed divide-y divide-gray-200 text-sm">
             <thead className="bg-blue-100">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                <th className="px-2 py-2 text-left font-medium text-gray-500 uppercase tracking-wider cursor-pointer whitespace-nowrap"
                     onClick={() => setSortBy('created_at')}>Zeitpunkt</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aktion</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                <th className="px-2 py-2 text-left font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Aktion</th>
+                <th className="px-2 py-2 text-left font-medium text-gray-500 uppercase tracking-wider cursor-pointer whitespace-nowrap"
                     onClick={() => setSortBy('screwdriver_name')}>Schraubendreher</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {paginatedScrewdriverLogs.length === 0 && (
-                <tr><td colSpan={4} className="px-6 py-4 text-gray-400">Keine Schraubendreher-Aktionen gefunden.</td></tr>
+                <tr><td colSpan={3} className="px-2 py-2 text-gray-400">Keine Schraubendreher-Aktionen gefunden.</td></tr>
               )}
               {paginatedScrewdriverLogs.map((log, index) => (
                 <tr key={index} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500" title={log.created_at}>
+                  <td className="px-2 py-2 whitespace-nowrap text-gray-500" title={log.created_at}>
                     {formatDateTime(log.created_at)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-2 py-2 whitespace-nowrap">
                     {(() => {
                       const tag = getActionTag(log);
                       return (
@@ -201,11 +167,8 @@ const ActivityLog = ({ logs, loading }) => {
                       );
                     })()}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-2 py-2 whitespace-nowrap text-gray-900">
                     {log.screwdriver_name}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
-                    {getActionDetails(log)}
                   </td>
                 </tr>
               ))}
@@ -222,33 +185,30 @@ const ActivityLog = ({ logs, loading }) => {
         </div>
       </div>
       {/* Attribut Aktionen */}
-      <div>
+      <div className="flex-1 flex flex-col min-h-0">
         <h3 className="text-lg font-semibold mb-2 text-purple-700 flex items-center gap-2">
           <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 20h9" /><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 3.5a2.121 2.121 0 113 3L7 19.5 3 21l1.5-4L16.5 3.5z" /></svg>
           Attribut-Aktionen
         </h3>
-        <div className="overflow-x-auto rounded border border-purple-100 bg-purple-50">
-          <table className="min-w-full divide-y divide-gray-200">
+        <div className="overflow-x-auto rounded border border-purple-100 bg-purple-50 flex-1 min-h-0">
+          <table className="min-w-full w-full table-fixed divide-y divide-gray-200 text-sm">
             <thead className="bg-purple-100">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                <th className="px-2 py-2 text-left font-medium text-gray-500 uppercase tracking-wider cursor-pointer whitespace-nowrap"
                     onClick={() => setSortBy('created_at')}>Zeitpunkt</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aktion</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                    onClick={() => setSortBy('screwdriver_name')}>Schraubendreher</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
+                <th className="px-2 py-2 text-left font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Aktion</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {paginatedAttributeLogs.length === 0 && (
-                <tr><td colSpan={4} className="px-6 py-4 text-gray-400">Keine Attribut-Aktionen gefunden.</td></tr>
+                <tr><td colSpan={2} className="px-2 py-2 text-gray-400">Keine Attribut-Aktionen gefunden.</td></tr>
               )}
               {paginatedAttributeLogs.map((log, index) => (
                 <tr key={index} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500" title={log.created_at}>
+                  <td className="px-2 py-2 whitespace-nowrap text-gray-500" title={log.created_at}>
                     {formatDateTime(log.created_at)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-2 py-2 whitespace-nowrap">
                     {(() => {
                       const tag = getActionTag(log);
                       return (
@@ -257,12 +217,6 @@ const ActivityLog = ({ logs, loading }) => {
                         </span>
                       );
                     })()}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {log.screwdriver_name}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
-                    {getActionDetails(log)}
                   </td>
                 </tr>
               ))}

@@ -68,44 +68,45 @@ const ScrewdriverList = ({ screwdrivers, attributes, onEdit, onToggleState, onSo
           onChange={(e) => setFilterText(e.target.value)}
         />
       </div>
-      <div className="overflow-x-auto bg-white rounded shadow">
-        <table className="min-w-full">
+      <div className="overflow-x-auto bg-white rounded shadow flex-1 min-h-0">
+        <table className={`min-w-full w-full table-fixed text-sm`.trim()}>
+          <colgroup>
+            <col style={{width: '18%'}} />
+            {activeAttributes.map(attr =>
+              ['is_required', 'is_parent', 'unique'].includes(attr.name)
+                ? <col key={attr.id} style={{width: '5%'}} />
+                : <col key={attr.id} style={{width: '15%'}} />
+            )}
+            <col style={{width: '10%'}} />
+            <col style={{width: '13%'}} />
+          </colgroup>
           <thead className="bg-gray-100">
             <tr>
-              {renderSortableHeader('name', 'Name')}
+              <th className="px-2 py-2 text-left font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Name</th>
               {activeAttributes.map(attr => (
-                <th 
-                  key={attr.id} 
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-50"
-                  onClick={() => onSort(`attribute_${attr.id}`)}
-                >
-                  <div className="flex items-center">
-                    {attr.name}
-                    {getSortIcon(`attribute_${attr.id}`)}
-                  </div>
-                </th>
+                <th key={attr.id} className="px-2 py-2 text-left font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">{attr.name}</th>
               ))}
-              {renderSortableHeader('state', 'Status')}
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aktionen</th>
+              <th className="px-2 py-2 text-left font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Status</th>
+              <th className="px-2 py-2 text-left font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Aktionen</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
             {filteredScrewdrivers.map((screwdriver) => (
               <tr key={screwdriver.id} className={screwdriver.state === 'off' ? 'bg-gray-50' : ''}>
-                <td className="px-6 py-4 whitespace-nowrap">{screwdriver.name}</td>
+                <td className="px-2 py-2 whitespace-nowrap">{screwdriver.name}</td>
                 {activeAttributes.map(attr => {
-                  const attributeValue = screwdriver.Attributes?.find(a => a.id === attr.id)?.ScrewdriverAttribute?.value || '-';
-                  return (
-                    <td key={attr.id} className="px-6 py-4 whitespace-nowrap">
-                      {attributeValue}
-                    </td>
-                  );
+                  const value = screwdriver.Attributes?.find(a => a.id === attr.id)?.ScrewdriverAttribute?.value;
+                  if (["is_required", "is_parent", "unique"].includes(attr.name)) {
+                    // boolean columns
+                    return <td key={attr.id} className="px-2 py-2 whitespace-nowrap text-center">{value === 'true' || value === true ? <span className="text-green-600 text-lg" title="Ja">✔️</span> : <span className="text-red-600 text-lg" title="Nein">❌</span>}</td>;
+                  }
+                  return <td key={attr.id} className="px-2 py-2 whitespace-nowrap">{value || '-'}</td>;
                 })}
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="px-2 py-2 whitespace-nowrap">
                   <div className="flex items-center">
                     <button
                       onClick={() => onToggleState(screwdriver)}
-                      className="text-2xl mr-2"
+                      className="text-xl mr-2"
                       title={screwdriver.state === 'on' ? 'Aktiv (Klicken zum Deaktivieren)' : 'Inaktiv (Klicken zum Aktivieren)'}
                     >
                       {screwdriver.state === 'on' ? (
@@ -114,12 +115,12 @@ const ScrewdriverList = ({ screwdrivers, attributes, onEdit, onToggleState, onSo
                         <FaToggleOff className="text-red-500" />
                       )}
                     </button>
-                    <span className={`text-sm ${screwdriver.state === 'on' ? 'text-green-600' : 'text-red-600'}`}>
+                    <span className={`text-xs ${screwdriver.state === 'on' ? 'text-green-600' : 'text-red-600'}`}>
                       {screwdriver.state === 'on' ? 'Aktiv' : 'Inaktiv'}
                     </span>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="px-2 py-2 whitespace-nowrap">
                   <button
                     onClick={() => onEdit(screwdriver)}
                     className="text-blue-600 hover:text-blue-800"

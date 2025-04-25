@@ -66,7 +66,7 @@ const AttributeList = ({
 
   const renderSortableHeader = (columnName, displayName) => (
     <th 
-      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-50"
+      className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-50 whitespace-nowrap"
       onClick={() => onSort(columnName)}
     >
       <div className="flex items-center">
@@ -77,12 +77,12 @@ const AttributeList = ({
   );
 
   return (
-    <div className="mb-4">
+    <div className="mb-4 w-full h-full flex flex-col">
       <div className="flex justify-between items-center mb-2">
         <input
           type="text"
           placeholder="Filter attributes..."
-          className="px-3 py-2 border rounded w-64"
+          className="px-2 py-1 border rounded w-64 text-sm"
           value={filterText}
           onChange={e => {
             if (propsSetFilterText !== undefined) {
@@ -92,10 +92,19 @@ const AttributeList = ({
             }
           }}
         />
-
       </div>
-      <div className="overflow-x-auto bg-white rounded shadow">
-        <table className="min-w-full">
+      <div className="overflow-x-auto bg-white rounded shadow flex-1 min-h-0">
+        <table className="min-w-full w-full table-fixed text-sm">
+          <colgroup>
+            <col style={{width: '18%'}} />
+            <col style={{width: '22%'}} />
+            <col style={{width: '24%'}} />
+            <col style={{width: '5%'}} />
+            <col style={{width: '5%'}} />
+            <col style={{width: '5%'}} />
+            <col style={{width: '10%'}} />
+            <col style={{width: '13%'}} />
+          </colgroup>
           <thead className="bg-gray-100">
             <tr>
               {renderSortableHeader('name', 'Name')}
@@ -105,23 +114,23 @@ const AttributeList = ({
               {renderSortableHeader('is_parent', 'Eltern')}
               {renderSortableHeader('unique', 'Eindeutig')}
               {renderSortableHeader('state', 'Status')}
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aktionen</th>
+              <th className="px-2 py-2 text-left font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Aktionen</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
             {filteredAttributes.map((attribute) => (
               <tr key={attribute.id} className={attribute.state === 'off' ? 'bg-gray-50' : ''}>
-                <td className="px-6 py-4 whitespace-nowrap">{attribute.name}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{attribute.description || '-'}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{attribute.validation_pattern || '-'}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{attribute.is_required ? 'Ja' : 'Nein'}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{attribute.is_parent ? 'Ja' : 'Nein'}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{Boolean(attribute.unique) ? 'Ja' : 'Nein'}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="px-2 py-2 whitespace-nowrap">{attribute.name}</td>
+                <td className="px-2 py-2 whitespace-nowrap">{attribute.description || '-'}</td>
+                <td className="px-2 py-2 whitespace-nowrap">{attribute.validation_pattern || '-'}</td>
+                <td className="px-2 py-2 whitespace-nowrap text-center">{attribute.is_required ? <span className="text-green-600 text-lg" title="Ja">✔️</span> : <span className="text-red-600 text-lg" title="Nein">❌</span>}</td>
+                <td className="px-2 py-2 whitespace-nowrap text-center">{attribute.is_parent ? <span className="text-green-600 text-lg" title="Ja">✔️</span> : <span className="text-red-600 text-lg" title="Nein">❌</span>}</td>
+                <td className="px-2 py-2 whitespace-nowrap text-center">{Boolean(attribute.unique) ? <span className="text-green-600 text-lg" title="Ja">✔️</span> : <span className="text-red-600 text-lg" title="Nein">❌</span>}</td>
+                <td className="px-2 py-2 whitespace-nowrap">
                   <div className="flex items-center">
                     <button
                       onClick={() => handleToggleClick(attribute)}
-                      className="text-2xl mr-2"
+                      className="text-xl mr-2"
                       title={attribute.state === 'on' ? 'Aktiv (Klicken zum Deaktivieren)' : 'Inaktiv (Klicken zum Aktivieren)'}
                     >
                       {attribute.state === 'on' ? (
@@ -130,12 +139,12 @@ const AttributeList = ({
                         <FaToggleOff className="text-red-500" />
                       )}
                     </button>
-                    <span className={`text-sm ${attribute.state === 'on' ? 'text-green-600' : 'text-red-600'}`}>
+                    <span className={`text-xs ${attribute.state === 'on' ? 'text-green-600' : 'text-red-600'}`}>
                       {attribute.state === 'on' ? 'Aktiv' : 'Inaktiv'}
                     </span>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="px-2 py-2 whitespace-nowrap">
                   <button
                     onClick={() => onEdit(attribute)}
                     className="text-blue-600 hover:text-blue-800"
