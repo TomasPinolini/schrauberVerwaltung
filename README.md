@@ -6,26 +6,50 @@ A comprehensive management system for screwdriver data and operations, designed 
 
 ```
 schrauber_verwaltung/
-├── backend/           # Backend server and API
-│   ├── src/          # Source code
-│   │   ├── controllers/  # API controllers
-│   │   ├── models/      # Database models
-│   │   ├── routes/      # API routes
-│   │   ├── middleware/  # Custom middleware
-│   │   └── utils/       # Utility functions
-│   ├── package.json  # Backend dependencies
-│   └── database.sql  # Database schema
-├── frontend/         # Frontend application
-│   ├── src/         # Source code
-│   │   ├── components/  # React components
-│   │   ├── pages/      # Page components
-│   │   ├── services/   # API services
-│   │   └── utils/      # Utility functions
-│   ├── public/      # Static assets
-│   └── package.json # Frontend dependencies
-└── data/            # Data storage
-    ├── one_payload/ # Single payload files (one per screwdriver)
-    └── all_data/    # Complete data files (multiple payloads)
+├── backend/                         # Backend server and REST API (Node.js + Express)
+│   ├── src/
+│   │   ├── controllers/             # Logic for handling API requests (business logic)
+│   │   │   ├── attributeController.js         # Attribute management endpoints
+│   │   │   ├── attributeValueController.js    # Attribute value endpoints
+│   │   │   └── screwdriverController.js       # Screwdriver CRUD, statistics, and reporting
+│   │   ├── models/                  # Sequelize ORM models for DB tables
+│   │   │   ├── ActivityLog.js               # Tracks all significant actions/events
+│   │   │   ├── Attribute.js                 # Attribute definitions (name, validation, etc.)
+│   │   │   ├── AttributeValue.js            # Possible values for parent attributes
+│   │   │   ├── DefaultAttributeValue.js     # Default values for attributes
+│   │   │   ├── Screwdriver.js               # Screwdriver entity
+│   │   │   ├── ScrewdriverAttribute.js      # Mapping of screwdrivers to their attributes/values
+│   │   │   └── index.js                     # Model loader/associations
+│   │   ├── routes/                   # Express route definitions (maps URLs to controllers)
+│   │   │   ├── attributeRoutes.js
+│   │   │   ├── attributeValueRoutes.js
+│   │   │   ├── logRoutes.js
+│   │   │   └── screwdriverRoutes.js
+│   │   ├── middleware/               # Custom Express middleware
+│   │   │   ├── errorHandler.js               # Centralized error handling
+│   │   │   └── validation.js                 # Request validation logic
+│   │   ├── utils/                    # Utility/helper functions
+│   │   │   └── logger.js                     # Logging setup (winston, etc.)
+│   │   └── app.js                    # Express app setup and configuration
+│   ├── package.json                  # Backend dependencies and scripts
+│   └── database.sql                  # SQL schema for initial DB setup
+├── frontend/                         # Frontend React application
+│   ├── src/
+│   │   ├── components/               # Reusable React components
+│   │   │   ├── attributes/                   # Attribute list, forms, etc.
+│   │   │   ├── reports/                      # Reporting/dashboard widgets
+│   │   │   ├── screwdrivers/                 # Screwdriver list, forms, etc.
+│   │   │   ├── ui/                           # Shared UI elements (Button, Select, etc.)
+│   │   │   └── NavBar.jsx                    # Main navigation bar
+│   │   ├── pages/                    # Top-level pages (route targets)
+│   │   │   ├── AttributesPage.jsx
+│   │   │   ├── ReportsPage.jsx
+│   │   │   └── ScrewdriversPage.jsx
+│   ├── public/                      # Static assets (favicon, index.html, etc.)
+│   └── package.json                 # Frontend dependencies and scripts
+└── data/                            # Data import/export area
+    ├── one_payload/                 # Single screwdriver payload files (per tool)
+    └── all_data/                    # Aggregated data files (multiple payloads, for bulk import/export)
 ```
 
 ## Features
@@ -72,7 +96,7 @@ schrauber_verwaltung/
 
 ### 1. Clone the Repository
 ```bash
-git clone [repository-url]
+git clone https://github.com/TomasPinolini/SchrauberVerwaltung.git
 cd schrauber_verwaltung
 ```
 
