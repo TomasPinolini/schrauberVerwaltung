@@ -6487,3 +6487,6 @@
 {"level":"info","message":"Incoming GET request to /api/screwdrivers/parent-attributes/19/distribution?state=inactive","timestamp":"2025-04-28T05:25:21.874Z"}
 {"level":"info","message":"Incoming GET request to /api/activity-logs","timestamp":"2025-04-28T05:25:21.880Z"}
 {"level":"info","message":"Incoming GET request to /api/screwdrivers/statistics/overview","timestamp":"2025-04-28T05:25:21.893Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-04-28T06:39:59.947Z"}
+{"level":"info","message":"Database connection test initiated...","timestamp":"2025-04-28T06:39:59.951Z"}
+{"level":"info","message":"Database connection established successfully","timestamp":"2025-04-28T06:40:00.111Z"}
