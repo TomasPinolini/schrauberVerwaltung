@@ -6487,6 +6487,7 @@
 {"level":"info","message":"Incoming GET request to /api/screwdrivers/parent-attributes/19/distribution?state=inactive","timestamp":"2025-04-28T05:25:21.874Z"}
 {"level":"info","message":"Incoming GET request to /api/activity-logs","timestamp":"2025-04-28T05:25:21.880Z"}
 {"level":"info","message":"Incoming GET request to /api/screwdrivers/statistics/overview","timestamp":"2025-04-28T05:25:21.893Z"}
+<<<<<<< HEAD
 {"level":"info","message":"Incoming GET request to /api/screwdrivers/parent-attributes","timestamp":"2025-04-28T05:29:40.676Z"}
 {"level":"info","message":"Incoming GET request to /api/screwdrivers/statistics/overview","timestamp":"2025-04-28T05:29:40.677Z"}
 {"level":"info","message":"Incoming GET request to /api/activity-logs","timestamp":"2025-04-28T05:29:40.677Z"}
@@ -6840,3 +6841,8 @@
 {"level":"info","message":"Incoming GET request to /api/screwdrivers/parent-attributes/19/distribution?state=inactive","timestamp":"2025-04-28T05:42:52.513Z"}
 {"level":"info","message":"Incoming GET request to /api/activity-logs","timestamp":"2025-04-28T05:42:52.514Z"}
 {"level":"info","message":"Incoming GET request to /api/screwdrivers/statistics/overview","timestamp":"2025-04-28T05:42:52.523Z"}
+=======
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-04-28T06:39:59.947Z"}
+{"level":"info","message":"Database connection test initiated...","timestamp":"2025-04-28T06:39:59.951Z"}
+{"level":"info","message":"Database connection established successfully","timestamp":"2025-04-28T06:40:00.111Z"}
+>>>>>>> 2e630fdddb5982dd5260838fd0304feae19b8485
