@@ -66,7 +66,7 @@ const AttributeList = ({
 
   const renderSortableHeader = (columnName, displayName) => (
     <th 
-      className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-50 whitespace-nowrap"
+      className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-50 whitespace-nowrap"
       onClick={() => onSort(columnName)}
     >
       <div className="flex items-center">
@@ -96,14 +96,14 @@ const AttributeList = ({
       <div className="overflow-x-auto bg-white rounded shadow flex-1 min-h-0">
         <table className="min-w-full w-full table-fixed text-sm">
           <colgroup>
-            <col style={{width: '18%'}} />
-            <col style={{width: '22%'}} />
-            <col style={{width: '24%'}} />
-            <col style={{width: '5%'}} />
-            <col style={{width: '5%'}} />
-            <col style={{width: '5%'}} />
             <col style={{width: '10%'}} />
-            <col style={{width: '13%'}} />
+            <col style={{width: '20%'}} />
+            <col style={{width: '24%'}} />
+            <col style={{width: '10%'}} />
+            <col style={{width: '8%'}} />
+            <col style={{width: '8%'}} />
+            <col style={{width: '10%'}} />
+            <col style={{width: '9%'}} />
           </colgroup>
           <thead className="bg-gray-100">
             <tr>

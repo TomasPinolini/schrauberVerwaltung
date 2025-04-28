@@ -71,23 +71,23 @@ const ScrewdriverList = ({ screwdrivers, attributes, onEdit, onToggleState, onSo
       <div className="overflow-x-auto bg-white rounded shadow flex-1 min-h-0">
         <table className={`min-w-full w-full table-fixed text-sm`.trim()}>
           <colgroup>
-            <col style={{width: '18%'}} />
+            <col style={{width: '10%'}} />
             {activeAttributes.map(attr =>
               ['is_required', 'is_parent', 'unique'].includes(attr.name)
                 ? <col key={attr.id} style={{width: '5%'}} />
                 : <col key={attr.id} style={{width: '15%'}} />
             )}
-            <col style={{width: '10%'}} />
-            <col style={{width: '13%'}} />
+            <col style={{width: '8%'}} />
+            <col style={{width: '8%'}} />
           </colgroup>
           <thead className="bg-gray-100">
             <tr>
-              <th className="px-2 py-2 text-left font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Name</th>
+              {renderSortableHeader('name', 'Name')}
               {activeAttributes.map(attr => (
-                <th key={attr.id} className="px-2 py-2 text-left font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">{attr.name}</th>
+                renderSortableHeader(`attribute_${attr.id}`, attr.name)
               ))}
-              <th className="px-2 py-2 text-left font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Status</th>
-              <th className="px-2 py-2 text-left font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Aktionen</th>
+              <th className="px-1 py-2 text-left font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Status</th>
+              <th className="px-1 py-2 text-left font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Aktionen</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
@@ -102,7 +102,7 @@ const ScrewdriverList = ({ screwdrivers, attributes, onEdit, onToggleState, onSo
                   }
                   return <td key={attr.id} className="px-2 py-2 whitespace-nowrap">{value || '-'}</td>;
                 })}
-                <td className="px-2 py-2 whitespace-nowrap">
+                <td className="px-1 py-2 whitespace-nowrap">
                   <div className="flex items-center">
                     <button
                       onClick={() => onToggleState(screwdriver)}
@@ -120,7 +120,7 @@ const ScrewdriverList = ({ screwdrivers, attributes, onEdit, onToggleState, onSo
                     </span>
                   </div>
                 </td>
-                <td className="px-2 py-2 whitespace-nowrap">
+                <td className="px-1 py-2 whitespace-nowrap">
                   <button
                     onClick={() => onEdit(screwdriver)}
                     className="text-blue-600 hover:text-blue-800"

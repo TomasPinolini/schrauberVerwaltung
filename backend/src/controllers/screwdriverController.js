@@ -567,41 +567,71 @@ const getParentAttributeDistribution = async (req, res) => {
             return res.status(404).json({ error: 'Parent attribute not found' });
         }
 
-        // Get the distribution of values for this attribute, filtered by state if provided
-        const stateFilter = req.query.state;
-        let screwdriverWhere = { is_current: true };
-        if (stateFilter === 'active') {
-            screwdriverWhere['$Screwdriver.state$'] = 'on';
-        } else if (stateFilter === 'inactive') {
-            screwdriverWhere['$Screwdriver.state$'] = 'off';
-        }
+        // Get all possible values for this attribute
+        const allValuesRaw = await ScrewdriverAttribute.findAll({
+            attributes: [
+                [sequelize.fn('DISTINCT', sequelize.col('value')), 'value']
+            ],
+            where: {
+                attribute_id: attributeId
+            }
+        });
+        const allValues = allValuesRaw.map(v => v.value);
 
-        const distribution = await ScrewdriverAttribute.findAll({
+        // Get counts for active screwdrivers
+        const activeDistribution = await ScrewdriverAttribute.findAll({
             attributes: [
                 'value',
                 [sequelize.fn('COUNT', sequelize.col('screwdriver_id')), 'count']
             ],
             where: {
                 attribute_id: attributeId,
-                ...screwdriverWhere
+                is_current: true,
+                '$Screwdriver.state$': 'on'
             },
             include: [
                 {
                     model: Screwdriver,
-                    as: 'Screwdriver', // Use the alias defined in the model
-                    attributes: [], // not needed in result
+                    as: 'Screwdriver',
+                    attributes: [],
                 }
             ],
-            group: ['value'],
-            order: [[sequelize.fn('COUNT', sequelize.col('screwdriver_id')), 'DESC']]
+            group: ['value']
         });
+        const activeMap = Object.fromEntries(activeDistribution.map(item => [item.value, parseInt(item.dataValues.count)]));
+
+        // Get counts for inactive screwdrivers
+        const inactiveDistribution = await ScrewdriverAttribute.findAll({
+            attributes: [
+                'value',
+                [sequelize.fn('COUNT', sequelize.col('screwdriver_id')), 'count']
+            ],
+            where: {
+                attribute_id: attributeId,
+                is_current: true,
+                '$Screwdriver.state$': 'off'
+            },
+            include: [
+                {
+                    model: Screwdriver,
+                    as: 'Screwdriver',
+                    attributes: [],
+                }
+            ],
+            group: ['value']
+        });
+        const inactiveMap = Object.fromEntries(inactiveDistribution.map(item => [item.value, parseInt(item.dataValues.count)]));
+
+        // Build unified result
+        const values = allValues.map(value => ({
+            value,
+            active: activeMap[value] || 0,
+            inactive: inactiveMap[value] || 0
+        }));
 
         res.json({
             attributeName: parentAttribute.name,
-            distribution: distribution.map(item => ({
-                value: item.value,
-                count: parseInt(item.dataValues.count)
-            }))
+            values
         });
     } catch (error) {
         logger.error('Error getting attribute distribution:', error);
