@@ -241,7 +241,7 @@ ActivityLog.propTypes = {
     created_at: PropTypes.string.isRequired,
     screwdriver_name: PropTypes.string.isRequired,
     attribute_name: PropTypes.string,
-    new_value: PropTypes.string.isRequired,
+    new_value: PropTypes.string, // Make optional
     previous_value: PropTypes.string,
     is_current: PropTypes.bool
   })).isRequired,

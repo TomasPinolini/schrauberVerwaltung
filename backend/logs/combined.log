@@ -6846,3 +6846,5 @@
 {"level":"info","message":"Database connection test initiated...","timestamp":"2025-04-28T06:39:59.951Z"}
 {"level":"info","message":"Database connection established successfully","timestamp":"2025-04-28T06:40:00.111Z"}
 >>>>>>> 2e630fdddb5982dd5260838fd0304feae19b8485
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-04-29T18:55:41.458Z"}
+{"level":"info","message":"Database connection test initiated...","timestamp":"2025-04-29T18:55:41.460Z"}

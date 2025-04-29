@@ -64,15 +64,9 @@ const ScrewdriverOverview = ({
       if (!selectedAttribute) return;
       setLoading(true);
       try {
-        // Fetch for all, active, and inactive
-        const [activeRes, inactiveRes] = await Promise.all([
-          axios.get(`/api/screwdrivers/parent-attributes/${selectedAttribute}/distribution?state=active`),
-          axios.get(`/api/screwdrivers/parent-attributes/${selectedAttribute}/distribution?state=inactive`)
-        ]);
-        setDistribution({
-          active: activeRes.data,
-          inactive: inactiveRes.data
-        });
+        // Fetch the new unified distribution format
+        const response = await axios.get(`/api/screwdrivers/parent-attributes/${selectedAttribute}/distribution`);
+        setDistribution(response.data);
         setError(null);
       } catch (err) {
         setError('Fehler beim Laden der Verteilung');
@@ -84,19 +78,20 @@ const ScrewdriverOverview = ({
     fetchDistribution();
   }, [selectedAttribute]);
 
+  // Chart data for new API format
   const chartData = distribution ? {
-    labels: distribution.active.distribution.map(item => item.value),
+    labels: distribution.values.map(item => item.value),
     datasets: [
       {
         label: 'Aktiv',
-        data: distribution.active.distribution.map(item => item.count),
+        data: distribution.values.map(item => item.active),
         backgroundColor: 'rgba(34,197,94,0.7)',
         borderColor: 'rgba(34,197,94,1)',
         borderWidth: 1
       },
       {
         label: 'Inaktiv',
-        data: distribution.inactive.distribution.map(item => item.count),
+        data: distribution.values.map(item => item.inactive),
         backgroundColor: 'rgba(239,68,68,0.7)',
         borderColor: 'rgba(239,68,68,1)',
         borderWidth: 1
@@ -115,7 +110,7 @@ const ScrewdriverOverview = ({
       },
       title: {
         display: true,
-        text: distribution ? `Verteilung nach ${distribution.active.attributeName}` : 'Verteilung'
+        text: distribution ? `Verteilung nach ${distribution.attributeName}` : 'Verteilung'
       }
     },
     scales: {
@@ -182,20 +177,7 @@ const ScrewdriverOverview = ({
         ) : (
           distribution && (
             <div style={{ maxHeight: 420, minHeight: 250 }}>
-              <Bar options={{ ...chartOptions, maintainAspectRatio: false }} data={
-                stateFilter === 'all' ? chartData : {
-                  labels: distribution[stateFilter]?.distribution.map(item => item.value) || [],
-                  datasets: [
-                    {
-                      label: stateFilter === 'active' ? 'Aktiv' : 'Inaktiv',
-                      data: distribution[stateFilter]?.distribution.map(item => item.count) || [],
-                      backgroundColor: stateFilter === 'active' ? 'rgba(34,197,94,0.7)' : 'rgba(239,68,68,0.7)',
-                      borderColor: stateFilter === 'active' ? 'rgba(34,197,94,1)' : 'rgba(239,68,68,1)',
-                      borderWidth: 1
-                    }
-                  ]
-                }
-              } height={320} />
+              <Bar options={{ ...chartOptions, maintainAspectRatio: false }} data={chartData} height={320} />
             </div>
           )
         )}
