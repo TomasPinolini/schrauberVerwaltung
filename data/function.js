@@ -9,10 +9,22 @@ const TARGET_TABLE = "dbo.Auftraege";      // schema-qualified table name
 const TABLE_COL    = "[Table]";            // bracketed (reserved word)
 
 // ---------- helpers -------------------------------------------------- */
-const base64ToArr = (b64, scale = 1) =>
-    !b64 ? [] :
-    Array.from(new Uint16Array(Buffer.from(b64,'base64').buffer))
-         .map(v => v/scale);
+function decodeBase64OrArray(val, scale = 1) {
+    if (typeof val === 'string') {
+        try {
+            const buf = Buffer.from(val, 'base64');
+            if (buf.length % 4 === 0) {
+                const arr = [];
+                for (let i = 0; i < buf.length; i += 4) {
+                    arr.push(buf.readFloatLE(i) / scale);
+                }
+                return arr;
+            }
+        } catch (e) { /* ignore */ }
+        return val;
+    }
+    return val;
+}
 
 const isoDatetime = v => v ? new Date(v).toISOString().slice(0,19).replace('T',' ') : null;
 
@@ -97,8 +109,16 @@ channels.forEach(ch => {
     // If NOK, try to extract graph data
     if (r.Ergebnis === 'NOK' || graphData || graphArr) {
         if (graphData) {
-            r.Winkelwerte     = base64ToArr(graphData["angle values"],  graphData["angle scale"] ||1).join(',');
-            r.Drehmomentwerte = base64ToArr(graphData["torque values"], graphData["torque scale"]||1).join(',');
+            r.Winkelwerte     = Array.isArray(graphData["angle values"])
+                ? graphData["angle values"].join(',')
+                : Array.isArray(graphData["angle scale"]) || !graphData["angle scale"]
+                    ? decodeBase64OrArray(graphData["angle values"]).join(',')
+                    : decodeBase64OrArray(graphData["angle values"], graphData["angle scale"]).join(',');
+            r.Drehmomentwerte = Array.isArray(graphData["torque values"])
+                ? graphData["torque values"].join(',')
+                : Array.isArray(graphData["torque scale"]) || !graphData["torque scale"]
+                    ? decodeBase64OrArray(graphData["torque values"]).join(',')
+                    : decodeBase64OrArray(graphData["torque values"], graphData["torque scale"]).join(',');
         } else if (graphArr) {
             // graph as arrays
             r.Winkelwerte     = Array.isArray(graphArr["angle values"]) ? graphArr["angle values"].join(',') : null;
