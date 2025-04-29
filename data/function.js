@@ -2,12 +2,13 @@
    Function node: Build INSERT for dbo.Auftraege
    • Column 1  = [Table]  (screwdriver tag, per channel)
    • Handles single- and multi-channel payloads in ONE insert
+   • EXTENDED: Robust normalization for all known payload formats
    ==================================================================== */
 
 const TARGET_TABLE = "dbo.Auftraege";      // schema-qualified table name
 const TABLE_COL    = "[Table]";            // bracketed (reserved word)
 
-/* ---------- helpers -------------------------------------------------- */
+// ---------- helpers -------------------------------------------------- */
 const base64ToArr = (b64, scale = 1) =>
     !b64 ? [] :
     Array.from(new Uint16Array(Buffer.from(b64,'base64').buffer))
@@ -19,18 +20,19 @@ const fmt = (v, str=false) =>
       (v===undefined || v===null || v==='') ? 'NULL'
       : str ? `'${v.toString().replace(/'/g,"''")}'` : v;
 
-/* ---------- normalise input ----------------------------------------- */
-const root      = Array.isArray(msg.payload) ? msg.payload[0] : msg.payload;
-const channels  = root.channels?.length ? root.channels : [root];
+// ---------- normalize input ----------------------------------------- */
+// Always treat as array of channels, even if single object
+const root = Array.isArray(msg.payload) ? msg.payload[0] : msg.payload;
+const channels = root.channels?.length ? root.channels : [root];
 
-const baseName  = root.Table || 'Unknown';          // comes from earlier Change node
-const idCode    = root["id code"]  || null;
-const progNr    = root["appl nr"]  || root["prg nr"]  || null;
-const progName  = root["appl name"]|| root["prg name"]|| null;
-const datum     = isoDatetime(root.date || root.dateIso);
-const ergebnis  = (root.result || '').toUpperCase();
+const baseName = root.Table || root["table"] || root["name"] || root["appl name"] || 'Unknown';
+const idCode   = root["id code"] || root["id_code"] || root["id code channel"] || null;
+const progNr   = root["appl nr"] || root["prg nr"] || root["program nr"] || null;
+const progName = root["appl name"] || root["prg name"] || root["program name"] || null;
+const datum    = isoDatetime(root.date || root.dateIso || root["prg date"]);
+const ergebnis = (root.result || root["quality code"] || '').toString().toUpperCase();
 
-/* Material & serial split from "MAT-SER_…" */
+// Material & serial split from "MAT-SER_…" (if present)
 let material = null, serialnr = null;
 if (idCode?.includes('-') && idCode.includes('_')){
     const [mat,ser] = idCode.split('_')[0].split('-');
@@ -40,26 +42,26 @@ if (idCode?.includes('-') && idCode.includes('_')){
 const tuples = [];
 
 channels.forEach(ch => {
-
-    /* channel-specific tag e.g.  GH4_LinkesBand_CH2  */
+    // channel-specific tag e.g.  GH4_LinkesBand_CH2
     const tableTag = channels.length === 1
-        ? baseName
+        ? (baseName || ch.Table || ch["table"] || ch["appl name"] || 'Unknown')
         : `${baseName}_CH${ch.nr || ch["node id"] || 0}`;
 
+    // Prefer channel-level fields, fallback to root
     const steps = ch["tightening steps"] || root["tightening steps"] || [];
-    if (!steps.length) return;
-    const last  = steps[steps.length-1];
+    if (!Array.isArray(steps) || !steps.length) return;
+    const last = steps[steps.length-1] || {};
 
     const r = {
         Table              : tableTag,
-        Datum              : datum,
-        ID_Code            : idCode,
-        Program_Nr         : progNr,
-        Program_Name       : progName,
+        Datum              : isoDatetime(ch.date || ch.dateIso || root.date || root.dateIso || ch["prg date"]),
+        ID_Code            : ch["id code"] || ch["id_code"] || ch["id code channel"] || idCode,
+        Program_Nr         : ch["appl nr"] || ch["prg nr"] || ch["program nr"] || progNr,
+        Program_Name       : ch["appl name"] || ch["prg name"] || ch["program name"] || progName,
         Materialnummer     : material,
         Serialnummer       : serialnr,
         Schraubkanal       : ch.nr || ch["node id"] || null,
-        Ergebnis           : ergebnis,
+        Ergebnis           : (ch.result || ch["quality code"] || ergebnis || '').toString().toUpperCase(),
         N_Letzter_Schritt  : last.row  ?? null,
         P_Letzter_Schritt  : last.name ?? null,
         Drehmoment_Nom     : null, Drehmoment_Ist: null,
@@ -69,13 +71,16 @@ channels.forEach(ch => {
         Winkelwerte        : null, Drehmomentwerte: null
     };
 
+    // Extract tightening function values if present
     (last["tightening functions"]||[]).forEach(fn=>{
         switch(fn.name){
             case 'TF Torque':     r.Drehmoment_Nom = fn.nom; r.Drehmoment_Ist = fn.act; break;
             case 'MF TorqueMin':  r.Drehmoment_Min = fn.nom; break;
+            case 'MF TorqueMax':  // Some payloads use MF TorqueMax instead of MFs TorqueMax
             case 'MFs TorqueMax': r.Drehmoment_Max = fn.nom; break;
             case 'TF Angle':      r.Winkel_Nom     = fn.nom; r.Winkel_Ist     = fn.act; break;
             case 'MF AngleMin':   r.Winkel_Min     = fn.nom; break;
+            case 'MF AngleMax':
             case 'MFs AngleMax':  r.Winkel_Max     = fn.nom; break;
         }
         if (fn.add?.[0]?.["angle threshold"]){
@@ -85,10 +90,20 @@ channels.forEach(ch => {
         }
     });
 
-    if (ergebnis === 'NOK'){
-        const g = last.graph_b64||{};
-        r.Winkelwerte     = base64ToArr(g["angle values"],  g["angle scale"] ||1).join(',');
-        r.Drehmomentwerte = base64ToArr(g["torque values"], g["torque scale"]||1).join(',');
+    // Graph data extraction (supports both b64 and array)
+    // 1. Prefer channel-level, then last step, then root
+    let graphData = ch.graph_b64 || last.graph_b64 || root.graph_b64 || null;
+    let graphArr  = ch.graph     || last.graph     || root.graph     || null;
+    // If NOK, try to extract graph data
+    if (r.Ergebnis === 'NOK' || graphData || graphArr) {
+        if (graphData) {
+            r.Winkelwerte     = base64ToArr(graphData["angle values"],  graphData["angle scale"] ||1).join(',');
+            r.Drehmomentwerte = base64ToArr(graphData["torque values"], graphData["torque scale"]||1).join(',');
+        } else if (graphArr) {
+            // graph as arrays
+            r.Winkelwerte     = Array.isArray(graphArr["angle values"]) ? graphArr["angle values"].join(',') : null;
+            r.Drehmomentwerte = Array.isArray(graphArr["torque values"]) ? graphArr["torque values"].join(',') : null;
+        }
     }
 
     tuples.push(`(
@@ -116,7 +131,7 @@ channels.forEach(ch => {
     )`);
 });
 
-/* ---------- final SQL sent to MSSQL node ---------------------------- */
+// ---------- final SQL sent to MSSQL node ---------------------------- */
 msg.topic = `
 INSERT INTO ${TARGET_TABLE} (
     ${TABLE_COL},
