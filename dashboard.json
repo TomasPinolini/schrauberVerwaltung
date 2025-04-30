@@ -1,0 +1,1417 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 376,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "mssql",
+        "uid": "ad34dc54-c571-4ea0-9b70-0a8a3b25030c"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "left",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": false,
+            "inspect": false
+          },
+          "decimals": 1,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "DatumWithTime"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 160
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Ergebnis"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 32
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "ID"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 186
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "1"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 51
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "2"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 52
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "3"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 51
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Materialnummer"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 121
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Serialnummer"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 78
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Schraubkanal"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 61
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "ID_Code"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 136
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Datum"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 158
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Program_Name"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 127
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "N_Letzte_Schritt"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 67
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Drehmoment_Nom"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 62
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "OK"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 52
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Ist"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 59
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Nom"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 89
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Program_Nr"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 29
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "P"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 28
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 20,
+        "w": 6,
+        "x": 0,
+        "y": 0
+      },
+      "id": 3,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "enablePagination": true,
+          "fields": "",
+          "reducer": ["sum"],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": false,
+            "displayName": "ID_Code"
+          }
+        ]
+      },
+      "pluginVersion": "11.5.1",
+      "targets": [
+        {
+          "dataset": "DB_camos_capp_Standard_SQL",
+          "datasource": {
+            "type": "mssql",
+            "uid": "ad34dc54-c571-4ea0-9b70-0a8a3b25030c"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \r\n    Datum,\r\n    ID_Code,\r\n    Program_Nr as P,\r\n    Ergebnis,\r\n    Drehmoment_Ist AS Ist\r\nFROM Auftraege\r\nWHERE Tabelle = '${tabelle}'\r\n    AND Schraubkanal = '${schrauber}'\r\n    AND Ergebnis IN (${ergebnis})\r\n    AND Datum BETWEEN $__timeFrom() AND $__timeTo()\r\n    AND Program_Nr = '${program}'\r\nORDER BY Datum DESC;\r\n/*\r\n*/\r\n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "mssql",
+        "uid": "ad34dc54-c571-4ea0-9b70-0a8a3b25030c"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 2,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "fieldMinMax": false,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "NOM"
+            },
+            "properties": [
+              {
+                "id": "custom.showPoints",
+                "value": "never"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "IST"
+            },
+            "properties": [
+              {
+                "id": "custom.pointSize",
+                "value": 4
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 26
+              },
+              {
+                "id": "custom.gradientMode",
+                "value": "opacity"
+              },
+              {
+                "id": "custom.fillBelowTo",
+                "value": "Drehmoment_Nom"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Drehmoment_Nom"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.transform",
+                "value": "constant"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Drehmoment_Ist"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Drehmoment_Max"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "purple",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.transform",
+                "value": "constant"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Drehmoment_Min"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "purple",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.transform",
+                "value": "constant"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 18,
+        "x": 6,
+        "y": 0
+      },
+      "id": 4,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.5.1",
+      "targets": [
+        {
+          "dataset": "DB_camos_capp_Standard_SQL",
+          "datasource": {
+            "type": "mssql",
+            "uid": "ad34dc54-c571-4ea0-9b70-0a8a3b25030c"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \r\n    Datum,\r\n    Drehmoment_Ist\r\nFROM Auftraege\r\nWHERE Tabelle = '${tabelle}'\r\n    AND Schraubkanal = '${schrauber}'\r\n    AND Program_Nr = ${program}\r\n    AND Ergebnis IN (${ergebnis})\r\n    AND Datum BETWEEN $__timeFrom() AND $__timeTo()\r\nORDER BY Datum;\r\n",
+          "refId": "IST",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        {
+          "dataset": "DB_camos_capp_Standard_SQL",
+          "datasource": {
+            "type": "mssql",
+            "uid": "ad34dc54-c571-4ea0-9b70-0a8a3b25030c"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT \r\n    CAST(Datum AS DATETIME) AS time,\r\n    Drehmoment_Nom\r\nFROM Auftraege\r\nWHERE Tabelle = '${tabelle}'\r\n    AND Schraubkanal = '${schrauber}'\r\n    AND Program_Nr = ${program}\r\n    AND Ergebnis IN (${ergebnis})\r\n    AND CAST(Datum AS DATETIME) >= $__timeFrom() \r\n    AND CAST(Datum AS DATETIME) <= $__timeTo()\r\nORDER BY Datum;\r\n",
+          "refId": "NOM",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        {
+          "dataset": "DB_camos_capp_Standard_SQL",
+          "datasource": {
+            "type": "mssql",
+            "uid": "ad34dc54-c571-4ea0-9b70-0a8a3b25030c"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT \r\n    CAST(Datum AS DATETIME) AS time,\r\n    Drehmoment_Max\r\nFROM Auftraege\r\nWHERE Tabelle = '${tabelle}'\r\n    AND Schraubkanal = '${schrauber}'\r\n    AND Program_Nr = ${program}\r\n    AND Ergebnis IN (${ergebnis})\r\n    AND CAST(Datum AS DATETIME) >= $__timeFrom() \r\n    AND CAST(Datum AS DATETIME) <= $__timeTo()\r\nORDER BY Datum;\r\n\r\n",
+          "refId": "MAX",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        {
+          "dataset": "DB_camos_capp_Standard_SQL",
+          "datasource": {
+            "type": "mssql",
+            "uid": "ad34dc54-c571-4ea0-9b70-0a8a3b25030c"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT \r\n    CAST(Datum AS DATETIME) AS time,\r\n    Drehmoment_Min\r\nFROM Auftraege\r\nWHERE Tabelle = '${tabelle}'\r\n    AND Schraubkanal = '${schrauber}'\r\n    AND Program_Nr = ${program}\r\n    AND Ergebnis IN (${ergebnis})\r\n    AND CAST(Datum AS DATETIME) >= $__timeFrom() \r\n    AND CAST(Datum AS DATETIME) <= $__timeTo()\r\nORDER BY Datum;\r\n",
+          "refId": "MIN",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "mssql",
+        "uid": "ad34dc54-c571-4ea0-9b70-0a8a3b25030c"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 0.2
+              },
+              {
+                "color": "red",
+                "value": 0.4
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 6,
+        "y": 11
+      },
+      "id": 8,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.5.1",
+      "targets": [
+        {
+          "dataset": "DB_camos_capp_Standard_SQL",
+          "datasource": {
+            "type": "mssql",
+            "uid": "ad34dc54-c571-4ea0-9b70-0a8a3b25030c"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \r\n    STDEVP(Drehmoment_Ist) / AVG(Drehmoment_Ist) AS Variationskoeffizient\r\nFROM Auftraege\r\nWHERE Tabelle = '${tabelle}'\r\n    AND Drehmoment_Ist IS NOT NULL \r\n    AND Datum BETWEEN $__timeFrom() AND $__timeTo()\r\n    AND Schraubkanal = '${schrauber}'\r\n    AND Program_Nr = ${program}\r\n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "mssql",
+        "uid": "ad34dc54-c571-4ea0-9b70-0a8a3b25030c"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "fieldMinMax": false,
+          "mappings": []
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "OK"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "semi-dark-green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "NOK"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "semi-dark-red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 5,
+        "x": 10,
+        "y": 11
+      },
+      "id": 2,
+      "options": {
+        "displayLabels": ["name", "value", "percent"],
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false,
+          "values": []
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.5.1",
+      "targets": [
+        {
+          "dataset": "DB_camos_capp_Standard_SQL",
+          "datasource": {
+            "type": "mssql",
+            "uid": "ad34dc54-c571-4ea0-9b70-0a8a3b25030c"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \r\n    Ergebnis,\r\n    COUNT(*) AS count\r\nFROM Auftraege\r\nWHERE Tabelle = '${tabelle}'\r\n    AND Schraubkanal = '${schrauber}'  \r\n    AND Datum BETWEEN $__timeFrom() AND $__timeTo()\r\nGROUP BY Ergebnis\r\nORDER BY count DESC;\r\n\r\n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "mssql",
+        "uid": "ad34dc54-c571-4ea0-9b70-0a8a3b25030c"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 34,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 4,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "NOK_Count"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 9,
+        "x": 15,
+        "y": 11
+      },
+      "id": 5,
+      "options": {
+        "barRadius": 0.05,
+        "barWidth": 0.83,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "pluginVersion": "11.5.1",
+      "targets": [
+        {
+          "dataset": "DB_camos_capp_Standard_SQL",
+          "datasource": {
+            "type": "mssql",
+            "uid": "ad34dc54-c571-4ea0-9b70-0a8a3b25030c"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \r\n    CAST(N_Letzter_Schritt AS VARCHAR) AS Letzter_Schritt,\r\n    COUNT(*) AS NOK_Count\r\nFROM Auftraege\r\nWHERE Tabelle = '${tabelle}'\r\n    AND Ergebnis = 'NOK'\r\n    AND Schraubkanal = '${schrauber}'\r\n    AND Datum BETWEEN $__timeFrom() AND $__timeTo()\r\n\r\nGROUP BY N_Letzter_Schritt\r\nORDER BY N_Letzter_Schritt;\r\n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "mssql",
+        "uid": "ad34dc54-c571-4ea0-9b70-0a8a3b25030c"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 1.33
+              },
+              {
+                "color": "green",
+                "value": 1.66
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 6,
+        "y": 15
+      },
+      "id": 7,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": ["last"],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.5.1",
+      "targets": [
+        {
+          "dataset": "DB_camos_capp_Standard_SQL",
+          "datasource": {
+            "type": "mssql",
+            "uid": "ad34dc54-c571-4ea0-9b70-0a8a3b25030c"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT \r\n    CASE              \r\n    WHEN (230 - AVG(Drehmoment_Ist)) / (3 * STDEV(Drehmoment_Ist)) <\r\n    (AVG(Drehmoment_Ist) - 160) / (3 * STDEV(Drehmoment_Ist))\r\n    THEN (230 - AVG(Drehmoment_Ist)) / (3 * STDEV(Drehmoment_Ist))\r\n    ELSE (AVG(Drehmoment_Ist) - 160) / (3 * STDEV(Drehmoment_Ist))\r\n    END AS CPK\r\nFROM Auftraege\r\nWHERE Tabelle = '${tabelle}'\r\n    AND Drehmoment_Ist IS NOT NULL \r\n    AND Datum BETWEEN $__timeFrom() AND $__timeTo()\r\n    AND Schraubkanal = '${schrauber}'\r\n    AND Program_Nr = ${program}\r\n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "mssql",
+        "uid": "ad34dc54-c571-4ea0-9b70-0a8a3b25030c"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": true,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 100,
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 2,
+            "pointShape": "circle",
+            "pointSize": {
+              "fixed": 4
+            },
+            "pointStrokeWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "show": "points+lines"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "y"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "light-blue",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.axisLabel",
+                "value": "Drehmoment"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "x"
+            },
+            "properties": [
+              {
+                "id": "custom.axisLabel",
+                "value": "Winkel"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 24,
+        "x": 0,
+        "y": 20
+      },
+      "id": 9,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "mapping": "auto",
+        "series": [
+          {
+            "frame": {
+              "matcher": {
+                "id": "byIndex",
+                "options": 0
+              }
+            },
+            "x": {
+              "matcher": {
+                "id": "byName",
+                "options": "x"
+              }
+            },
+            "y": {
+              "matcher": {
+                "id": "byName",
+                "options": "y"
+              }
+            }
+          }
+        ],
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "none",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.5.1",
+      "targets": [
+        {
+          "dataset": "DB_camos_capp_Standard_SQL",
+          "datasource": {
+            "type": "mssql",
+            "uid": "ad34dc54-c571-4ea0-9b70-0a8a3b25030c"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT \r\n  winkel.value AS [x],\r\n  torque.value AS [y]\r\nFROM \r\n  Auftraege r\r\nCROSS APPLY dbo.SplitCSV(r.Winkelwerte, ',') AS winkel\r\nCROSS APPLY dbo.SplitCSV(r.Drehmomentwerte, ',') AS torque\r\nWHERE r.Tabelle = '${tabelle}'\r\n    AND Datum BETWEEN '${datum}' AND '${datum}'\r\n  AND r.Schraubkanal = '${schrauber}'\r\n  AND winkel.position = torque.position\r\n  AND ISNUMERIC(winkel.value) = 1\r\n  AND ISNUMERIC(torque.value) = 1\r\nORDER BY \r\n  winkel.position\r\n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "",
+      "type": "xychart"
+    }
+  ],
+  "preload": false,
+  "refresh": "",
+  "schemaVersion": 40,
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "allowCustomValue": false,
+        "current": {
+          "text": "MFV23_Halle101_114227CP_link",
+          "value": "MFV23_Halle101_114227CP_link"
+        },
+        "description": "",
+        "label": "Schrauber",
+        "name": "tabelle",
+        "options": [
+          {
+            "selected": false,
+            "text": "MOE61_Halle206_GH4",
+            "value": "MOE61_Halle206_GH4"
+          },
+          {
+            "selected": false,
+            "text": "MOE61_Halle207_BEM",
+            "value": "MOE61_Halle207_BEM"
+          },
+          {
+            "selected": false,
+            "text": "MFV23_Halle101_114227CP_recht",
+            "value": "MFV23_Halle101_114227CP_recht"
+          },
+          {
+            "selected": true,
+            "text": "MFV23_Halle101_114227CP_link",
+            "value": "MFV23_Halle101_114227CP_link"
+          },
+          {
+            "selected": false,
+            "text": "MOE61_Halle206_BGGF1GF3",
+            "value": "MOE61_Halle206_BGGF1GF3"
+          },
+          {
+            "selected": false,
+            "text": "MFV3_Halle204_Vorm_Prop_Druck",
+            "value": "MFV3_Halle204_Vorm_Prop_Druck"
+          },
+          {
+            "selected": false,
+            "text": "MFV3_Halle204_Rest_CH",
+            "value": "MFV3_Halle204_Rest_CH"
+          },
+          {
+            "selected": false,
+            "text": "MFV23_Halle101_11461CP",
+            "value": "MFV23_Halle101_11461CP"
+          }
+        ],
+        "query": "MOE61_Halle206_GH4, MOE61_Halle207_BEM,  MFV23_Halle101_114227CP_recht, MFV23_Halle101_114227CP_link, MOE61_Halle206_BGGF1GF3, MFV3_Halle204_Vorm_Prop_Druck, MFV3_Halle204_Rest_CH, MFV23_Halle101_11461CP",
+        "type": "custom"
+      },
+      {
+        "allowCustomValue": false,
+        "current": {
+          "text": "4",
+          "value": "4"
+        },
+        "datasource": {
+          "type": "mssql",
+          "uid": "ad34dc54-c571-4ea0-9b70-0a8a3b25030c"
+        },
+        "definition": "SELECT Program_Nr FROM Auftraege\nWHERE Tabelle = '${tabelle}'\nORDER BY Program_Nr\n\n",
+        "includeAll": false,
+        "label": "Program",
+        "name": "program",
+        "options": [],
+        "query": "SELECT Program_Nr FROM Auftraege\nWHERE Tabelle = '${tabelle}'\nORDER BY Program_Nr\n\n",
+        "refresh": 1,
+        "regex": "",
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allowCustomValue": false,
+        "current": {
+          "text": "1",
+          "value": "1"
+        },
+        "datasource": {
+          "type": "mssql",
+          "uid": "ad34dc54-c571-4ea0-9b70-0a8a3b25030c"
+        },
+        "definition": "SELECT Schraubkanal FROM Auftraege\nWHERE Tabelle = '${tabelle}'\nORDER BY Schraubkanal\n\n",
+        "label": "Schrauber",
+        "name": "schrauber",
+        "options": [],
+        "query": "SELECT Schraubkanal FROM Auftraege\nWHERE Tabelle = '${tabelle}'\nORDER BY Schraubkanal\n\n",
+        "refresh": 1,
+        "regex": "",
+        "sort": 3,
+        "type": "query"
+      },
+      {
+        "allowCustomValue": false,
+        "current": {
+          "text": ["NOK", "OK"],
+          "value": ["NOK", "OK"]
+        },
+        "description": "",
+        "includeAll": false,
+        "label": "Ergebnis",
+        "multi": true,
+        "name": "ergebnis",
+        "options": [
+          {
+            "selected": true,
+            "text": "OK",
+            "value": "OK"
+          },
+          {
+            "selected": true,
+            "text": "NOK",
+            "value": "NOK"
+          }
+        ],
+        "query": "OK, NOK",
+        "type": "custom"
+      },
+      {
+        "allowCustomValue": false,
+        "current": {
+          "text": "All",
+          "value": ["$__all"]
+        },
+        "datasource": {
+          "type": "mssql",
+          "uid": "ad34dc54-c571-4ea0-9b70-0a8a3b25030c"
+        },
+        "definition": "SELECT materialnummer \nFROM Auftraege\nWHERE Tabelle = '${tabelle}' \nGROUP BY materialnummer\nORDER BY materialnummer",
+        "description": "",
+        "includeAll": true,
+        "label": "Material Nummer",
+        "multi": true,
+        "name": "materialnummer",
+        "options": [],
+        "query": "SELECT materialnummer \nFROM Auftraege\nWHERE Tabelle = '${tabelle}' \nGROUP BY materialnummer\nORDER BY materialnummer",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "allowCustomValue": true,
+        "current": {
+          "text": "2025-04-30 10:00:04",
+          "value": "2025-04-30 10:00:04"
+        },
+        "datasource": {
+          "type": "mssql",
+          "uid": "ad34dc54-c571-4ea0-9b70-0a8a3b25030c"
+        },
+        "definition": "SELECT DISTINCT\n    CONVERT(varchar(19), CAST(Datum AS datetime), 120) AS Datum\nFROM Auftraege\nWHERE Tabelle = '${tabelle}'\n    AND Datum BETWEEN $__timeFrom() AND $__timeTo()\n    AND Schraubkanal = '${schrauber}'\n    AND Ergebnis IN (${ergebnis})\n    AND Program_Nr = '${program}'\nORDER BY Datum DESC\n",
+        "description": "",
+        "label": "Datum",
+        "name": "datum",
+        "options": [],
+        "query": "SELECT DISTINCT\n    CONVERT(varchar(19), CAST(Datum AS datetime), 120) AS Datum\nFROM Auftraege\nWHERE Tabelle = '${tabelle}'\n    AND Datum BETWEEN $__timeFrom() AND $__timeTo()\n    AND Schraubkanal = '${schrauber}'\n    AND Ergebnis IN (${ergebnis})\n    AND Program_Nr = '${program}'\nORDER BY Datum DESC\n",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "2025-04-30T09:49:03.465Z",
+    "to": "2025-04-30T10:00:06.226Z"
+  },
+  "timepicker": {},
+  "timezone": "utc",
+  "title": "Verschraubungen",
+  "uid": "fee168s4ao000e",
+  "version": 144,
+  "weekStart": ""
+}
