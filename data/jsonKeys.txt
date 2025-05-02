@@ -1,0 +1,246 @@
+# Screwdriver Controller Payload Mappings
+
+## Common Fields (All Controllers)
+- Datum: `date` (ISO format: "YYYY-MM-DD HH:MM:SS")
+- ID_Code: `id code` (formats vary by controller type)
+- Ergebnis: `result` ("OK"|"NOK")
+- Program_Nr: `prg nr`
+- Program_Name: `prg name`
+- Zyklus: `cycle`
+
+## Standard Controllers (MFV3, MFV23, MOE61)
+### Tightening Steps Structure
+- Steps: `tightening steps` (array of step objects)
+  - Step_Type: `step type`
+  - Row: `row`
+  - Column: `column`
+  - Tightening_Functions: `tightening functions` (array)
+    - Name: `name` (e.g. "TF Torque", "TF Angle")
+    - Nominal: `nom`
+    - Actual: `act`
+
+### Measurement Fields
+- Drehmoment_Nom: First `tightening functions` entry where name contains "TF Torque"
+- Drehmoment_Ist: Corresponding `act` value
+- Winkel_Nom: First `tightening functions` entry where name contains "TF Angle"
+- Winkel_Ist: Corresponding `act` value
+
+## GH4 Controller (MOE6_Halle206_GH4)
+### Special Characteristics
+- Nested structure with `channels` array (1-4 screwdrivers)
+- Different ID format: "R" prefix with material/serial numbers
+- Application-level fields before channel data
+
+### Channel-Specific Mappings
+Each channel contains:
+- Channel_Nr: `nr`
+- SST: `SST`
+- Program_Data: Same structure as standard controllers
+- Tightening_Steps: Same mapping as standard but within channel object
+
+## Field Naming Variations
+- TorqueMax: May appear as:
+  - `MF TorqueMax` (most common)
+  - `MFs TorqueMax` (some MFV23 models)
+- AngleMin: `MF AngleMin` vs `MFs AngleMin`
+
+## Graph Data Formats
+- Standard: Array format (`graph.torque_values`)
+- Some MFV23: Base64 encoded (`graph_b64`)
+
+## Special Cases
+1. Angle-based final tightening (some MFV23)
+2. Redundant sensor data (when `redundancy sensor` > 0)
+3. Batch processing fields (when `batch nr` > 0)
+
+## Controller-Specific Notes
+### MFV3_Halle204_Rest_CH
+- Datum: `date` or `dateIso` (both exist at root level, dateIso includes timezone)
+- ID_Code: `id code` (format: "L 000000151112")
+- Program_Nr: `prg nr`
+- Program_Name: `prg name`
+- Materialnummel: N/A
+- Serialnummer: N/A
+- Schraubkanal: `channel`
+- Ergebnis: `result`
+- N_Letzter_Schritt: `last step row`
+- P_Letzter_Schritt: `last step column`
+- Drehmoment_Nom: Found in the last tightening step: `tightening steps[last].tightening functions[x].nom` where name is "TF Torque"
+- Drehmoment_Ist: Found in the last tightening step: `tightening steps[last].tightening functions[x].act` where name is "TF Torque"
+- Drehmoment_Min: Found in the last tightening step: `tightening steps[last].tightening functions[x].nom` where name is "MF TorqueMin"
+- Drehmoment_Max: Found in the last tightening step: `tightening steps[last].tightening functions[x].nom` where name is "MFs TorqueMax"
+- Winkel_Nom: Found in the last tightening step: `tightening steps[last].tightening functions[x].nom` where name is "TF Angle"
+- Winkel_Ist: Found in the last tightening step: `tightening steps[last].tightening functions[x].act` where name is "TF Angle"
+- Winkel_Min: Found in the last tightening step: `tightening steps[last].tightening functions[x].nom` where name is "MF AngleMin" (may not exist in all steps)
+- Winkel_Max: Found in the last tightening step: `tightening steps[last].tightening functions[x].nom` where name is "MFs AngleMax" (may not exist in all steps)
+- Winkelwerte: `tightening steps[last].graph_b64.angle values` (base64 encoded) or `tightening steps[last].graph.angle values` (array, not present in this controller)
+- Drehmomentwerte: `tightening steps[last].graph_b64.torque values` (base64 encoded) or `tightening steps[last].graph.torque values` (array, not present in this controller)
+
+### MFV3_Halle204_Vorm_Prop_Druck
+- Datum: `date` or `dateIso` (both exist at root level, dateIso includes timezone)
+- ID_Code: `id code` (format: "L 000000577802")
+- Program_Nr: `prg nr`
+- Program_Name: `prg name`
+- Materialnummel: N/A
+- Serialnummer: N/A
+- Schraubkanal: `channel`
+- Ergebnis: `result`
+- N_Letzter_Schritt: `last step row`
+- P_Letzter_Schritt: `last step column`
+- Drehmoment_Nom: Found in the last tightening step: `tightening steps[last].tightening functions[x].nom` where name is "TF Torque"
+- Drehmoment_Ist: Found in the last tightening step: `tightening steps[last].tightening functions[x].act` where name is "TF Torque"
+- Drehmoment_Min: Found in the last tightening step: `tightening steps[last].tightening functions[x].nom` where name is "MF TorqueMin"
+- Drehmoment_Max: Found in the last tightening step: `tightening steps[last].tightening functions[x].nom` where name is "MF TorqueMax"
+- Winkel_Nom: Usually not explicitly defined in this controller
+- Winkel_Ist: Usually not explicitly defined in this controller
+- Winkel_Min: Usually not present in this controller type
+- Winkel_Max: Usually not present in this controller type
+- Winkelwerte: `tightening steps[last].graph_b64.angle values` (base64 encoded)
+- Drehmomentwerte: `tightening steps[last].graph_b64.torque values` (base64 encoded)
+- Additional data: `tightening steps[last].graph_b64.time values` (detailed timing information)
+- Special field: `tightening steps[last].graph_b64.torsion release` (present in some steps)
+
+### MFV23_Halle101_114227CP_link
+- Datum: `date` (format: "2025-04-07 13:27:08")
+- ID_Code: `id code` (format: "L 000000195660")
+- Program_Nr: `prg nr`
+- Program_Name: `prg name`
+- Materialnummel: N/A
+- Serialnummer: N/A
+- Schraubkanal: `channel`
+- Ergebnis: `result`
+- N_Letzter_Schritt: `last step row`
+- P_Letzter_Schritt: `last step column`
+- Drehmoment_Nom: Found in the last tightening step: `tightening steps[last].tightening functions[x].nom` where name is "TF Torque"
+- Drehmoment_Ist: Found in the last tightening step: `tightening steps[last].tightening functions[x].act` where name is "TF Torque"
+- Drehmoment_Min: Found in the last tightening step: `tightening steps[last].tightening functions[x].nom` where name is "MF TorqueMin"
+- Drehmoment_Max: Found in the last tightening step: `tightening steps[last].tightening functions[x].nom` where name is "MF TorqueMax"
+- Winkel_Nom: Found in the last tightening step: `tightening steps[last].tightening functions[x].nom` where name is "TF Angle"
+- Winkel_Ist: Found in the last tightening step: `tightening steps[last].tightening functions[x].act` where name is "TF Angle"
+- Winkel_Min: Found in the last tightening step: `tightening steps[last].tightening functions[x].nom` where name is "MF AngleMin" (may not exist in all steps)
+- Winkel_Max: Found in the last tightening step: `tightening steps[last].tightening functions[x].nom` where name is "MF AngleMax" (may not exist in all steps)
+- Winkelwerte: `tightening steps[last].graph.angle values` (array format)
+- Drehmomentwerte: `tightening steps[last].graph.torque values` (array format)
+
+### MFV23_Halle101_114227CP_recht
+- Datum: `date` (format: "2025-04-08 05:54:29")
+- ID_Code: `id code` (format: "L 000000223838")
+- Program_Nr: `prg nr`
+- Program_Name: `prg name`
+- Materialnummel: N/A
+- Serialnummer: N/A
+- Schraubkanal: `channel`
+- Ergebnis: `result`
+- N_Letzter_Schritt: `last step row`
+- P_Letzter_Schritt: `last step column`
+- Drehmoment_Nom: Found in the last tightening step: `tightening steps[last].tightening functions[x].nom` where name is "TF Torque"
+- Drehmoment_Ist: Found in the last tightening step: `tightening steps[last].tightening functions[x].act` where name is "TF Torque"
+- Drehmoment_Min: Found in the last tightening step: `tightening steps[last].tightening functions[x].nom` where name is "MF TorqueMin"
+- Drehmoment_Max: Found in the last tightening step: `tightening steps[last].tightening functions[x].nom` where name is "MF TorqueMax"
+- Winkel_Nom: Found in the last tightening step: `tightening steps[last].tightening functions[x].nom` where name is "TF Angle"
+- Winkel_Ist: Found in the last tightening step: `tightening steps[last].tightening functions[x].act` where name is "TF Angle"
+- Winkel_Min: Found in the last tightening step: `tightening steps[last].tightening functions[x].nom` where name is "MF AngleMin"
+- Winkel_Max: Found in the last tightening step: `tightening steps[last].tightening functions[x].nom` where name is "MFs AngleMax"
+- Winkelwerte: `tightening steps[last].graph.angle values` (array format)
+- Drehmomentwerte: `tightening steps[last].graph.torque values` (array format)
+- Additional data: `tightening steps[last].graph.time values` (detailed timing information)
+
+### MFV23_Halle101_11461CP
+- Datum: `date` (format: "2025-04-11 07:50:17")
+- ID_Code: `id code` (format: "L 000000109266")
+- Program_Nr: `prg nr`
+- Program_Name: `prg name`
+- Materialnummel: N/A
+- Serialnummer: N/A
+- Schraubkanal: `channel`
+- Ergebnis: `result`
+- N_Letzter_Schritt: `last step row`
+- P_Letzter_Schritt: `last step column`
+- Drehmoment_Nom: Found in intermediate steps: `tightening steps[x].tightening functions[y].nom` where name is "TF Torque" (may not exist in last step if using angle)
+- Drehmoment_Ist: Found in intermediate steps: `tightening steps[x].tightening functions[y].act` where name is "TF Torque" (may not exist in last step if using angle)
+- Drehmoment_Min: Found in intermediate steps: `tightening steps[x].tightening functions[y].nom` where name is "MF TorqueMin" (may not exist in last step)
+- Drehmoment_Max: Found in intermediate steps: `tightening steps[x].tightening functions[y].nom` where name is "MFs TorqueMax" (may not exist in last step)
+- Winkel_Nom: Found in the last tightening step: `tightening steps[last].tightening functions[x].nom` where name is "TF Angle"
+- Winkel_Ist: Found in the last tightening step: `tightening steps[last].tightening functions[x].act` where name is "TF Angle"
+- Winkel_Min: Found in intermediate steps: `tightening steps[x].tightening functions[y].nom` where name is "MF AngleMin"
+- Winkel_Max: Found in intermediate steps: `tightening steps[x].tightening functions[y].nom` where name is "MFs AngleMax"
+- Winkelwerte: `tightening steps[last].graph.angle values` (array format)
+- Drehmomentwerte: `tightening steps[last].graph.torque values` (array format)
+- Additional data: `tightening steps[last].graph.time values` (detailed timing information)
+- Special field: `tightening steps[last].graph.torsion release` (present in some steps)
+- Special case: This controller uses angle-based tightening in the final step rather than torque
+
+### MOE61_Halle206_BGGF1GF3
+- Datum: `date` (format: "2025-04-10 07:24:12")
+- ID_Code: `id code` (format: "L 000000075617")
+- Program_Nr: `prg nr`
+- Program_Name: `prg name`
+- Materialnummel: N/A
+- Serialnummer: N/A
+- Schraubkanal: `channel`
+- Ergebnis: `result`
+- N_Letzter_Schritt: `last step row`
+- P_Letzter_Schritt: `last step column`
+- Drehmoment_Nom: Found in the last tightening step: `tightening steps[last].tightening functions[x].nom` where name is "TF Torque"
+- Drehmoment_Ist: Found in the last tightening step: `tightening steps[last].tightening functions[x].act` where name is "TF Torque"
+- Drehmoment_Min: Found in the last tightening step: `tightening steps[last].tightening functions[x].nom` where name is "MF TorqueMin" (may not exist in all steps)
+- Drehmoment_Max: Found in the last tightening step: `tightening steps[last].tightening functions[x].nom` where name is "MFs TorqueMax" (may not exist in all steps)
+- Winkel_Nom: Found in the last tightening step: `tightening steps[last].tightening functions[x].nom` where name is "TF Angle"
+- Winkel_Ist: Found in the last tightening step: `tightening steps[last].tightening functions[x].act` where name is "TF Angle"
+- Winkel_Min: Found in the last tightening step: `tightening steps[last].tightening functions[x].nom` where name is "MF AngleMin" (may not exist in all steps)
+- Winkel_Max: Found in the last tightening step: `tightening steps[last].tightening functions[x].nom` where name is "MFs AngleMax" (may not exist in all steps)
+- Winkelwerte: `tightening steps[last].graph.angle values` (array format)
+- Drehmomentwerte: `tightening steps[last].graph.torque values` (array format)
+
+### MOE61_Halle207_BEM
+- Datum: `date` and `dateIso` (format: "2025-04-08 07:06:15", dateIso includes timezone)
+- ID_Code: `id code` (format: "L 000000068112")
+- Program_Nr: `prg nr`
+- Program_Name: `prg name`
+- Materialnummel: N/A
+- Serialnummer: N/A
+- Schraubkanal: `channel`
+- Ergebnis: `result`
+- N_Letzter_Schritt: `last step row`
+- P_Letzter_Schritt: `last step column`
+- Drehmoment_Nom: Found in the last tightening step: `tightening steps[last].tightening functions[x].nom` where name is "TF Torque" (may not exist if last step uses angle)
+- Drehmoment_Ist: Found in the last tightening step: `tightening steps[last].tightening functions[x].act` where name is "TF Torque" (may not exist if last step uses angle)
+- Drehmoment_Min: Found in the last tightening step: `tightening steps[last].tightening functions[x].nom` where name is "MF TorqueMin" (may not exist in all steps)
+- Drehmoment_Max: Found in the last tightening step: `tightening steps[last].tightening functions[x].nom` where name is "MFs TorqueMax" (may not exist in all steps)
+- Winkel_Nom: Found in the last tightening step: `tightening steps[last].tightening functions[x].nom` where name is "TF Angle"
+- Winkel_Ist: Found in the last tightening step: `tightening steps[last].tightening functions[x].act` where name is "TF Angle"
+- Winkel_Min: Usually not present in this controller type
+- Winkel_Max: Usually not present in this controller type
+- Winkelwerte: `tightening steps[last].graph.angle values` (array format)
+- Drehmomentwerte: `tightening steps[last].graph.torque values` (array format)
+- Additional data: `tightening steps[last].graph.time values` (detailed timing information)
+- Special field: `tightening steps[last].graph.torsion release` (present in some steps)
+
+### MOE6_Halle206_GH4
+- **Special format: Contains multiple channel data in a nested structure**
+- Datum: Root level `date` (format: "2025-03-06 06:17:44") or inside each channel `channels[x].date`
+- ID_Code: Root level `id code` (format: "R901450936-1108_001") or inside each channel `channels[x].id code`
+- Program_Nr: For each channel: `channels[x].prg nr`
+- Program_Name: For each channel: `channels[x].prg name`
+- Materialnummel: Extracted from ID code - part before first "-": "R901450936"
+- Serialnummer: Extracted from ID code - part after last "_": "001"
+- Schraubkanal: For each channel: `channels[x].nr` (1-4)
+- Ergebnis: Root level `result` or for each channel: `channels[x].result`
+- N_Letzter_Schritt: For each channel: `channels[x].last step row`
+- P_Letzter_Schritt: For each channel: `channels[x].last step column`
+- Drehmoment_Nom: For each channel, in the last tightening step: `channels[x].tightening steps[last].tightening functions[y].nom` where name is "TF Torque"
+- Drehmoment_Ist: For each channel, in the last tightening step: `channels[x].tightening steps[last].tightening functions[y].act` where name is "TF Torque"
+- Drehmoment_Min: For each channel, in the last tightening step: `channels[x].tightening steps[last].tightening functions[y].nom` where name is "MF TorqueMin"
+- Drehmoment_Max: For each channel, in the last tightening step: `channels[x].tightening steps[last].tightening functions[y].nom` where name is "MFs TorqueMax"
+- Winkel_Nom: For each channel, in the last tightening step: `channels[x].tightening steps[last].tightening functions[y].nom` where name is "TF Angle" or "TF Yield Point"
+- Winkel_Ist: For each channel, in the last tightening step: `channels[x].tightening steps[last].tightening functions[y].act` where name is "TF Angle" or "TF Yield Point"
+- Winkel_Min: For each channel, in the last tightening step: `channels[x].tightening steps[last].tightening functions[y].nom` where name is "MF AngleMin"
+- Winkel_Max: For each channel, in the last tightening step: `channels[x].tightening steps[last].tightening functions[y].nom` where name is "MFs AngleMax"
+- Winkelwerte: For each channel: `channels[x].tightening steps[last].graph_b64.angle values` (base64 encoded)
+- Drehmomentwerte: For each channel: `channels[x].tightening steps[last].graph_b64.torque values` (base64 encoded)
+- Special field: `channels[x].tightening steps[last].graph_b64.torsion release` (present in some steps)
+
+
+
+
+

@@ -6,7 +6,6 @@
    ==================================================================== */
 
 const TARGET_TABLE = "dbo.Auftraege";      // schema-qualified table name
-const TABLE_COL    = "[Table]";            // bracketed (reserved word)
 
 // ---------- helpers -------------------------------------------------- */
 function decodeBase64OrArray(val, scale = 1) {
@@ -154,8 +153,7 @@ channels.forEach(ch => {
 // ---------- final SQL sent to MSSQL node ---------------------------- */
 msg.topic = `
 INSERT INTO ${TARGET_TABLE} (
-    ${TABLE_COL},
-    Datum, ID_Code, Program_Nr, Program_Name,
+    Tabelle, Datum, ID_Code, Program_Nr, Program_Name,
     Materialnummer, Serialnummer, Schraubkanal, Ergebnis,
     N_Letzter_Schritt, P_Letzter_Schritt,
     Drehmoment_Nom, Drehmoment_Ist, Drehmoment_Min, Drehmoment_Max,

@@ -11,26 +11,39 @@
  */
 function function_2(payload) {
     const TARGET_TABLE = "dbo.Auftraege";
-    const TABLE_COL = "[Table]";
 
     const isoDatetime = v => v ? new Date(v).toISOString().slice(0,19).replace('T',' ') : null;
     const fmt = (v, str=false) => (v===undefined || v===null || v==='') ? 'NULL' : str ? `'${v.toString().replace(/'/g,"''")}'` : v;
 
-    // Canonical field mapping helper
-    function getField(obj, keys, fallback=null) {
-        for (const k of keys) if (obj && obj[k] !== undefined) return obj[k];
+    // Flexible field getter: tries all keys, case-insensitive, strips whitespace
+    function getField(objs, keys, fallback = null, ignoreCase = true) {
+        if (!Array.isArray(objs)) objs = [objs];
+        for (const obj of objs) {
+            if (!obj) continue;
+            for (const k of keys) {
+                // Exact match
+                if (obj[k] !== undefined) return obj[k];
+                // Case-insensitive + whitespace-insensitive match
+                if (ignoreCase) {
+                    const foundKey = Object.keys(obj).find(
+                        key => key.toLowerCase().replace(/\s+/g, '') === k.toLowerCase().replace(/\s+/g, '')
+                    );
+                    if (foundKey && obj[foundKey] !== undefined) return obj[foundKey];
+                }
+            }
+        }
         return fallback;
     }
 
     // Always treat as array of channels, even if single object
     const root = Array.isArray(payload) ? payload[0] : payload;
     const channels = root.channels?.length ? root.channels : [root];
-    const baseName = getField(root, ["Table","table","name","appl name"], 'Unknown');
-    const idCode   = getField(root, ["id code","id_code","id code channel"]);
-    const progNr   = getField(root, ["appl nr","prg nr","program nr"]);
-    const progName = getField(root, ["appl name","prg name","program name"]);
-    const datum    = isoDatetime(getField(root, ["date","dateIso","prg date"]));
-    const ergebnis = (getField(root, ["result","quality code"], '') || '').toString().toUpperCase();
+    const baseName = getField(root, ["Table","table","name","appl name","tablename","tabelle"] , 'Unknown');
+    const idCode   = getField(root, ["id code","id_code","id code channel","idcode"]);
+    const progNr   = getField(root, ["appl nr","prg nr","program nr","applnr","prgnr"]);
+    const progName = getField(root, ["appl name","prg name","program name","applname","prgname"]);
+    const datum    = isoDatetime(getField(root, ["date","dateIso","prg date","datum","datetime"]));
+    const ergebnis = (getField(root, ["result","quality code","ergebnis","oknok"] , '') || '').toString().toUpperCase();
 
     let material = null, serialnr = null;
     if (idCode?.includes('-') && idCode.includes('_')){
@@ -40,6 +53,21 @@ function function_2(payload) {
 
     const tuples = [];
     const analysis = [];
+
+    // Add helper function to decode base64 graph data
+    function decodeGraphB64(graph) {
+        const angleBuf = Buffer.from(graph["angle values"], 'base64');
+        const torqueBuf = Buffer.from(graph["torque values"], 'base64');
+        const angleValues = [];
+        for (let i = 0; i < angleBuf.length; i += 4) {
+            angleValues.push(angleBuf.readInt32LE(i) / graph["angle scale"]);
+        }
+        const torqueValues = [];
+        for (let i = 0; i < torqueBuf.length; i += 4) {
+            torqueValues.push(torqueBuf.readInt32LE(i) / graph["torque scale"]);
+        }
+        return { angleValues, torqueValues };
+    }
 
     channels.forEach((ch, idx) => {
         const tableTag = channels.length === 1
@@ -54,16 +82,18 @@ function function_2(payload) {
 
         const r = {
             Table              : tableTag,
-            Datum              : isoDatetime(getField([ch, root], ["date","dateIso","prg date"])),
-            ID_Code            : getField([ch, root], ["id code","id_code","id code channel"]),
-            Program_Nr         : getField([ch, root], ["appl nr","prg nr","program nr"]),
-            Program_Name       : getField([ch, root], ["appl name","prg name","program name"]),
+            Datum              : isoDatetime(getField([ch, root], ["date","dateIso","prg date","datum","datetime"])),
+            ID_Code            : getField([ch, root], ["id code","id_code","id code channel","idcode"]),
+            Program_Nr         : getField([ch, root], ["appl nr","prg nr","program nr","applnr","prgnr"]),
+            Program_Name       : getField([ch, root], ["appl name","prg name","program name","applname","prgname"]),
             Materialnummer     : material,
             Serialnummer       : serialnr,
             Schraubkanal       : ch.nr || ch["node id"] || null,
-            Ergebnis           : (getField([ch, root], ["result","quality code"], ergebnis) || '').toString().toUpperCase(),
+            Ergebnis           : (getField([ch, root], ["result","quality code","ergebnis","oknok"] , ergebnis) || '').toString().toUpperCase(),
             N_Letzter_Schritt  : last.row  ?? null,
             P_Letzter_Schritt  : last.name ?? null,
+            Zyklus             : getField([ch, root], ["cycle"]),
+            SST                : getField(ch, ["SST","sst"]),
             Drehmoment_Nom     : null, Drehmoment_Ist: null,
             Drehmoment_Min     : null, Drehmoment_Max: null,
             Winkel_Nom         : null, Winkel_Ist   : null,
@@ -74,18 +104,35 @@ function function_2(payload) {
         for (const [k, label] of [
             [r.Table, "Table"], [r.Datum, "Datum"], [r.ID_Code, "ID_Code"], [r.Program_Nr, "Program_Nr"],
             [r.Program_Name, "Program_Name"], [r.Materialnummer, "Materialnummer"], [r.Serialnummer, "Serialnummer"],
-            [r.Schraubkanal, "Schraubkanal"], [r.Ergebnis, "Ergebnis"]
+            [r.Schraubkanal, "Schraubkanal"], [r.Ergebnis, "Ergebnis"], [r.N_Letzter_Schritt, "N_Letzter_Schritt"],
+            [r.P_Letzter_Schritt, "P_Letzter_Schritt"], [r.Zyklus, "Zyklus"], [r.SST, "SST"]
         ]) checkMissing(k, label);
 
-        // Extract tightening function values if present
-        (last["tightening functions"]||[]).forEach(fn=>{
-            switch(fn.name){
-                case 'TF Torque':     r.Drehmoment_Nom = fn.nom; r.Drehmoment_Ist = fn.act; break;
-                case 'MF TorqueMin':  r.Drehmoment_Min = fn.nom; break;
-                case 'MF TorqueMax':  case 'MFs TorqueMax': r.Drehmoment_Max = fn.nom; break;
-                case 'TF Angle':      r.Winkel_Nom     = fn.nom; r.Winkel_Ist     = fn.act; break;
-                case 'MF AngleMin':   r.Winkel_Min     = fn.nom; break;
-                case 'MF AngleMax':   case 'MFs AngleMax':  r.Winkel_Max = fn.nom; break;
+        // Extract torque and angle from all tightening functions across steps
+        const allFns = steps.flatMap(st => st["tightening functions"]||[]);
+        allFns.forEach(fn=>{
+            const name = fn.name.trim();
+            switch(name){
+                case 'TF Torque':
+                    r.Drehmoment_Nom = fn.nom;
+                    r.Drehmoment_Ist = fn.act;
+                    break;
+                case 'MF TorqueMin':
+                    r.Drehmoment_Min = fn.nom;
+                    break;
+                case 'MF TorqueMax': case 'MFs TorqueMax':
+                    r.Drehmoment_Max = fn.nom;
+                    break;
+                case 'TF Angle':
+                    r.Winkel_Nom = fn.nom;
+                    r.Winkel_Ist = fn.act;
+                    break;
+                case 'MF AngleMin':
+                    r.Winkel_Min = fn.nom;
+                    break;
+                case 'MF AngleMax': case 'MFs AngleMax':
+                    r.Winkel_Max = fn.nom;
+                    break;
             }
             if (fn.add?.[0]?.["angle threshold"]){
                 const th = fn.add[0]["angle threshold"];
@@ -93,21 +140,16 @@ function function_2(payload) {
                 r.Winkel_Ist = th.act ?? r.Winkel_Ist;
             }
         });
-        // Graph data extraction (supports both b64 and array)
-        let graphData = ch.graph_b64 || last.graph_b64 || root.graph_b64 || null;
-        let graphArr  = ch.graph     || last.graph     || root.graph     || null;
-        if (r.Ergebnis === 'NOK' || graphData || graphArr) {
-            if (graphData) {
-                r.Winkelwerte     = Array.isArray(graphData["angle values"])
-                    ? graphData["angle values"].join(',')
-                    : null;
-                r.Drehmomentwerte = Array.isArray(graphData["torque values"])
-                    ? graphData["torque values"].join(',')
-                    : null;
-            } else if (graphArr) {
-                r.Winkelwerte     = Array.isArray(graphArr["angle values"]) ? graphArr["angle values"].join(',') : null;
-                r.Drehmomentwerte = Array.isArray(graphArr["torque values"]) ? graphArr["torque values"].join(',') : null;
-            }
+        // Graph data extraction (supports both base64 and array)
+        let graphData = ch.graph_b64 || last.graph_b64 || root.graph_b64;
+        let graphArr  = ch.graph     || last.graph     || root.graph;
+        if (graphData) {
+            const { angleValues, torqueValues } = decodeGraphB64(graphData);
+            r.Winkelwerte     = angleValues.join(',');
+            r.Drehmomentwerte = torqueValues.join(',');
+        } else if (graphArr) {
+            r.Winkelwerte     = Array.isArray(graphArr["angle values"]) ? graphArr["angle values"].join(',') : null;
+            r.Drehmomentwerte = Array.isArray(graphArr["torque values"]) ? graphArr["torque values"].join(',') : null;
         }
         // Track missing graph/step fields
         checkMissing(r.N_Letzter_Schritt, "N_Letzter_Schritt");
@@ -135,6 +177,8 @@ function function_2(payload) {
             ${fmt(r.Ergebnis,true)},
             ${fmt(r.N_Letzter_Schritt)},
             ${fmt(r.P_Letzter_Schritt,true)},
+            ${fmt(r.Zyklus)},
+            ${fmt(r.SST,true)},
             ${fmt(r.Drehmoment_Nom)},
             ${fmt(r.Drehmoment_Ist)},
             ${fmt(r.Drehmoment_Min)},
@@ -149,13 +193,13 @@ function function_2(payload) {
         analysis.push({channel: idx, missing});
     });
     const sql = `INSERT INTO ${TARGET_TABLE} (
-        ${TABLE_COL},
-        Datum, ID_Code, Program_Nr, Program_Name,
+        Tabelle, Datum, ID_Code, Program_Nr, Program_Name,
         Materialnummer, Serialnummer, Schraubkanal, Ergebnis,
-        N_Letzter_Schritt, P_Letzter_Schritt,
+        N_Letzter_Schritt, P_Letzter_Schritt, Zyklus, SST,
         Drehmoment_Nom, Drehmoment_Ist, Drehmoment_Min, Drehmoment_Max,
         Winkel_Nom, Winkel_Ist, Winkel_Min, Winkel_Max,
         Winkelwerte, Drehmomentwerte
-    )\nVALUES\n${tuples.join(',\n')};`;
+    )\nVALUES\n${tuples.join(', ')};`;
     return { sql, analysis };
 }
+module.exports = { function_2 };
