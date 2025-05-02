@@ -166,3 +166,4 @@ VALUES
 ${tuples.join(',\n')};`;
 
 return msg;
+
