@@ -1,7 +1,6 @@
-#!/usr/bin/env node
-// Tailored processor for payload MOE6_Halle206_GH4.json (GH4 controller)
-const fs = require('fs');
-const path = require('path');
+// NODE-RED FUNCTION NODE VERSION
+// Input: msg.payload contains the JSON data from the GH4 controller
+// Output: msg.topic contains the SQL INSERT statement
 
 // Helper to decode base64 graph data
 function decodeGraphB64(graph) {
@@ -14,19 +13,13 @@ function decodeGraphB64(graph) {
   return { angleValues, torqueValues };
 }
 
-// Load single-payload JSON
-const payloadPath = path.resolve(__dirname, '-MOE6_Halle206_GH4.json');
-let data;
-try {
-  data = JSON.parse(fs.readFileSync(payloadPath, 'utf8'));
-} catch (err) {
-  console.error('Failed to load payload:', err);
-  process.exit(1);
-}
-
-// Identifiers & SQL formatter
-const payloadName = path.basename(payloadPath, '.json');
+// SQL formatter
 const fmt = (v, str = false) => (v == null || v === '') ? 'NULL' : (str ? `'${v.toString().replace(/'/g, "''")}'` : v);
+
+// Get data from msg.payload instead of file
+const data = msg.payload;
+const payloadName = data.name || "MOE6_Halle206_GH4";
+const tuples = [];
 
 // Process each channel
 for (const ch of Array.isArray(data.channels) ? data.channels : []) {
@@ -67,27 +60,20 @@ for (const ch of Array.isArray(data.channels) ? data.channels : []) {
     Drehmomentwerte = torqueValues.join(',');
   }
 
-  // SQL
-  const sql = `INSERT INTO dbo.Auftraege (
-    Tabelle, Datum, ID_Code, Program_Nr, Program_Name,
-    Schraubkanal, Ergebnis, N_Letzter_Schritt, P_Letzter_Schritt, Zyklus,
-    Drehmoment_Nom, Drehmoment_Ist, Winkelwerte, Drehmomentwerte
-  ) VALUES (
+  // Add to tuples array for multi-row INSERT
+  tuples.push(`(
     ${fmt(tableTag,true)}, ${fmt(Datum,true)}, ${fmt(ID_Code,true)}, ${fmt(Program_Nr)}, ${fmt(Program_Name,true)},
     ${fmt(Schraubkanal)}, ${fmt(Ergebnis,true)}, ${fmt(N_Letzter_Schritt)}, ${fmt(P_Letzter_Schritt,true)}, ${fmt(Zyklus)},
     ${fmt(Drehmoment_Nom)}, ${fmt(Drehmoment_Ist)}, ${fmt(Winkelwerte,true)}, ${fmt(Drehmomentwerte,true)}
-  );`;
-  console.log(`--- SQL QUERY (Channel ${ch.nr}) ---\n${sql}`);
+  )`);
+}
 
-  // Missing fields
-  const missing = [];
-  const checkMissing = (v,label) => { if (v == null || v === '') missing.push(label); };
-  [
-    [Datum,'Datum'], [ID_Code,'ID_Code'], [Program_Nr,'Program_Nr'], [Program_Name,'Program_Name'],
-    [Zyklus,'Zyklus'], [Schraubkanal,'Schraubkanal'], [Ergebnis,'Ergebnis'],
-    [N_Letzter_Schritt,'N_Letzter_Schritt'], [P_Letzter_Schritt,'P_Letzter_Schritt'],
-    [Drehmoment_Nom,'Drehmoment_Nom'], [Drehmoment_Ist,'Drehmoment_Ist'],
-    [Winkelwerte,'Winkelwerte'], [Drehmomentwerte,'Drehmomentwerte']
-  ].forEach(([v,l]) => checkMissing(v,l));
-  console.log(`\n--- MISSING FIELDS ANALYSIS (Channel ${ch.nr}) ---\n${JSON.stringify([{channel: ch.nr, missing}],null,2)}`);
-} // end channel loop
+// Set msg.topic to the SQL query instead of console.log
+msg.topic = `INSERT INTO dbo.Auftraege (
+  Tabelle, Datum, ID_Code, Program_Nr, Program_Name,
+  Schraubkanal, Ergebnis, N_Letzter_Schritt, P_Letzter_Schritt, Zyklus,
+  Drehmoment_Nom, Drehmoment_Ist, Winkelwerte, Drehmomentwerte
+) VALUES
+${tuples.join(',\n')};`;
+
+return msg;

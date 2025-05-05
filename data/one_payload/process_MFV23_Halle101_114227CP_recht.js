@@ -1,20 +1,13 @@
-#!/usr/bin/env node
-// Tailored processor for payload _MFV23_Halle101_114227CP_recht.json
-const fs = require('fs');
-const path = require('path');
+// NODE-RED FUNCTION NODE VERSION
+// Input: msg.payload contains the JSON data from the MFV23 controller
+// Output: msg.topic contains the SQL INSERT statement
 
-// Load payload
-const payloadPath = path.resolve(__dirname, '_MFV23_Halle101_114227CP_recht.json');
-let ch;
-try {
-  ch = JSON.parse(fs.readFileSync(payloadPath, 'utf8'));
-} catch (err) {
-  console.error('Failed to load payload:', err);
-  process.exit(1);
-}
+// SQL formatting helper
+const fmt = (v, str=false) => (v===undefined || v===null || v==='') ? 'NULL' : str ? `'${v.toString().replace(/'/g, "''")}'` : v;
 
-// Derive identifiers
-const payloadName = path.basename(payloadPath, '.json');
+// Get data from msg.payload
+const ch = msg.payload;
+const payloadName = ch.name || "MFV23_Halle101_114227CP_recht";
 const tableTag = `${payloadName}_CH${ch.nr || ch['node id'] || 0}`;
 
 // Common fields
@@ -50,11 +43,8 @@ if (last.graph && Array.isArray(last.graph['angle values'])) {
   Drehmomentwerte = Array.isArray(last.graph['torque values']) ? last.graph['torque values'].join(',') : null;
 }
 
-// SQL formatting helper
-const fmt = (v, str=false) => (v===undefined || v===null || v==='') ? 'NULL' : str ? `'${v.toString().replace(/'/g, "''")}'` : v;
-
 // Build and output SQL
-const sql = `INSERT INTO dbo.Auftraege (
+msg.topic = `INSERT INTO dbo.Auftraege (
   Tabelle, Datum, ID_Code, Program_Nr, Program_Name,
   Schraubkanal, Ergebnis, N_Letzter_Schritt, P_Letzter_Schritt, Zyklus,
   Drehmoment_Nom, Drehmoment_Ist, Winkelwerte, Drehmomentwerte
@@ -64,25 +54,4 @@ const sql = `INSERT INTO dbo.Auftraege (
   ${fmt(Drehmoment_Nom)}, ${fmt(Drehmoment_Ist)}, ${fmt(Winkelwerte, true)}, ${fmt(Drehmomentwerte, true)}
 );`;
 
-console.log('--- SQL QUERY ---\n' + sql);
-
-// Missing fields analysis
-const missing = [];
-const checkMissing = (val, label) => { if (val===undefined || val===null || val==='') missing.push(label); };
-[
-  [Datum, 'Datum'],
-  [ID_Code, 'ID_Code'],
-  [Program_Nr, 'Program_Nr'],
-  [Program_Name, 'Program_Name'],
-  [Zyklus, 'Zyklus'],
-  [Schraubkanal, 'Schraubkanal'],
-  [Ergebnis, 'Ergebnis'],
-  [N_Letzter_Schritt, 'N_Letzter_Schritt'],
-  [P_Letzter_Schritt, 'P_Letzter_Schritt'],
-  [Drehmoment_Nom, 'Drehmoment_Nom'],
-  [Drehmoment_Ist, 'Drehmoment_Ist'],
-  [Winkelwerte, 'Winkelwerte'],
-  [Drehmomentwerte, 'Drehmomentwerte']
-].forEach(([val,label]) => checkMissing(val,label));
-const analysis = [{ channel: 0, missing }];
-console.log('\n--- MISSING FIELDS ANALYSIS ---\n' + JSON.stringify(analysis, null, 2));
+return msg;
