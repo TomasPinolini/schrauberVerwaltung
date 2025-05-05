@@ -46,7 +46,6 @@ for (const ch of Array.isArray(data.channels) ? data.channels : []) {
   const ID_Code = ch['id code'];
   const Program_Nr = ch['prg nr'];
   const Program_Name = ch['prg name'];
-  const Zyklus = ch.cycle;
   const Schraubkanal = ch.nr || ch['node id'] || null;
   const Ergebnis = (ch.result || ch['quality code'] || '')
     .toString().trim().toUpperCase();
@@ -80,7 +79,7 @@ for (const ch of Array.isArray(data.channels) ? data.channels : []) {
   // Add to tuples array for multi-row INSERT
   tuples.push(`(
     ${fmt(tableTag,true)}, ${fmt(Datum,true)}, ${fmt(ID_Code,true)}, ${fmt(Program_Nr)}, ${fmt(Program_Name,true)},
-    ${fmt(Schraubkanal)}, ${fmt(Ergebnis,true)}, ${fmt(N_Letzter_Schritt)}, ${fmt(P_Letzter_Schritt,true)}, ${fmt(Zyklus)},
+    ${fmt(Schraubkanal)}, ${fmt(Ergebnis,true)}, ${fmt(N_Letzter_Schritt)}, ${fmt(P_Letzter_Schritt,true)},
     ${fmt(Drehmoment_Nom)}, ${fmt(Drehmoment_Ist)}, ${fmt(Winkelwerte,true)}, ${fmt(Drehmomentwerte,true)}
   )`);
 }
@@ -88,7 +87,7 @@ for (const ch of Array.isArray(data.channels) ? data.channels : []) {
 // Set msg.topic to the SQL query instead of console.log
 msg.topic = `INSERT INTO dbo.Auftraege (
   Tabelle, Datum, ID_Code, Program_Nr, Program_Name,
-  Schraubkanal, Ergebnis, N_Letzter_Schritt, P_Letzter_Schritt, Zyklus,
+  Schraubkanal, Ergebnis, N_Letzter_Schritt, P_Letzter_Schritt,
   Drehmoment_Nom, Drehmoment_Ist, Winkelwerte, Drehmomentwerte
 ) VALUES
 ${tuples.join(',\n')};`;

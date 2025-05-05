@@ -34,7 +34,7 @@ const Datum        = new Date(ch.dateIso||ch.date).toISOString().slice(0,19).rep
 const ID_Code      = ch['id code'];
 const Program_Nr   = ch['prg nr'];
 const Program_Name = ch['prg name'];
-const Zyklus       = ch.cycle;
+// Zyklus field removed as requested
 const Schraubkanal = ch.nr||ch['node id']||null;
 const Ergebnis     = (ch.result||ch['quality code']||'').toString().trim().toUpperCase();
 
@@ -68,14 +68,14 @@ if (last.graph && Array.isArray(last.graph['angle values'])) {
     : decodeBase64OrArray(g['torque values'], g['torque scale']).join(',');
 }
 
-// sql
+// sql - removed Zyklus
 msg.topic = `INSERT INTO ${TARGET_TABLE} (
   Tabelle,Datum,ID_Code,Program_Nr,Program_Name,
-  Schraubkanal,Ergebnis,N_Letzter_Schritt,P_Letzter_Schritt,Zyklus,
+  Schraubkanal,Ergebnis,N_Letzter_Schritt,P_Letzter_Schritt,
   Drehmoment_Nom,Drehmoment_Ist,Winkelwerte,Drehmomentwerte
 ) VALUES (
   ${fmt(tableTag,true)},${fmt(Datum,true)},${fmt(ID_Code,true)},${fmt(Program_Nr)},${fmt(Program_Name,true)},
-  ${fmt(Schraubkanal)},${fmt(Ergebnis,true)},${fmt(N_Letz)},${fmt(P_Letz,true)},${fmt(Zyklus)},
+  ${fmt(Schraubkanal)},${fmt(Ergebnis,true)},${fmt(N_Letz)},${fmt(P_Letz,true)},
   ${fmt(Drehmoment_Nom)},${fmt(Drehmoment_Ist)},${fmt(Winkelwerte,true)},${fmt(Drehmomentwerte,true)}
 );`;
 
