@@ -1,0 +1,38 @@
+{
+  {
+    "class": 16,
+    "code": "EREQUEST",
+    "lineNumber": 1,
+    "message": "String or binary data would be truncated in table 'DB_RexrothSchrauber_SQL.dbo.Auftraege', column 'Tabelle'. Truncated value: 'MFV3_Halle204_Vorm_Prop_Druck_'.",
+    "details": "String or binary data would be truncated in table 'DB_RexrothSchrauber_SQL.dbo.Auftraege', column 'Tabelle'. Truncated value: 'MFV3_Halle204_Vorm_Prop_Druck_'.",
+    "name": "RequestError",
+    "number": 2628,
+    "procName": "",
+    "serverName": "LO0VSQL03",
+    "state": 1
+  },
+  {
+    "class": 16,
+    "code": "EREQUEST",
+    "lineNumber": 1,
+    "message": "String or binary data would be truncated in table 'DB_RexrothSchrauber_SQL.dbo.Auftraege', column 'Tabelle'. Truncated value: 'MFV23_Halle101_114227CP_recht_'.",
+    "details": "String or binary data would be truncated in table 'DB_RexrothSchrauber_SQL.dbo.Auftraege', column 'Tabelle'. Truncated value: 'MFV23_Halle101_114227CP_recht_'.",
+    "name": "RequestError",
+    "number": 2628,
+    "procName": "",
+    "serverName": "LO0VSQL03",
+    "state": 1
+  },
+  {
+    "class": 16,
+    "code": "EREQUEST",
+    "lineNumber": 1,
+    "message": "String or binary data would be truncated in table 'DB_RexrothSchrauber_SQL.dbo.Auftraege', column 'Tabelle'. Truncated value: 'MFV23_Halle101_114227CP_link_C'.",
+    "details": "String or binary data would be truncated in table 'DB_RexrothSchrauber_SQL.dbo.Auftraege', column 'Tabelle'. Truncated value: 'MFV23_Halle101_114227CP_link_C'.",
+    "name": "RequestError",
+    "number": 2628,
+    "procName": "",
+    "serverName": "LO0VSQL03",
+    "state": 1
+  }
+}

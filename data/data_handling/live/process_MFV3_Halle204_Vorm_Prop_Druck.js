@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 // Node-RED–ready processor for MFV3_Halle204_Vorm_Prop_Druck
 
 // NODE-RED FUNCTION NODE VERSION
