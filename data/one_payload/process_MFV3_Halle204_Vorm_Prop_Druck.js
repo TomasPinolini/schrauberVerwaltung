@@ -5,7 +5,7 @@
 // Input: msg.payload contains the JSON data from the MFV3 controller
 // Output: msg.topic contains the SQL INSERT statement
 
-// Helper function to decode base64 graph data
+// Helper function to decode base64 graph data - improved version
 function decodeBase64OrArray(graph) {
   if (!graph) return { angleValues: [], torqueValues: [] };
   
@@ -16,12 +16,15 @@ function decodeBase64OrArray(graph) {
   } else if (typeof graph['angle values'] === 'string') {
     try {
       const buf = Buffer.from(graph['angle values'], 'base64');
+      const scale = graph['angle scale'] || 1;
       if (buf.length % 4 === 0) {
         for (let i = 0; i < buf.length; i += 4) {
-          angleValues.push(buf.readFloatLE(i) / (graph['angle scale'] || 1));
+          angleValues.push(buf.readInt32LE(i) / scale); // Note: using Int32LE instead of FloatLE
         }
       }
-    } catch (e) { /* ignore */ }
+    } catch (e) { 
+      console.log("Error decoding angle values:", e);
+    }
   }
   
   // Handle torque values
@@ -31,19 +34,22 @@ function decodeBase64OrArray(graph) {
   } else if (typeof graph['torque values'] === 'string') {
     try {
       const buf = Buffer.from(graph['torque values'], 'base64');
+      const scale = graph['torque scale'] || 1;
       if (buf.length % 4 === 0) {
         for (let i = 0; i < buf.length; i += 4) {
-          torqueValues.push(buf.readFloatLE(i) / (graph['torque scale'] || 1));
+          torqueValues.push(buf.readInt32LE(i) / scale); // Note: using Int32LE instead of FloatLE
         }
       }
-    } catch (e) { /* ignore */ }
+    } catch (e) {
+      console.log("Error decoding torque values:", e);
+    }
   }
   
   return { angleValues, torqueValues };
 }
 
 const TARGET_TABLE = 'dbo.Auftraege';
-const payloadName = 'MFV3_Halle204_Vorm_Prop_Druck';
+const payloadName = msg.payload.name || 'MFV3_Halle204_Vorm_Prop_Druck';
 
 // Get data from msg.payload
 const ch = msg.payload;
@@ -80,7 +86,8 @@ if(last.graph&&Array.isArray(last.graph['angle values'])){
   Drehmomentwerte=Array.isArray(last.graph['torque values'])?last.graph['torque values'].join(','):null;
 } else if(last.graph_b64){
   const {angleValues,torqueValues}=decodeBase64OrArray(last.graph_b64);
-  Winkelwerte=angleValues.join(','); Drehmomentwerte=torqueValues.join(',');
+  Winkelwerte=angleValues.join(','); 
+  Drehmomentwerte=torqueValues.join(',');
 }
 
 // sql

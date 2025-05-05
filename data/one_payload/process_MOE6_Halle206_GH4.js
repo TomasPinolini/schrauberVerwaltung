@@ -2,15 +2,32 @@
 // Input: msg.payload contains the JSON data from the GH4 controller
 // Output: msg.topic contains the SQL INSERT statement
 
-// Helper to decode base64 graph data
+// Helper function to decode base64 graph data - improved version
 function decodeGraphB64(graph) {
-  const angleBuf = Buffer.from(graph['angle values'], 'base64');
-  const torqueBuf = Buffer.from(graph['torque values'], 'base64');
-  const angleValues = [];
-  for (let i = 0; i < angleBuf.length; i += 4) angleValues.push(angleBuf.readInt32LE(i) / graph['angle scale']);
-  const torqueValues = [];
-  for (let i = 0; i < torqueBuf.length; i += 4) torqueValues.push(torqueBuf.readInt32LE(i) / graph['torque scale']);
-  return { angleValues, torqueValues };
+  if (!graph) return { angleValues: [], torqueValues: [] };
+  
+  try {
+    const angleBuf = Buffer.from(graph['angle values'], 'base64');
+    const torqueBuf = Buffer.from(graph['torque values'], 'base64');
+    const angleValues = [];
+    const torqueValues = [];
+    
+    const angleScale = graph['angle scale'] || 1;
+    const torqueScale = graph['torque scale'] || 1;
+    
+    for (let i = 0; i < angleBuf.length; i += 4) {
+      angleValues.push(angleBuf.readInt32LE(i) / angleScale);
+    }
+    
+    for (let i = 0; i < torqueBuf.length; i += 4) {
+      torqueValues.push(torqueBuf.readInt32LE(i) / torqueScale);
+    }
+    
+    return { angleValues, torqueValues };
+  } catch (e) {
+    console.log("Error decoding base64 graph data:", e);
+    return { angleValues: [], torqueValues: [] };
+  }
 }
 
 // SQL formatter
