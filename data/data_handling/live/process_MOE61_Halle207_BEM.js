@@ -8,7 +8,8 @@ const fmt = (v, str=false) => (v===undefined || v===null || v==='') ? 'NULL' : s
 // Get data from msg.payload
 const ch = msg.payload;
 const payloadName = ch.name || "MOE61_Halle207_BEM";
-const tableTag = `${payloadName}_CH${ch.nr || ch['node id'] || 0}`;
+// Removed channel suffix from tableTag to prevent truncation in database
+const tableTag = payloadName;
 
 // Common fields (use dateIso if available)
 const Datum = new Date(ch.dateIso || ch.date).toISOString().slice(0,19).replace('T',' ');

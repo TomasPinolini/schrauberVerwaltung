@@ -56,7 +56,7 @@ const ch = msg.payload;
 const fmt = (v,str=false) => (v==null||v==='') ? 'NULL' : (str?`'${v.toString().replace(/'/g,"''")}'`:v);
 
 // derive
-const tableTag     = `${payloadName}_CH${ch.nr||ch['node id']||0}`;
+const tableTag     = payloadName;
 const Datum        = new Date(ch.dateIso||ch.date).toISOString().slice(0,19).replace('T',' ');
 const ID_Code      = ch['id code'];
 const Program_Nr   = ch['prg nr'];
