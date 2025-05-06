@@ -227,21 +227,27 @@ async function main() {
 CREATE TABLE dbo.Auftraege_Archive
 (
     ID INT IDENTITY(1,1) PRIMARY KEY,
-    Tabelle VARCHAR(50) NOT NULL,
-    Datum DATETIME NOT NULL,
-    ID_Code VARCHAR(50) NULL,
-    Program_Nr INT NULL,
-    Program_Name VARCHAR(100) NULL,
-    Schraubkanal VARCHAR(50) NULL,
-    Ergebnis VARCHAR(20) NULL,
+    Tabelle VARCHAR(50) NULL,
+    Datum DATETIME NULL,
+    ID_Code VARCHAR(255) NOT NULL,
+    Program_Nr VARCHAR(255) NULL,
+    Program_Name VARCHAR(255) NULL,
+    Materialnummer VARCHAR(255) NULL,
+    Serialnummer VARCHAR(255) NULL,
+    Schraubkanal VARCHAR(255) NULL,
+    Ergebnis VARCHAR(255) NULL,
     N_Letzter_Schritt INT NULL,
-    P_Letzter_Schritt VARCHAR(100) NULL,
+    P_Letzter_Schritt VARCHAR(255) NULL,
     Drehmoment_Nom FLOAT NULL,
     Drehmoment_Ist FLOAT NULL,
-    Winkelwerte TEXT NULL,
-    Drehmomentwerte TEXT NULL,
-    Material VARCHAR(50) NULL,
-    SerialNr VARCHAR(50) NULL,
+    Drehmoment_Min FLOAT NULL,
+    Drehmoment_Max FLOAT NULL,
+    Winkel_Nom FLOAT NULL,
+    Winkel_Ist FLOAT NULL,
+    Winkel_Min FLOAT NULL,
+    Winkel_Max FLOAT NULL,
+    Winkelwerte VARCHAR(MAX) NULL,
+    Drehmomentwerte VARCHAR(MAX) NULL,
     Archived_Date DATETIME DEFAULT GETDATE() NOT NULL
 );
 GO
@@ -249,8 +255,8 @@ GO
 -- Create indexes for better performance
 CREATE INDEX IX_Auftraege_Archive_Datum ON dbo.Auftraege_Archive(Datum);
 CREATE INDEX IX_Auftraege_Archive_ID_Code ON dbo.Auftraege_Archive(ID_Code);
-CREATE INDEX IX_Auftraege_Archive_Material ON dbo.Auftraege_Archive(Material);
-CREATE INDEX IX_Auftraege_Archive_SerialNr ON dbo.Auftraege_Archive(SerialNr);
+CREATE INDEX IX_Auftraege_Archive_Materialnummer ON dbo.Auftraege_Archive(Materialnummer);
+CREATE INDEX IX_Auftraege_Archive_Serialnummer ON dbo.Auftraege_Archive(Serialnummer);
 GO
 
 -- Insert statements follow

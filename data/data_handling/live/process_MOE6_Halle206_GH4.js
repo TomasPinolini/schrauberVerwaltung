@@ -96,8 +96,8 @@ try {
       
       // Extract material and serial number from ID code
       const { material, serial } = extractMaterialAndSerial(ID_Code);
-      const Material = material;
-      const SerialNr = serial;
+      const Materialnummer = material;
+      const Serialnummer = serial;
       
       const Program_Nr = ch['prg nr'];
       const Program_Name = ch['prg name'];
@@ -138,9 +138,9 @@ try {
       // Add to tuples array for multi-row INSERT - now includes Material and SerialNr
       tuples.push(`(
         ${fmt(tableTag,true)}, ${fmt(Datum,true)}, ${fmt(ID_Code,true)}, ${fmt(Program_Nr)}, ${fmt(Program_Name,true)},
-        ${fmt(Schraubkanal)}, ${fmt(Ergebnis,true)}, ${fmt(N_Letzter_Schritt)}, ${fmt(P_Letzter_Schritt,true)},
-        ${fmt(Drehmoment_Nom)}, ${fmt(Drehmoment_Ist)}, ${fmt(Winkelwerte,true)}, ${fmt(Drehmomentwerte,true)},
-        ${fmt(Material,true)}, ${fmt(SerialNr,true)}
+        ${fmt(Materialnummer,true)}, ${fmt(Serialnummer,true)}, ${fmt(Schraubkanal)}, ${fmt(Ergebnis,true)}, ${fmt(N_Letzter_Schritt)}, ${fmt(P_Letzter_Schritt,true)},
+        ${fmt(Drehmoment_Nom)}, ${fmt(Drehmoment_Ist)}, NULL, NULL, NULL, NULL, NULL, NULL,
+        ${fmt(Winkelwerte,true)}, ${fmt(Drehmomentwerte,true)}
       )`);
     } catch (channelError) {
       // Log error but continue processing other channels
@@ -156,9 +156,9 @@ try {
   // Set msg.topic to the SQL query
   msg.topic = `INSERT INTO dbo.Auftraege (
     Tabelle, Datum, ID_Code, Program_Nr, Program_Name,
-    Schraubkanal, Ergebnis, N_Letzter_Schritt, P_Letzter_Schritt,
-    Drehmoment_Nom, Drehmoment_Ist, Winkelwerte, Drehmomentwerte,
-    Material, SerialNr
+    Materialnummer, Serialnummer, Schraubkanal, Ergebnis, N_Letzter_Schritt, P_Letzter_Schritt,
+    Drehmoment_Nom, Drehmoment_Ist, Drehmoment_Min, Drehmoment_Max, Winkel_Nom, Winkel_Ist, Winkel_Min, Winkel_Max,
+    Winkelwerte, Drehmomentwerte
   ) VALUES
   ${tuples.join(',\n')};`;
   
