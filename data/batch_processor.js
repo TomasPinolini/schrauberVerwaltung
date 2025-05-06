@@ -240,6 +240,8 @@ CREATE TABLE dbo.Auftraege_Archive
     Drehmoment_Ist FLOAT NULL,
     Winkelwerte TEXT NULL,
     Drehmomentwerte TEXT NULL,
+    Material VARCHAR(50) NULL,
+    SerialNr VARCHAR(50) NULL,
     Archived_Date DATETIME DEFAULT GETDATE() NOT NULL
 );
 GO
@@ -247,6 +249,8 @@ GO
 -- Create indexes for better performance
 CREATE INDEX IX_Auftraege_Archive_Datum ON dbo.Auftraege_Archive(Datum);
 CREATE INDEX IX_Auftraege_Archive_ID_Code ON dbo.Auftraege_Archive(ID_Code);
+CREATE INDEX IX_Auftraege_Archive_Material ON dbo.Auftraege_Archive(Material);
+CREATE INDEX IX_Auftraege_Archive_SerialNr ON dbo.Auftraege_Archive(SerialNr);
 GO
 
 -- Insert statements follow

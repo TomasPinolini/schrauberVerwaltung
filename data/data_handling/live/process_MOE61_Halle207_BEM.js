@@ -7,6 +7,15 @@
 // SQL formatting helper
 const fmt = (v, str=false) => (v===undefined || v===null || v==='') ? 'NULL' : str ? `'${v.toString().replace(/'/g, "''")}'` : v;
 
+// Helper function to extract material and serial number from ID code
+function extractMaterialAndSerial(idCode) {
+  if (!idCode) return { material: null, serial: null };
+  
+  // For standard controllers, we don't have material/serial information
+  // Only the GH4 controller has this information embedded in the ID code
+  return { material: null, serial: null };
+}
+
 // Main processing function with error handling
 try {
   const TARGET_TABLE = 'dbo.Auftraege';
@@ -34,6 +43,12 @@ try {
   // Common fields (use dateIso if available)
   const Datum = new Date(ch.dateIso || ch.date || new Date()).toISOString().slice(0,19).replace('T',' ');
   const ID_Code = ch['id code'];
+  
+  // Extract material and serial number
+  const { material, serial } = extractMaterialAndSerial(ID_Code);
+  const Material = material;
+  const SerialNr = serial;
+  
   const Program_Nr = ch['prg nr'];
   const Program_Name = ch['prg name'];
   // Zyklus removed as requested
@@ -72,11 +87,13 @@ try {
   msg.topic = `INSERT INTO ${TARGET_TABLE} (
     Tabelle, Datum, ID_Code, Program_Nr, Program_Name,
     Schraubkanal, Ergebnis, N_Letzter_Schritt, P_Letzter_Schritt,
-    Drehmoment_Nom, Drehmoment_Ist, Winkelwerte, Drehmomentwerte
+    Drehmoment_Nom, Drehmoment_Ist, Winkelwerte, Drehmomentwerte,
+    Material, SerialNr
   ) VALUES (
     ${fmt(tableTag, true)}, ${fmt(Datum, true)}, ${fmt(ID_Code, true)}, ${fmt(Program_Nr)}, ${fmt(Program_Name, true)},
     ${fmt(Schraubkanal)}, ${fmt(Ergebnis, true)}, ${fmt(N_Letzter_Schritt)}, ${fmt(P_Letzter_Schritt, true)},
-    ${fmt(Drehmoment_Nom)}, ${fmt(Drehmoment_Ist)}, ${fmt(Winkelwerte, true)}, ${fmt(Drehmomentwerte, true)}
+    ${fmt(Drehmoment_Nom)}, ${fmt(Drehmoment_Ist)}, ${fmt(Winkelwerte, true)}, ${fmt(Drehmomentwerte, true)},
+    ${fmt(Material, true)}, ${fmt(SerialNr, true)}
   );`;
   
   // Add processing metadata
