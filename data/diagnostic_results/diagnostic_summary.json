@@ -1,0 +1,39 @@
+{
+  "totalProcessors": 8,
+  "successful": 0,
+  "failed": 8,
+  "processorResults": {
+    "MFV23_Halle101_114227CP_link": {
+      "success": false,
+      "error": "Identifier 'fmt' has already been declared"
+    },
+    "MFV23_Halle101_114227CP_recht": {
+      "success": false,
+      "error": "Identifier 'fmt' has already been declared"
+    },
+    "MFV23_Halle101_11461CP": {
+      "success": false,
+      "error": "Identifier 'fmt' has already been declared"
+    },
+    "MFV3_Halle204_Rest_CH": {
+      "success": false,
+      "error": "Identifier 'fmt' has already been declared"
+    },
+    "MFV3_Halle204_Vorm_Prop_Druck": {
+      "success": false,
+      "error": "Invalid or unexpected token"
+    },
+    "MOE61_Halle206_BGGF1GF3": {
+      "success": false,
+      "error": "Identifier 'fmt' has already been declared"
+    },
+    "MOE61_Halle207_BEM": {
+      "success": false,
+      "error": "Identifier 'fmt' has already been declared"
+    },
+    "MOE6_Halle206_GH4": {
+      "success": false,
+      "error": "Identifier 'fmt' has already been declared"
+    }
+  }
+}

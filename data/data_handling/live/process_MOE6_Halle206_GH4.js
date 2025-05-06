@@ -1,6 +1,8 @@
 // NODE-RED FUNCTION NODE VERSION
 // Input: msg.payload contains the JSON data from the GH4 controller
 // Output: msg.topic contains the SQL INSERT statement
+//         If successful, msg.payload remains unchanged
+//         If error, msg.error contains error details and msg.payload remains unchanged
 
 // Helper function to decode base64 graph data - improved version
 function decodeGraphB64(graph) {
@@ -25,71 +27,165 @@ function decodeGraphB64(graph) {
     
     return { angleValues, torqueValues };
   } catch (e) {
-    console.log("Error decoding base64 graph data:", e);
+    node.error("Error decoding base64 graph data: " + e.message);
     return { angleValues: [], torqueValues: [] };
+  }
+}
+
+// Helper function to extract material and serial number from ID code
+function extractMaterialAndSerial(idCode) {
+  if (!idCode) return { material: null, serial: null };
+  
+  try {
+    // Expected format: "R901450936-1108_001" where R901450936 is material number and 001 is serial
+    // Material is the part before the first dash
+    const materialPart = idCode.split('-')[0];
+    
+    // Serial is the part after the last underscore (always the last number)
+    const lastUnderscoreIndex = idCode.lastIndexOf('_');
+    const serialPart = lastUnderscoreIndex !== -1 ? idCode.substring(lastUnderscoreIndex + 1) : null;
+    
+    return {
+      material: materialPart || null,
+      serial: serialPart || null
+    };
+  } catch (e) {
+    node.error("Error extracting material and serial: " + e.message);
+    return { material: null, serial: null };
   }
 }
 
 // SQL formatter
 const fmt = (v, str = false) => (v == null || v === '') ? 'NULL' : (str ? `'${v.toString().replace(/'/g, "''")}'` : v);
 
-// Get data from msg.payload instead of file
-const data = msg.payload;
-const payloadName = data.name || "MOE6_Halle206_GH4";
-const tuples = [];
-
-// Process each channel
-for (const ch of Array.isArray(data.channels) ? data.channels : []) {
-  const tableTag = `${payloadName}_CH${ch.nr || ch['node id'] || 0}`;
-  const Datum = new Date(ch.date || data.date)
-    .toISOString().slice(0, 19).replace('T', ' ');
-  const ID_Code = ch['id code'];
-  const Program_Nr = ch['prg nr'];
-  const Program_Name = ch['prg name'];
-  const Schraubkanal = ch.nr || ch['node id'] || null;
-  const Ergebnis = (ch.result || ch['quality code'] || '')
-    .toString().trim().toUpperCase();
-
-  // Steps
-  const steps = Array.isArray(ch['tightening steps']) ? ch['tightening steps'] : [];
-  const last = steps[steps.length - 1] || {};
-  const N_Letzter_Schritt = last.row || null;
-  const P_Letzter_Schritt = last.name || null;
-
-  // Torque/Angle
-  let Drehmoment_Nom = null, Drehmoment_Ist = null;
-  const funcs = Array.isArray(last['tightening functions']) ? last['tightening functions'] : [];
-  const torqueFn = funcs.find(f => f.name === 'TF Torque');
-  const angleFn  = funcs.find(f => f.name === 'TF Angle');
-  const finalFn  = torqueFn || angleFn;
-  if (finalFn) { Drehmoment_Nom = finalFn.nom; Drehmoment_Ist = finalFn.act; }
-
-  // Graph
-  let Winkelwerte = null, Drehmomentwerte = null;
-  if (last.graph && Array.isArray(last.graph['angle values'])) {
-    Winkelwerte = last.graph['angle values'].join(',');
-    Drehmomentwerte = Array.isArray(last.graph['torque values'])
-      ? last.graph['torque values'].join(',') : null;
-  } else if (last.graph_b64) {
-    const { angleValues, torqueValues } = decodeGraphB64(last.graph_b64);
-    Winkelwerte = angleValues.join(',');
-    Drehmomentwerte = torqueValues.join(',');
+// Main processing function with error handling
+try {
+  // Validate input
+  if (!msg.payload) {
+    throw new Error("Empty payload received");
   }
-
-  // Add to tuples array for multi-row INSERT
-  tuples.push(`(
-    ${fmt(tableTag,true)}, ${fmt(Datum,true)}, ${fmt(ID_Code,true)}, ${fmt(Program_Nr)}, ${fmt(Program_Name,true)},
-    ${fmt(Schraubkanal)}, ${fmt(Ergebnis,true)}, ${fmt(N_Letzter_Schritt)}, ${fmt(P_Letzter_Schritt,true)},
-    ${fmt(Drehmoment_Nom)}, ${fmt(Drehmoment_Ist)}, ${fmt(Winkelwerte,true)}, ${fmt(Drehmomentwerte,true)}
-  )`);
+  
+  // Get data from msg.payload
+  const data = msg.payload;
+  const payloadName = data.name || "MOE6_Halle206_GH4";
+  const tuples = [];
+  
+  // Validate channels
+  if (!data.channels || !Array.isArray(data.channels) || data.channels.length === 0) {
+    throw new Error("No channels found in payload");
+  }
+  
+  // Process each channel
+  for (const ch of data.channels) {
+    try {
+      // Validate required fields
+      if (!ch.date && !data.date) {
+        node.warn(`Channel missing date, using current time`);
+      }
+      
+      // Removed channel suffix from tableTag to prevent truncation in database
+      const tableTag = payloadName;
+      const Datum = new Date(ch.date || data.date || new Date())
+        .toISOString().slice(0, 19).replace('T', ' ');
+      const ID_Code = ch['id code'];
+      
+      if (!ID_Code) {
+        node.warn(`Channel missing ID code, skipping`);
+        continue;
+      }
+      
+      // Extract material and serial number from ID code
+      const { material, serial } = extractMaterialAndSerial(ID_Code);
+      const Material = material;
+      const SerialNr = serial;
+      
+      const Program_Nr = ch['prg nr'];
+      const Program_Name = ch['prg name'];
+      const Schraubkanal = ch.nr || ch['node id'] || null;
+      const Ergebnis = (ch.result || ch['quality code'] || '')
+        .toString().trim().toUpperCase();
+    
+      // Steps
+      const steps = Array.isArray(ch['tightening steps']) ? ch['tightening steps'] : [];
+      if (steps.length === 0) {
+        node.warn(`Channel ${Schraubkanal} has no tightening steps, using defaults`);
+      }
+      
+      const last = steps[steps.length - 1] || {};
+      const N_Letzter_Schritt = last.row || null;
+      const P_Letzter_Schritt = last.name || null;
+    
+      // Torque/Angle
+      let Drehmoment_Nom = null, Drehmoment_Ist = null;
+      const funcs = Array.isArray(last['tightening functions']) ? last['tightening functions'] : [];
+      const torqueFn = funcs.find(f => f.name === 'TF Torque');
+      const angleFn  = funcs.find(f => f.name === 'TF Angle');
+      const finalFn  = torqueFn || angleFn;
+      if (finalFn) { Drehmoment_Nom = finalFn.nom; Drehmoment_Ist = finalFn.act; }
+    
+      // Graph
+      let Winkelwerte = null, Drehmomentwerte = null;
+      if (last.graph && Array.isArray(last.graph['angle values'])) {
+        Winkelwerte = last.graph['angle values'].join(',');
+        Drehmomentwerte = Array.isArray(last.graph['torque values'])
+          ? last.graph['torque values'].join(',') : null;
+      } else if (last.graph_b64) {
+        const { angleValues, torqueValues } = decodeGraphB64(last.graph_b64);
+        Winkelwerte = angleValues.join(',');
+        Drehmomentwerte = torqueValues.join(',');
+      }
+    
+      // Add to tuples array for multi-row INSERT - now includes Material and SerialNr
+      tuples.push(`(
+        ${fmt(tableTag,true)}, ${fmt(Datum,true)}, ${fmt(ID_Code,true)}, ${fmt(Program_Nr)}, ${fmt(Program_Name,true)},
+        ${fmt(Schraubkanal)}, ${fmt(Ergebnis,true)}, ${fmt(N_Letzter_Schritt)}, ${fmt(P_Letzter_Schritt,true)},
+        ${fmt(Drehmoment_Nom)}, ${fmt(Drehmoment_Ist)}, ${fmt(Winkelwerte,true)}, ${fmt(Drehmomentwerte,true)},
+        ${fmt(Material,true)}, ${fmt(SerialNr,true)}
+      )`);
+    } catch (channelError) {
+      // Log error but continue processing other channels
+      node.error(`Error processing channel: ${channelError.message}`);
+    }
+  }
+  
+  // Check if we have any valid tuples
+  if (tuples.length === 0) {
+    throw new Error("No valid data extracted from payload");
+  }
+  
+  // Set msg.topic to the SQL query
+  msg.topic = `INSERT INTO dbo.Auftraege (
+    Tabelle, Datum, ID_Code, Program_Nr, Program_Name,
+    Schraubkanal, Ergebnis, N_Letzter_Schritt, P_Letzter_Schritt,
+    Drehmoment_Nom, Drehmoment_Ist, Winkelwerte, Drehmomentwerte,
+    Material, SerialNr
+  ) VALUES
+  ${tuples.join(',\n')};`;
+  
+  // Add processing metadata
+  msg.processed = {
+    controller: payloadName,
+    timestamp: new Date().toISOString(),
+    channelsProcessed: tuples.length,
+    totalChannels: data.channels ? data.channels.length : 0
+  };
+  
+  return msg;
+  
+} catch (error) {
+  // Handle any errors in the main processing
+  node.error("Processing error: " + error.message);
+  
+  // Create an error message that will be sent to an error handling node
+  msg.error = {
+    message: error.message,
+    timestamp: new Date().toISOString(),
+    controller: msg.payload ? (msg.payload.name || "MOE6_Halle206_GH4") : "unknown",
+    payload: msg.payload // Include the original payload for debugging
+  };
+  
+  // Clear the topic to prevent SQL execution
+  msg.topic = null;
+  
+  return [null, msg]; // Send to second output if configured for error handling
 }
-
-// Set msg.topic to the SQL query instead of console.log
-msg.topic = `INSERT INTO dbo.Auftraege (
-  Tabelle, Datum, ID_Code, Program_Nr, Program_Name,
-  Schraubkanal, Ergebnis, N_Letzter_Schritt, P_Letzter_Schritt,
-  Drehmoment_Nom, Drehmoment_Ist, Winkelwerte, Drehmomentwerte
-) VALUES
-${tuples.join(',\n')};`;
-
-return msg;

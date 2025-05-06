@@ -1,155 +1,154 @@
 # Schrauber Verwaltung
 
-A comprehensive management system for screwdriver data and operations, designed to handle real-time data processing, attribute management, and detailed reporting.
+A comprehensive system for managing and processing screwdriver controller data from multiple controller types, designed to handle real-time data processing, standardized storage, and detailed reporting.
+
+## Project Overview
+
+Schrauber Verwaltung is specialized in processing and storing data from various screwdriver controllers used in manufacturing. The system handles different controller types (MFV3, MFV23, MOE61, GH4) with varying data structures and formats, standardizing them for database storage and analysis. It combines data processing capabilities with a full-featured web application for screwdriver management, attribute tracking, and reporting.
 
 ## Project Structure
 
 ```
 schrauber_verwaltung/
-├── backend/                         # Backend server and REST API (Node.js + Express)
+├── data/                            # Core data processing and storage
+│   ├── one_payload/                 # Single screwdriver payload files (per controller)
+│   ├── all_data/                    # Aggregated data files
+│   ├── data_handling/               # Data processing scripts
+│   │   ├── live/                    # Live data processing for different controllers
+│   │   │   ├── process_MFV3_*.js    # MFV3 controller processors
+│   │   │   ├── process_MFV23_*.js   # MFV23 controller processors
+│   │   │   ├── process_MOE61_*.js   # MOE61 controller processors
+│   │   │   └── process_MOE6_*.js    # MOE6/GH4 controller processors
+│   │   └── migration/               # Data migration tools
+│   ├── Upserts/                     # Database upsert scripts
+│   ├── jsonKeys.txt                 # Mapping of JSON fields to database columns
+│   └── function.js                  # Core processing functions
+├── backend/                         # Backend server (Node.js + Express)
 │   ├── src/
-│   │   ├── controllers/             # Logic for handling API requests (business logic)
-│   │   │   ├── attributeController.js         # Attribute management endpoints
-│   │   │   ├── attributeValueController.js    # Attribute value endpoints
-│   │   │   └── screwdriverController.js       # Screwdriver CRUD, statistics, and reporting
-│   │   ├── models/                  # Sequelize ORM models for DB tables
-│   │   │   ├── ActivityLog.js               # Tracks all significant actions/events
-│   │   │   ├── Attribute.js                 # Attribute definitions (name, validation, etc.)
-│   │   │   ├── AttributeValue.js            # Possible values for parent attributes
-│   │   │   ├── DefaultAttributeValue.js     # Default values for attributes
-│   │   │   ├── Screwdriver.js               # Screwdriver entity
-│   │   │   ├── ScrewdriverAttribute.js      # Mapping of screwdrivers to their attributes/values
-│   │   │   └── index.js                     # Model loader/associations
-│   │   ├── routes/                   # Express route definitions (maps URLs to controllers)
-│   │   │   ├── attributeRoutes.js
-│   │   │   ├── attributeValueRoutes.js
-│   │   │   ├── logRoutes.js
-│   │   │   └── screwdriverRoutes.js
-│   │   ├── middleware/               # Custom Express middleware
-│   │   │   ├── errorHandler.js               # Centralized error handling
-│   │   │   └── validation.js                 # Request validation logic
-│   │   ├── utils/                    # Utility/helper functions
-│   │   │   └── logger.js                     # Logging setup (winston, etc.)
-│   │   └── app.js                    # Express app setup and configuration
-│   ├── package.json                  # Backend dependencies and scripts
-│   └── database.sql                  # SQL schema for initial DB setup
-├── frontend/                         # Frontend React application
+│   │   ├── controllers/             # API endpoints and business logic
+│   │   │   ├── attributeController.js       # Attribute management
+│   │   │   ├── attributeValueController.js  # Attribute value management
+│   │   │   └── screwdriverController.js     # Screwdriver CRUD and reporting
+│   │   ├── models/                  # Sequelize ORM models
+│   │   ├── routes/                  # API route definitions
+│   │   ├── middleware/              # Express middleware
+│   │   ├── utils/                   # Utility functions
+│   │   └── app.js                   # Express app configuration
+│   ├── .env                         # Environment configuration
+│   └── schrauber_verwaltung.sql     # Database schema
+├── frontend/                        # Frontend React application
 │   ├── src/
-│   │   ├── components/               # Reusable React components
-│   │   │   ├── attributes/                   # Attribute list, forms, etc.
-│   │   │   ├── reports/                      # Reporting/dashboard widgets
-│   │   │   ├── screwdrivers/                 # Screwdriver list, forms, etc.
-│   │   │   ├── ui/                           # Shared UI elements (Button, Select, etc.)
-│   │   │   └── NavBar.jsx                    # Main navigation bar
-│   │   ├── pages/                    # Top-level pages (route targets)
-│   │   │   ├── AttributesPage.jsx
-│   │   │   ├── ReportsPage.jsx
-│   │   │   └── ScrewdriversPage.jsx
-│   ├── public/                      # Static assets (favicon, index.html, etc.)
-│   └── package.json                 # Frontend dependencies and scripts
-└── data/                            # Data import/export area
-    ├── one_payload/                 # Single screwdriver payload files (per tool)
-    └── all_data/                    # Aggregated data files (multiple payloads, for bulk import/export)
+│   │   ├── components/              # React components
+│   │   │   ├── attributes/          # Attribute management UI
+│   │   │   ├── reports/             # Reporting and dashboard widgets
+│   │   │   ├── screwdrivers/        # Screwdriver management UI
+│   │   │   └── ui/                  # Shared UI components
+│   │   ├── pages/                   # Application pages
+│   │   └── App.jsx                  # Main application component
+│   └── index.html                   # HTML entry point
+├── dashboard.json                   # Grafana dashboard configuration
+├── node_red_errors.json             # Node-RED error handling configuration
+└── package.json                     # Project dependencies and scripts
 ```
 
 ## Features
 
-### 1. Screwdriver Management
-- **List, Filter, and Sort**: View all screwdrivers, filter by active/inactive/all, and sort by name or any attribute.
-- **Add & Edit**: Add new screwdrivers or edit existing ones, including dynamic, attribute-driven forms.
-- **State Management**: Activate/deactivate screwdrivers (soft delete).
-- **Validation**: Advanced form validation for required fields and attribute types.
-- **Attribute History**: Track and view the full change history for each screwdriver’s attributes.
+### 1. Multi-Controller Support
+- **Standard Controllers**: Process data from MFV3, MFV23, and MOE61 controllers with flat JSON structures
+- **GH4 Controller**: Handle nested data structures with multiple channels (up to 4 screwdrivers simultaneously)
+- **Format Normalization**: Convert different naming conventions and data formats to a standardized structure
 
-### 2. Attribute Management
-- **Dynamic Attributes**: Create, edit, and manage custom attributes (with name, description, regex validation, required flag, and parent/child relationships).
-- **Toggle State**: Activate/deactivate attributes.
-- **Parent Attributes**: Hierarchical attribute organization and parent attribute value management.
-- **Attribute Value Management**: Add, edit, and remove possible values for parent attributes.
+### 2. Data Processing
+- **Base64 Decoding**: Process base64-encoded graph data for torque and angle measurements
+- **ID Code Parsing**: Extract material and serial numbers from different ID code formats
+- **Field Mapping**: Map varying JSON field names to standardized database columns
+- **Tightening Method Support**: Handle both torque-based and angle-based final tightening methods
 
-### 3. Reporting & Statistics
-- **Dashboard**: Overview with total, active, and inactive screwdriver counts.
-- **Daily Creation Stats**: Visualize screwdriver creation over time.
-- **Top Attributes**: See most-used attributes in the system.
-- **Activity Log**: Full audit trail of all significant actions (create, update, delete, toggle) for screwdrivers and attributes.
-- **Attribute Distribution**: Analyze value distributions for parent attributes.
+### 3. Data Storage
+- **Standardized Database**: Store processed data in a consistent format regardless of source controller
+- **Graph Data Preservation**: Store detailed torque and angle graph data for analysis
+- **Metadata Retention**: Preserve controller-specific metadata for debugging and auditing
 
-### 4. Data Integrity & History
-- **Structured Storage**: Organized storage in `one_payload` and `all_data` directories.
-- **Validation Patterns**: Enforce data integrity with regex patterns on attributes.
-- **Historical Records**: Maintain complete attribute and screwdriver change history.
+### 4. Screwdriver Management
+- **CRUD Operations**: Create, read, update, and delete screwdriver records
+- **State Management**: Activate/deactivate screwdrivers (soft delete)
+- **Filtering & Sorting**: Filter by active/inactive state and sort by various attributes
+- **Attribute History**: Track changes to screwdriver attributes over time
 
-### 5. User Experience
-- **Modern React UI**: Responsive, consistent design with loading indicators and error handling.
-- **Comprehensive Error Handling**: Clear feedback for all async and validation errors.
+### 5. Attribute System
+- **Dynamic Attributes**: Create and manage custom attributes for screwdrivers
+- **Parent-Child Relationships**: Support hierarchical attribute structures
+- **Validation Rules**: Apply validation patterns to ensure data integrity
+- **Default Values**: Set default values for attributes
 
-### 6. API & Extensibility
-- **RESTful API**: Full-featured backend for CRUD operations, statistics, and reporting.
-- **Extensible Models**: Easily add new attributes or extend screwdriver data model.
+### 6. Reporting & Analytics
+- **Dashboard Integration**: Grafana dashboard for visualizing screwdriver data
+- **Statistical Reports**: View screwdriver counts, attribute distributions, and usage patterns
+- **Activity Logging**: Track all significant actions in the system
+- **Data Export**: Export reports and data for external analysis
+
+### 7. User Interface
+- **React Frontend**: Modern, responsive user interface built with React
+- **Interactive Components**: Dynamic forms, tables, and charts
+- **Navigation**: Intuitive navigation between different system areas
+
+## Controller Data Structures
+
+### Standard Controllers (MFV3, MFV23, MOE61)
+- **ID Format**: "L 000000151112"
+- **Structure**: Flat JSON with single controller data
+- **Graph Data**: May use base64 encoding or array format
+- **Example Fields**: `date`, `id code`, `prg nr`, `tightening steps`
+
+### GH4 Controller (MOE6_Halle206_GH4)
+- **ID Format**: "R901450936-1108_001" (includes material and serial numbers)
+- **Structure**: Nested JSON with `channels` array containing multiple screwdriver data
+- **Graph Data**: Primarily uses base64 encoding
+- **Example Fields**: Root level `date`, `channels[x].tightening steps`
 
 ## Setup Instructions
 
 ### Prerequisites
 - Node.js (v14 or higher)
-- MySQL (v8.0 or higher)
-- npm or yarn
+- SQL Server
+- XAMPP (for local development)
 
-### 1. Clone the Repository
+### Installation
+1. Clone the repository
 ```bash
 git clone https://github.com/TomasPinolini/SchrauberVerwaltung.git
 cd schrauber_verwaltung
 ```
 
-### 2. Backend Setup
+2. Install dependencies for all components
+```bash
+npm run install:all
+```
+
+3. Configure database connection
+   - Update database connection settings in `backend/.env`
+
+4. Initialize the database
 ```bash
 cd backend
-npm install
+mysql -u your_username -p < schrauber_verwaltung.sql
 ```
 
-Create a `.env` file in the backend directory:
-```env
-DB_HOST=localhost
-DB_USER=your_username
-DB_PASSWORD=your_password
-DB_NAME=schrauber_db
-PORT=3000
-JWT_SECRET=your_jwt_secret
-```
-
-Initialize the database:
+5. Run the application
 ```bash
-mysql -u your_username -p < database.sql
-```
-
-### 3. Frontend Setup
-```bash
-cd frontend
-npm install
-```
-
-### 4. Start the Application
-
-Start the backend server:
-```bash
-cd backend
 npm start
 ```
 
-Start the frontend development server:
-```bash
-cd frontend
-npm run dev
-```
+## Data Processing Flow
 
-The application will be available at:
-- Frontend: `http://localhost:5173`
-- Backend API: `http://localhost:3000`
+1. Screwdriver controller generates JSON payload
+2. System identifies controller type and selects appropriate processor
+3. Processor extracts and normalizes data fields according to jsonKeys.txt mapping
+4. Processor decodes any base64-encoded graph data
+5. Normalized data is inserted into the database
+6. Data becomes available for reporting and analysis through the web interface
 
-## API Documentation
-
-### Authentication
-- POST `/api/auth/login` - User login
-- POST `/api/auth/logout` - User logout
+## API Endpoints
 
 ### Screwdrivers
 - GET `/api/screwdrivers` - Get all screwdrivers
@@ -164,7 +163,33 @@ The application will be available at:
 - GET `/api/attributes/:id` - Get specific attribute
 - PUT `/api/attributes/:id` - Update attribute
 - PATCH `/api/attributes/:id/toggle-state` - Toggle attribute state
-- DELETE `/api/attributes/:id` - Delete attribute
+
+### Statistics
+- GET `/api/screwdrivers/statistics/overview` - Get overview statistics
+- GET `/api/screwdrivers/statistics/attribute/:attributeId` - Get distribution for a parent attribute
+
+## Database Schema
+
+The system uses a standardized database schema with the following key tables:
+- `dbo.Auftraege`: Main table for storing processed screwdriver data
+- `Screwdriver`: Screwdriver entity information
+- `Attribute`: Attribute definitions
+- `ScrewdriverAttribute`: Mapping of screwdrivers to their attributes/values
+- `ActivityLog`: Audit trail of all significant actions
+
+## Node-RED Integration
+
+The system includes Node-RED flows for data processing automation:
+- Controller-specific processing nodes
+- Error handling and logging
+- Database integration
+
+## Grafana Dashboard
+
+The included Grafana dashboard (dashboard.json) provides:
+- Real-time monitoring of screwdriver operations
+- Historical trend analysis
+- Performance metrics visualization
 
 ## Contributing
 
