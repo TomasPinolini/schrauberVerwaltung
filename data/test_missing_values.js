@@ -159,17 +159,42 @@ async function main() {
       const content = fs.readFileSync(file, 'utf8');
       const lines = content.split('\n').filter(line => line.trim() !== '');
       
-      // Process only the first 100 payloads (or fewer if file has less than 100
-      const payloadsToProcess = Math.min(100, lines.length);
-      console.log(`Processing ${payloadsToProcess} payloads from ${controllerType}`);
+      // Correct controller type for MOE6_Halle206_GH4 to MOE61_Halle206_GH4
+      let actualControllerType = controllerType;
+      if (controllerType === 'MOE6_Halle206_GH4') {
+        actualControllerType = 'MOE61_Halle206_GH4';
+        // Initialize stats for the corrected controller type if it doesn't exist
+        if (!stats.controllerStats[actualControllerType]) {
+          stats.controllerStats[actualControllerType] = {
+            totalPayloads: 0,
+            Drehmoment_Nom: 0,
+            Drehmoment_Ist: 0,
+            Drehmoment_Min: 0,
+            Drehmoment_Max: 0,
+            Winkel_Nom: 0,
+            Winkel_Ist: 0,
+            Winkel_Min: 0,
+            Winkel_Max: 0
+          };
+        }
+      }
+      
+      // Process only the first 5 payloads (or fewer if file has less than 5)
+      console.log(`Processing up to 5 payloads from ${actualControllerType}`);
       
       let processedResults = [];
+      let totalPayloadsProcessed = 0;
       
-      for (let i = 0; i < payloadsToProcess; i++) {
+      for (let i = 0; i < lines.length && totalPayloadsProcessed < 5; i++) {
         try {
           const payload = JSON.parse(lines[i]);
-          const results = processPayload(payload, controllerType);
-          processedResults = processedResults.concat(results);
+          const results = processPayload(payload, actualControllerType);
+          
+          // For GH4 controllers, we might get multiple results per line
+          // Only add as many as needed to reach 5 total payloads
+          const resultsToAdd = Math.min(results.length, 5 - totalPayloadsProcessed);
+          processedResults = processedResults.concat(results.slice(0, resultsToAdd));
+          totalPayloadsProcessed += resultsToAdd;
         } catch (parseError) {
           console.error(`Error parsing payload ${i+1} in ${file}: ${parseError.message}`);
         }
@@ -177,44 +202,44 @@ async function main() {
       
       // Update statistics
       stats.totalPayloads += processedResults.length;
-      stats.controllerStats[controllerType].totalPayloads += processedResults.length;
+      stats.controllerStats[actualControllerType].totalPayloads += processedResults.length;
       
       for (const result of processedResults) {
         if (result.Drehmoment_Nom !== null) {
           stats.Drehmoment_Nom++;
-          stats.controllerStats[controllerType].Drehmoment_Nom++;
+          stats.controllerStats[actualControllerType].Drehmoment_Nom++;
         }
         if (result.Drehmoment_Ist !== null) {
           stats.Drehmoment_Ist++;
-          stats.controllerStats[controllerType].Drehmoment_Ist++;
+          stats.controllerStats[actualControllerType].Drehmoment_Ist++;
         }
         if (result.Drehmoment_Min !== null) {
           stats.Drehmoment_Min++;
-          stats.controllerStats[controllerType].Drehmoment_Min++;
+          stats.controllerStats[actualControllerType].Drehmoment_Min++;
         }
         if (result.Drehmoment_Max !== null) {
           stats.Drehmoment_Max++;
-          stats.controllerStats[controllerType].Drehmoment_Max++;
+          stats.controllerStats[actualControllerType].Drehmoment_Max++;
         }
         if (result.Winkel_Nom !== null) {
           stats.Winkel_Nom++;
-          stats.controllerStats[controllerType].Winkel_Nom++;
+          stats.controllerStats[actualControllerType].Winkel_Nom++;
         }
         if (result.Winkel_Ist !== null) {
           stats.Winkel_Ist++;
-          stats.controllerStats[controllerType].Winkel_Ist++;
+          stats.controllerStats[actualControllerType].Winkel_Ist++;
         }
         if (result.Winkel_Min !== null) {
           stats.Winkel_Min++;
-          stats.controllerStats[controllerType].Winkel_Min++;
+          stats.controllerStats[actualControllerType].Winkel_Min++;
         }
         if (result.Winkel_Max !== null) {
           stats.Winkel_Max++;
-          stats.controllerStats[controllerType].Winkel_Max++;
+          stats.controllerStats[actualControllerType].Winkel_Max++;
         }
       }
       
-      console.log(`Processed ${controllerType}: ${processedResults.length} payloads`);
+      console.log(`Processed ${actualControllerType}: ${processedResults.length} payloads`);
     } catch (error) {
       console.error(`Error processing ${file}: ${error.message}`);
     }

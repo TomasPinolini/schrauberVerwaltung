@@ -1,12 +1,3 @@
-im running a data migration.
-take a look at the @batch_processor.js then at the @data/data_handling/live folder, and then at the samples from @data/one_payload 
-the issue im encountering rightn now is that after running that some values of columns where allways null:
-Drehmoment_Min
-Drehmoment_Max
-Winkel_Nom
-Winkel_Ist
-Winkel_Min
-Winkel_Max
-in no row where those values inserted.
-read also the @jsonkeys.txt to see where those values are stored.
-and help me design some sort of testing of in how many payloads those values where sent
+ok, ive done the migration, but i think its incomplete.
+could it be that the @batch_processor.js is not doing the COMPLETE migration?
+or just a part of the txt's?
