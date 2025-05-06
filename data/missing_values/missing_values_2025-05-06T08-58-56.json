@@ -1,0 +1,102 @@
+{
+  "timestamp": "2025-05-06T08:58:56.604Z",
+  "totalPayloads": 110,
+  "Drehmoment_Nom": 95,
+  "Drehmoment_Ist": 95,
+  "Drehmoment_Min": 95,
+  "Drehmoment_Max": 95,
+  "Winkel_Nom": 55,
+  "Winkel_Ist": 55,
+  "Winkel_Min": 40,
+  "Winkel_Max": 40,
+  "controllerStats": {
+    "MFV23_Halle101_114227CP_link": {
+      "totalPayloads": 10,
+      "Drehmoment_Nom": 10,
+      "Drehmoment_Ist": 10,
+      "Drehmoment_Min": 10,
+      "Drehmoment_Max": 10,
+      "Winkel_Nom": 0,
+      "Winkel_Ist": 0,
+      "Winkel_Min": 0,
+      "Winkel_Max": 0
+    },
+    "MFV23_Halle101_114227CP_recht": {
+      "totalPayloads": 10,
+      "Drehmoment_Nom": 10,
+      "Drehmoment_Ist": 10,
+      "Drehmoment_Min": 10,
+      "Drehmoment_Max": 10,
+      "Winkel_Nom": 0,
+      "Winkel_Ist": 0,
+      "Winkel_Min": 0,
+      "Winkel_Max": 0
+    },
+    "MFV23_Halle101_11461CP": {
+      "totalPayloads": 10,
+      "Drehmoment_Nom": 0,
+      "Drehmoment_Ist": 0,
+      "Drehmoment_Min": 0,
+      "Drehmoment_Max": 0,
+      "Winkel_Nom": 10,
+      "Winkel_Ist": 10,
+      "Winkel_Min": 0,
+      "Winkel_Max": 0
+    },
+    "MFV3_Halle204_Rest_CH": {
+      "totalPayloads": 10,
+      "Drehmoment_Nom": 10,
+      "Drehmoment_Ist": 10,
+      "Drehmoment_Min": 10,
+      "Drehmoment_Max": 10,
+      "Winkel_Nom": 0,
+      "Winkel_Ist": 0,
+      "Winkel_Min": 0,
+      "Winkel_Max": 0
+    },
+    "MFV3_Halle204_Vorm_Prop_Druck": {
+      "totalPayloads": 10,
+      "Drehmoment_Nom": 10,
+      "Drehmoment_Ist": 10,
+      "Drehmoment_Min": 10,
+      "Drehmoment_Max": 10,
+      "Winkel_Nom": 0,
+      "Winkel_Ist": 0,
+      "Winkel_Min": 0,
+      "Winkel_Max": 0
+    },
+    "MOE61_Halle206_BGGF1GF3": {
+      "totalPayloads": 10,
+      "Drehmoment_Nom": 10,
+      "Drehmoment_Ist": 10,
+      "Drehmoment_Min": 10,
+      "Drehmoment_Max": 10,
+      "Winkel_Nom": 0,
+      "Winkel_Ist": 0,
+      "Winkel_Min": 0,
+      "Winkel_Max": 0
+    },
+    "MOE61_Halle207_BEM": {
+      "totalPayloads": 10,
+      "Drehmoment_Nom": 5,
+      "Drehmoment_Ist": 5,
+      "Drehmoment_Min": 5,
+      "Drehmoment_Max": 5,
+      "Winkel_Nom": 5,
+      "Winkel_Ist": 5,
+      "Winkel_Min": 0,
+      "Winkel_Max": 0
+    },
+    "MOE6_Halle206_GH4": {
+      "totalPayloads": 40,
+      "Drehmoment_Nom": 40,
+      "Drehmoment_Ist": 40,
+      "Drehmoment_Min": 40,
+      "Drehmoment_Max": 40,
+      "Winkel_Nom": 40,
+      "Winkel_Ist": 40,
+      "Winkel_Min": 40,
+      "Winkel_Max": 40
+    }
+  }
+}

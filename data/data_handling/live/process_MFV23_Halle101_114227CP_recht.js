@@ -65,15 +65,52 @@ try {
   const N_Letzter_Schritt = last.row || null;
   const P_Letzter_Schritt = last.name || null;
   
-  // Extract torque (or angle) from last step functions
+  // Extract torque and angle values from last step functions
   let Drehmoment_Nom = null, Drehmoment_Ist = null;
+  let Drehmoment_Min = null, Drehmoment_Max = null;
+  let Winkel_Nom = null, Winkel_Ist = null;
+  let Winkel_Min = null, Winkel_Max = null;
+  
   const funcs = Array.isArray(last['tightening functions']) ? last['tightening functions'] : [];
+  
+  // Find the torque and angle functions
   const torqueFn = funcs.find(f => f.name === 'TF Torque');
-  const angleFn  = funcs.find(f => f.name === 'TF Angle');
-  const finalFn  = torqueFn || angleFn;
-  if (finalFn) {
-    Drehmoment_Nom = finalFn.nom;
-    Drehmoment_Ist = finalFn.act;
+  const angleFn = funcs.find(f => f.name === 'TF Angle' || f.name === 'TF Yield Point');
+  
+  // Extract torque values
+  if (torqueFn) {
+    Drehmoment_Nom = torqueFn.nom;
+    Drehmoment_Ist = torqueFn.act;
+  }
+  
+  // Extract angle values
+  if (angleFn) {
+    Winkel_Nom = angleFn.nom;
+    Winkel_Ist = angleFn.act;
+  }
+  
+  // Extract min/max values
+  const torqueMinFn = funcs.find(f => f.name === 'MF TorqueMin');
+  if (torqueMinFn) {
+    Drehmoment_Min = torqueMinFn.nom;
+  }
+  
+  // Check both variants of TorqueMax
+  const torqueMaxFn = funcs.find(f => f.name === 'MF TorqueMax' || f.name === 'MFs TorqueMax');
+  if (torqueMaxFn) {
+    Drehmoment_Max = torqueMaxFn.nom;
+  }
+  
+  // Check both variants of AngleMin
+  const angleMinFn = funcs.find(f => f.name === 'MF AngleMin' || f.name === 'MFs AngleMin');
+  if (angleMinFn) {
+    Winkel_Min = angleMinFn.nom;
+  }
+  
+  // Check both variants of AngleMax
+  const angleMaxFn = funcs.find(f => f.name === 'MF AngleMax' || f.name === 'MFs AngleMax');
+  if (angleMaxFn) {
+    Winkel_Max = angleMaxFn.nom;
   }
   
   // Graph arrays
@@ -92,7 +129,7 @@ try {
   ) VALUES (
     ${fmt(tableTag, true)}, ${fmt(Datum, true)}, ${fmt(ID_Code, true)}, ${fmt(Program_Nr)}, ${fmt(Program_Name, true)},
     ${fmt(Materialnummer, true)}, ${fmt(Serialnummer, true)}, ${fmt(Schraubkanal)}, ${fmt(Ergebnis, true)}, ${fmt(N_Letzter_Schritt)}, ${fmt(P_Letzter_Schritt, true)},
-    ${fmt(Drehmoment_Nom)}, ${fmt(Drehmoment_Ist)}, NULL, NULL, NULL, NULL, NULL, NULL,
+    ${fmt(Drehmoment_Nom)}, ${fmt(Drehmoment_Ist)}, ${fmt(Drehmoment_Min)}, ${fmt(Drehmoment_Max)}, ${fmt(Winkel_Nom)}, ${fmt(Winkel_Ist)}, ${fmt(Winkel_Min)}, ${fmt(Winkel_Max)},
     ${fmt(Winkelwerte, true)}, ${fmt(Drehmomentwerte, true)}
   );`;
   

@@ -224,7 +224,7 @@ async function main() {
     // Add CREATE TABLE statement at the beginning
     const createTableSQL = `
 -- Create table for historical data
-CREATE TABLE dbo.Auftraege_Archive
+CREATE TABLE dbo.Auftraege
 (
     ID INT IDENTITY(1,1) PRIMARY KEY,
     Tabelle VARCHAR(50) NULL,
@@ -253,10 +253,10 @@ CREATE TABLE dbo.Auftraege_Archive
 GO
 
 -- Create indexes for better performance
-CREATE INDEX IX_Auftraege_Archive_Datum ON dbo.Auftraege_Archive(Datum);
-CREATE INDEX IX_Auftraege_Archive_ID_Code ON dbo.Auftraege_Archive(ID_Code);
-CREATE INDEX IX_Auftraege_Archive_Materialnummer ON dbo.Auftraege_Archive(Materialnummer);
-CREATE INDEX IX_Auftraege_Archive_Serialnummer ON dbo.Auftraege_Archive(Serialnummer);
+CREATE INDEX IX_Auftraege_Datum ON dbo.Auftraege(Datum);
+CREATE INDEX IX_Auftraege_ID_Code ON dbo.Auftraege(ID_Code);
+CREATE INDEX IX_Auftraege_Materialnummer ON dbo.Auftraege(Materialnummer);
+CREATE INDEX IX_Auftraege_Serialnummer ON dbo.Auftraege(Serialnummer);
 GO
 
 -- Insert statements follow
@@ -264,7 +264,7 @@ GO
     
     // Modify SQL statements to insert into the archive table
     const modifiedSqlStatements = allSqlStatements.map(sql => {
-      return sql.replace('INSERT INTO dbo.Auftraege', 'INSERT INTO dbo.Auftraege_Archive');
+      return sql.replace('INSERT INTO dbo.Auftraege', 'INSERT INTO dbo.Auftraege');
     });
     
     // Write to file
