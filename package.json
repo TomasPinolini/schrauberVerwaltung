@@ -3,14 +3,18 @@
   "version": "1.0.0",
   "description": "A management system for screwdriver data and operations",
   "scripts": {
-    "install:all": "npm install && cd backend && npm install",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
     "start": "cd backend && npm start",
-    "dev": "cd backend && npm run dev",
+    "start:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build:frontend": "cd frontend && npm run build",
     "test": "cd backend && npm test"
   },
   "author": "",
   "license": "ISC",
   "workspaces": [
-    "backend"
+    "backend",
+    "frontend"
   ]
-} 
+}

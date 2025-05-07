@@ -1,16 +1,10 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
---
--- Servidor: 127.0.0.1
--- Tiempo de generación: 28-04-2025 a las 07:50:44
--- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.2.12
+-- Database Schema for Schrauber Verwaltung
+-- Version: 1.0
+-- Date: 2025-05-06
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
-
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -18,16 +12,16 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `schrauber_verwaltung`
+-- Database: `schrauber_verwaltung`
 --
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `activity_logs`
+-- Table structure for `activity_logs`
 --
 
-CREATE TABLE `activity_logs` (
+CREATE TABLE IF NOT EXISTS `activity_logs` (
   `id` int(11) NOT NULL,
   `type` varchar(64) NOT NULL,
   `entity_id` int(11) NOT NULL,
@@ -39,10 +33,10 @@ CREATE TABLE `activity_logs` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `attributes`
+-- Table structure for `attributes`
 --
 
-CREATE TABLE `attributes` (
+CREATE TABLE IF NOT EXISTS `attributes` (
   `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `description` text DEFAULT NULL,
@@ -59,10 +53,44 @@ CREATE TABLE `attributes` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `screwdrivers`
+-- Table structure for `auftraege`
 --
 
-CREATE TABLE `screwdrivers` (
+CREATE TABLE IF NOT EXISTS `auftraege` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `controller_type` varchar(64) NOT NULL,
+  `date` datetime NOT NULL,
+  `id_code` varchar(64) NOT NULL,
+  `program_nr` varchar(32) DEFAULT NULL,
+  `program_name` varchar(128) DEFAULT NULL,
+  `material_number` varchar(64) DEFAULT NULL,
+  `serial_number` varchar(64) DEFAULT NULL,
+  `screw_channel` varchar(16) DEFAULT NULL,
+  `result` varchar(16) DEFAULT NULL,
+  `last_step_n` varchar(16) DEFAULT NULL,
+  `last_step_p` varchar(16) DEFAULT NULL,
+  `nominal_torque` float DEFAULT NULL,
+  `actual_torque` float DEFAULT NULL,
+  `min_torque` float DEFAULT NULL,
+  `max_torque` float DEFAULT NULL,
+  `nominal_angle` float DEFAULT NULL,
+  `actual_angle` float DEFAULT NULL,
+  `min_angle` float DEFAULT NULL,
+  `max_angle` float DEFAULT NULL,
+  `angle_values` LONGTEXT DEFAULT NULL,
+  `torque_values` LONGTEXT DEFAULT NULL,
+  `cycle` varchar(32) DEFAULT NULL,
+  `screwdriver_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for `screwdrivers`
+--
+
+CREATE TABLE IF NOT EXISTS `screwdrivers` (
   `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `description` text DEFAULT NULL,
@@ -72,14 +100,13 @@ CREATE TABLE `screwdrivers` (
   `deleted_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `screwdriver_attributes`
+-- Table structure for `screwdriver_attributes`
 --
 
-CREATE TABLE `screwdriver_attributes` (
+CREATE TABLE IF NOT EXISTS `screwdriver_attributes` (
   `id` int(11) NOT NULL,
   `screwdriver_id` int(11) NOT NULL,
   `attribute_id` int(11) NOT NULL,
@@ -88,78 +115,111 @@ CREATE TABLE `screwdriver_attributes` (
   `is_current` tinyint(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-
-
 --
--- Índices para tablas volcadas
+-- Indexes for dumped tables
 --
 
 --
--- Indices de la tabla `activity_logs`
+-- Indexes for table `activity_logs`
 --
 ALTER TABLE `activity_logs`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`) -- Primary key for activity_logs
+  ;
 
 --
--- Indices de la tabla `attributes`
+-- Indexes for table `attributes`
 --
 ALTER TABLE `attributes`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_state` (`state`),
-  ADD KEY `idx_deleted_at` (`deleted_at`);
+  ADD PRIMARY KEY (`id`) -- Primary key for attributes
+  , ADD KEY `idx_state` (`state`)
+  , ADD KEY `idx_deleted_at` (`deleted_at`)
+  ;
 
 --
--- Indices de la tabla `screwdrivers`
+-- Indexes for table `auftraege`
+--
+-- Add indexes to auftraege table
+ALTER TABLE `auftraege`
+  ADD KEY `idx_controller_type` (`controller_type`)
+  , ADD KEY `idx_date` (`date`)
+  , ADD KEY `idx_result` (`result`)
+  , ADD KEY `idx_id_code` (`id_code`)
+  , ADD KEY `idx_screwdriver_id` (`screwdriver_id`)
+  ;
+
+--
+-- Indexes for table `screwdrivers`
 --
 ALTER TABLE `screwdrivers`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_state` (`state`),
-  ADD KEY `idx_deleted_at` (`deleted_at`);
+  ADD PRIMARY KEY (`id`) -- Primary key for screwdrivers
+  , ADD KEY `idx_state` (`state`)
+  , ADD KEY `idx_deleted_at` (`deleted_at`)
+  ;
 
 --
--- Indices de la tabla `screwdriver_attributes`
+-- Indexes for table `screwdriver_attributes`
 --
 ALTER TABLE `screwdriver_attributes`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `attribute_id` (`attribute_id`),
-  ADD KEY `idx_screwdriver_attribute` (`screwdriver_id`,`attribute_id`),
-  ADD KEY `idx_screwdriver_attribute_current` (`screwdriver_id`,`attribute_id`,`is_current`);
+  ADD PRIMARY KEY (`id`) -- Primary key for screwdriver_attributes
+  , ADD KEY `attribute_id` (`attribute_id`)
+  , ADD KEY `idx_screwdriver_attribute` (`screwdriver_id`,`attribute_id`)
+  , ADD KEY `idx_screwdriver_attribute_current` (`screwdriver_id`,`attribute_id`,`is_current`)
+  ;
 
 --
--- AUTO_INCREMENT de las tablas volcadas
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT de la tabla `activity_logs`
+-- AUTO_INCREMENT for table `activity_logs`
 --
+-- Set auto increment for activity_logs
 ALTER TABLE `activity_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
--- AUTO_INCREMENT de la tabla `attributes`
+-- AUTO_INCREMENT for table `attributes`
 --
+-- Set auto increment for attributes
 ALTER TABLE `attributes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
--- AUTO_INCREMENT de la tabla `screwdrivers`
+-- AUTO_INCREMENT for table `auftraege`
 --
+-- Set auto increment for auftraege
+ALTER TABLE `auftraege`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+--
+-- AUTO_INCREMENT for table `screwdrivers`
+--
+-- Set auto increment for screwdrivers
 ALTER TABLE `screwdrivers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
--- AUTO_INCREMENT de la tabla `screwdriver_attributes`
+-- AUTO_INCREMENT for table `screwdriver_attributes`
 --
+-- Set auto increment for screwdriver_attributes
 ALTER TABLE `screwdriver_attributes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=87;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
--- Restricciones para tablas volcadas
+-- Constraints for dumped tables
 --
 
 --
--- Filtros para la tabla `screwdriver_attributes`
+-- Constraints for table `auftraege`
 --
+-- Add foreign key constraint to auftraege table if it doesn't exist
+ALTER TABLE `auftraege`
+  ADD CONSTRAINT `auftraege_ibfk_1` FOREIGN KEY (`screwdriver_id`) REFERENCES `screwdrivers` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `screwdriver_attributes`
+--
+-- Add foreign key constraints to screwdriver_attributes table if they don't exist
 ALTER TABLE `screwdriver_attributes`
   ADD CONSTRAINT `screwdriver_attributes_ibfk_1` FOREIGN KEY (`screwdriver_id`) REFERENCES `screwdrivers` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `screwdriver_attributes_ibfk_2` FOREIGN KEY (`attribute_id`) REFERENCES `attributes` (`id`) ON DELETE CASCADE;

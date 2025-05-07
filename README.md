@@ -2,6 +2,14 @@
 
 A comprehensive system for managing and processing screwdriver controller data from multiple controller types, designed to handle real-time data processing, standardized storage, and detailed reporting.
 
+## Recent Updates
+
+- **Improved UI**: Modern responsive interface with Tailwind CSS
+- **Enhanced Navigation**: Fully functional navbar with mobile support
+- **Better State Management**: Implemented useReducer for more robust form handling
+- **User Feedback**: Added toast notifications for better user interaction
+- **Consistent Styling**: Standardized UI components across pages
+
 ## Project Overview
 
 Schrauber Verwaltung is specialized in processing and storing data from various screwdriver controllers used in manufacturing. The system handles different controller types (MFV3, MFV23, MOE61, GH4) with varying data structures and formats, standardizing them for database storage and analysis. It combines data processing capabilities with a full-featured web application for screwdriver management, attribute tracking, and reporting.
@@ -167,6 +175,26 @@ npm start
 ### Statistics
 - GET `/api/screwdrivers/statistics/overview` - Get overview statistics
 - GET `/api/screwdrivers/statistics/attribute/:attributeId` - Get distribution for a parent attribute
+
+### Auftraege
+- GET `/api/auftraege` - Get all screwdrivers
+- POST `/api/auftraege` - Create new screwdriver
+- GET `/api/auftraege/:id` - Get specific screwdriver
+- PUT `/api/auftraege/:id` - Update screwdriver
+- DELETE `/api/auftraege/:id` - Delete screwdriver
+
+<!-- ### Log
+- GET `/api/log` - Get all log entries
+- POST `/api/log` - Create new log entry
+- GET `/api/log/:id` - Get specific log entry
+- PUT `/api/log/:id` - Update log entry
+- DELETE `/api/log/:id` - Delete log entry
+
+### Health
+- GET `/api/health` - Get health status
+
+### Test DB
+- GET `/api/test-db` - Test database connection -->
 
 ## Database Schema
 

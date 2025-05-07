@@ -63,36 +63,40 @@ const AttributeForm = ({
         )}
       </div>
 
-      <div className="flex items-center gap-4">
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={formData.is_required || false}
-            onChange={(e) => onChange('is_required', e.target.checked)}
-            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-          />
-          <span className="text-sm font-medium text-gray-700">Pflichtfeld</span>
-        </label>
+      <div className="space-y-3 my-4">
+        <p className="text-sm font-medium text-gray-700 mb-2">Attributeigenschaften:</p>
+        
+        <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4">
+          <label className="flex items-center gap-2 min-w-[150px]">
+            <input
+              type="checkbox"
+              checked={formData.is_required || false}
+              onChange={(e) => onChange('is_required', e.target.checked)}
+              className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            />
+            <span className="text-sm font-medium text-gray-700">Pflichtfeld</span>
+          </label>
 
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={formData.is_parent || false}
-            onChange={(e) => onChange('is_parent', e.target.checked)}
-            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-          />
-          <span className="text-sm font-medium text-gray-700">Elternattribut</span>
-        </label>
+          <label className="flex items-center gap-2 min-w-[150px]">
+            <input
+              type="checkbox"
+              checked={formData.is_parent || false}
+              onChange={(e) => onChange('is_parent', e.target.checked)}
+              className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            />
+            <span className="text-sm font-medium text-gray-700">Elternattribut</span>
+          </label>
 
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={formData.unique || false}
-            onChange={(e) => onChange('unique', e.target.checked)}
-            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-          />
-          <span className="text-sm font-medium text-gray-700">Eindeutig (Unique)</span>
-        </label>
+          <label className="flex items-center gap-2 min-w-[150px]">
+            <input
+              type="checkbox"
+              checked={formData.unique || false}
+              onChange={(e) => onChange('unique', e.target.checked)}
+              className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            />
+            <span className="text-sm font-medium text-gray-700">Eindeutig (Unique)</span>
+          </label>
+        </div>
       </div>
 
       <button

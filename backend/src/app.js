@@ -71,61 +71,16 @@ app.use(session({
     }
 }));
 
-// Import routes
-const screwdriverRoutes = require('./routes/screwdriverRoutes');
-const attributeRoutes = require('./routes/attributeRoutes');
-const attributeValueRoutes = require('./routes/attributeValueRoutes');
-const logRoutes = require('./routes/logRoutes');
-
-// API Routes
-app.use('/api/screwdrivers', screwdriverRoutes);
-app.use('/api/attributes', attributeRoutes);
-app.use('/api/attribute-values', attributeValueRoutes);
-app.use('/api', logRoutes);
-
-// Health check endpoint
-app.get('/health', (req, res) => {
-    res.status(200).json({ status: 'ok' });
-});
-
-// Test database connection endpoint
-app.get('/test-db', async (req, res) => {
-    try {
-        const result = await sequelize.query('SELECT 1 + 1 AS result');
-        logger.info('Database connection test successful');
-        res.status(200).json({ 
-            status: 'ok',
-            message: 'Database connection successful',
-            result: result[0][0].result
-        });
-    } catch (error) {
-        logger.error('Database connection test failed:', error);
-        res.status(500).json({ 
-            status: 'error',
-            message: 'Database connection failed',
-            error: error.message
-        });
-    }
-});
-
-// Serve the main page
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../../frontend/index.html'));
-});
+// Initialize all routes from centralized route handler
+const initRoutes = require('./routes');
+initRoutes(app);
 
 // Error handling middleware
 app.use(errorHandler);
 
-// 404 handler
-app.use((req, res) => {
-    logger.warn(`Route not found: ${req.method} ${req.url}`);
-    res.status(404).json({ 
-        status: 'error',
-        error: {
-            message: 'Not found',
-            code: 'ROUTE_NOT_FOUND'
-        }
-    });
+// Serve the main page
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../../frontend/index.html'));
 });
 
 // Start server

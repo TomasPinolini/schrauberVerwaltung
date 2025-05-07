@@ -1,3 +1,0 @@
-ok, ive done the migration, but i think its incomplete.
-could it be that the @batch_processor.js is not doing the COMPLETE migration?
-or just a part of the txt's?

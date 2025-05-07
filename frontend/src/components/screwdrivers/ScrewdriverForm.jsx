@@ -23,9 +23,19 @@ const ScrewdriverForm = ({
     const value = formData.attributes?.find(a => a.attributeId === attribute.id)?.value || '';
     const error = errors[`attribute_${attribute.id}`];
 
-    const inputClassName = `w-full border p-2 rounded ${error ? 'border-red-500' : ''}`;
+    const inputClassName = `w-full border p-2 rounded ${error ? 'border-red-500' : 'border-gray-300'}`;
 
-    // Unique value validation will be handled in parent validation logic
+    // Add helper text for unique attributes or those with validation patterns
+    const getHelperText = () => {
+      const texts = [];
+      if (attribute.unique) texts.push('Muss eindeutig sein');
+      if (attribute.validation_pattern && attribute.data_type === 'string') {
+        texts.push(`Format: ${attribute.validation_pattern}`);
+      }
+      return texts.length > 0 ? texts.join(' • ') : null;
+    };
+    
+    const helperText = getHelperText();
 
     switch (attribute.data_type) {
       case 'boolean':
@@ -36,10 +46,11 @@ const ScrewdriverForm = ({
               value={value}
               onChange={(e) => onAttributeChange(attribute.id, e.target.value)}
             >
-              <option value="">Auswählen</option>
+              <option value="">Bitte wählen</option>
               <option value="true">Ja</option>
               <option value="false">Nein</option>
             </select>
+            {helperText && <p className="text-gray-500 text-xs mt-1">{helperText}</p>}
             {error && <p className="text-red-500 text-sm">{error}</p>}
           </div>
         );
@@ -52,7 +63,9 @@ const ScrewdriverForm = ({
               value={value}
               onChange={(e) => onAttributeChange(attribute.id, e.target.value)}
               step={attribute.validation_pattern || "any"}
+              placeholder={attribute.name}
             />
+            {helperText && <p className="text-gray-500 text-xs mt-1">{helperText}</p>}
             {error && <p className="text-red-500 text-sm">{error}</p>}
           </div>
         );
@@ -65,6 +78,7 @@ const ScrewdriverForm = ({
               value={value}
               onChange={(e) => onAttributeChange(attribute.id, e.target.value)}
             />
+            {helperText && <p className="text-gray-500 text-xs mt-1">{helperText}</p>}
             {error && <p className="text-red-500 text-sm">{error}</p>}
           </div>
         );
@@ -80,6 +94,7 @@ const ScrewdriverForm = ({
               placeholder={attribute.name}
               error={error}
             />
+            {helperText && <p className="text-gray-500 text-xs mt-1">{helperText}</p>}
             {error && <p className="text-red-500 text-sm">{error}</p>}
           </div>
         );
@@ -95,7 +110,7 @@ const ScrewdriverForm = ({
         </label>
         <Input
           type="text"
-          className={`w-full border p-2 rounded ${errors.name ? 'border-red-500' : ''}`}
+          className={`w-full border p-2 rounded ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
           value={formData.name}
           onChange={(e) => onChange('name', e.target.value)}
           placeholder="Name des Schraubendrehers"
@@ -119,13 +134,22 @@ const ScrewdriverForm = ({
         </div>
       ))}
 
-      <button
-        type="submit"
-        className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-        disabled={loading || Object.keys(errors).length > 0}
-      >
-        {loading ? 'Wird gespeichert...' : (isEditing ? 'Aktualisieren' : 'Erstellen')}
-      </button>
+      <div className="flex justify-end space-x-3 pt-4">
+        <button
+          type="button"
+          className="px-4 py-2 border border-gray-300 rounded text-gray-700 bg-white hover:bg-gray-50"
+          onClick={() => window.history.back()}
+        >
+          Abbrechen
+        </button>
+        <button
+          type="submit"
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={loading || Object.keys(errors).length > 0}
+        >
+          {loading ? 'Wird gespeichert...' : (isEditing ? 'Aktualisieren' : 'Erstellen')}
+        </button>
+      </div>
     </form>
   );
 };
