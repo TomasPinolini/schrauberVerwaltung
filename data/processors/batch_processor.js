@@ -1,15 +1,15 @@
 /**
- * Batch Processor for Schrauber Data - FIXED VERSION
+ * Batch Processor for Schrauber Data -  VERSION
  * 
  * This script processes all the payload files in the all_data directory
- * using the fixed unified processor and generates SQL statements
+ * using the  unified processor and generates SQL statements
  * for insertion into the database.
  * 
- * Usage: node batch_processor_fixed.js [--dry-run] [--output=filename.sql] [--limit=N]
+ * Usage: node batch_processor.js [--dry-run] [--output=filename.sql] [--limit=N]
  * 
  * Options:
  *   --dry-run       Don't write SQL to file, just show stats
- *   --output=file   Specify output SQL file (default: fixed_output.sql)
+ *   --output=file   Specify output SQL file (default: output.sql)
  *   --limit=N       Process only N payloads per file (for testing)
  */
 
@@ -22,7 +22,7 @@ const Module = require('module');
 const args = process.argv.slice(2);
 const options = {
   dryRun: args.includes('--dry-run'),
-  outputFile: 'fixed_output.sql',
+  outputFile: 'output.sql',
   limit: Infinity
 };
 
@@ -35,7 +35,7 @@ args.forEach(arg => {
   }
 });
 
-// Paths - Using the fixed unified processor
+// Paths - Using the  unified processor
 const ALL_DATA_DIR = path.join(__dirname, '..', 'all_data');
 const PROCESSOR_FILE = path.join(__dirname, 'unified_processor.js');
 const OUTPUT_FILE = path.join(__dirname, options.outputFile);
@@ -64,7 +64,7 @@ const createMockNode = () => {
   };
 };
 
-// Load the fixed unified processor
+// Load the  unified processor
 function loadProcessor() {
   try {
     const processorCode = fs.readFileSync(PROCESSOR_FILE, 'utf8');
@@ -135,7 +135,7 @@ function processPayload(payload, processorCode) {
 
 // Process all payloads in a file
 async function processFile(dataFile) {
-  console.log(`\nProcessing ${path.basename(dataFile)} with fixed unified processor`);
+  console.log(`\nProcessing ${path.basename(dataFile)} with  unified processor`);
   
   // Load the processor
   const processorCode = loadProcessor();
@@ -203,7 +203,7 @@ async function processFile(dataFile) {
 
 // Main function
 async function main() {
-  console.log('Batch Processor for Schrauber Data (FIXED VERSION)');
+  console.log('Batch Processor for Schrauber Data ( VERSION)');
   console.log('==================================================');
   console.log(`Mode: ${options.dryRun ? 'Dry Run' : 'Generate SQL'}`);
   console.log(`Output file: ${options.dryRun ? 'None' : options.outputFile}`);
@@ -237,7 +237,7 @@ async function main() {
 -- Drop existing table if needed (comment this out if you want to keep existing data)
 -- DROP TABLE IF EXISTS dbo.Auftraege_Fixed;
 
--- Create table for fixed historical data
+-- Create table for  historical data
 CREATE TABLE dbo.Auftraege_Fixed
 (
     ID INT IDENTITY(1,1) PRIMARY KEY,
@@ -278,7 +278,7 @@ GO
     
     // Modify SQL statements to use the new table name
     const modifiedSqlStatements = allSqlStatements.map(sql => 
-      sql.replace('INSERT INTO dbo.Auftraege', 'INSERT INTO dbo.Auftraege_Fixed')
+      sql.replace('INSERT INTO dbo.Auftraege_Fixed', 'INSERT INTO dbo.Auftraege_Fixed')
     );
     
     // Write to file
