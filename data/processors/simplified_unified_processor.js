@@ -12,7 +12,7 @@
  */
 
 // Target database table
-const TARGET_TABLE = "dbo.Auftraege_Fixed";
+const TARGET_TABLE = "dbo.Auftraege";
 
 // ==================== Helper Functions ====================
 
