@@ -4,11 +4,13 @@ A comprehensive system for managing and processing screwdriver controller data f
 
 ## Recent Updates
 
+- **Unified Processing**: Implemented a simplified unified processor that handles all controller types with a consistent approach
+- **Batch Processing**: Added batch processing capabilities for historical data migration
+- **Improved Data Extraction**: Enhanced field mapping for more accurate data extraction
+- **Table Name Handling**: Added support for custom table names via payload.Table property
 - **Improved UI**: Modern responsive interface with Tailwind CSS
 - **Enhanced Navigation**: Fully functional navbar with mobile support
 - **Better State Management**: Implemented useReducer for more robust form handling
-- **User Feedback**: Added toast notifications for better user interaction
-- **Consistent Styling**: Standardized UI components across pages
 
 ## Project Overview
 
@@ -19,18 +21,20 @@ Schrauber Verwaltung is specialized in processing and storing data from various 
 ```
 schrauber_verwaltung/
 ├── data/                            # Core data processing and storage
-│   ├── one_payload/                 # Single screwdriver payload files (per controller)
-│   ├── all_data/                    # Aggregated data files
-│   ├── data_handling/               # Data processing scripts
-│   │   ├── live/                    # Live data processing for different controllers
+│   ├── all_data/                    # Aggregated data files for batch processing
+│   ├── batch_results/               # SQL output files from batch processing
+│   ├── analysis_results/            # Analysis reports and statistics
+│   ├── processors/                  # Data processing scripts
+│   │   ├── simplified_unified_processor.js  # Unified processor for all controller types
+│   │   ├── batch_processor.js       # Batch processor for historical data
+│   │   ├── deep_analysis_processor.js # Processor for detailed data analysis
+│   │   ├── specific/                # Controller-specific processors (legacy)
 │   │   │   ├── process_MFV3_*.js    # MFV3 controller processors
 │   │   │   ├── process_MFV23_*.js   # MFV23 controller processors
 │   │   │   ├── process_MOE61_*.js   # MOE61 controller processors
 │   │   │   └── process_MOE6_*.js    # MOE6/GH4 controller processors
-│   │   └── migration/               # Data migration tools
+│   │   └── jsonKeys.txt             # Mapping of JSON fields to database columns
 │   ├── Upserts/                     # Database upsert scripts
-│   ├── jsonKeys.txt                 # Mapping of JSON fields to database columns
-│   └── function.js                  # Core processing functions
 ├── backend/                         # Backend server (Node.js + Express)
 │   ├── src/
 │   │   ├── controllers/             # API endpoints and business logic
@@ -67,10 +71,14 @@ schrauber_verwaltung/
 - **Format Normalization**: Convert different naming conventions and data formats to a standardized structure
 
 ### 2. Data Processing
+- **Unified Processing**: Single processor that handles all controller types with consistent field mapping
+- **Batch Processing**: Process large historical data files with line-by-line JSON parsing
+- **Deep Analysis**: Generate comprehensive statistics and reports from historical data
 - **Base64 Decoding**: Process base64-encoded graph data for torque and angle measurements
 - **ID Code Parsing**: Extract material and serial numbers from different ID code formats
 - **Field Mapping**: Map varying JSON field names to standardized database columns
 - **Tightening Method Support**: Handle both torque-based and angle-based final tightening methods
+- **Custom Table Names**: Support for specifying the table name via payload.Table property
 
 ### 3. Data Storage
 - **Standardized Database**: Store processed data in a consistent format regardless of source controller
@@ -100,6 +108,32 @@ schrauber_verwaltung/
 - **Interactive Components**: Dynamic forms, tables, and charts
 - **Navigation**: Intuitive navigation between different system areas
 
+## Data Processing System
+
+### Simplified Unified Processor
+The core of the data processing system is the simplified unified processor (`simplified_unified_processor.js`), which:
+- Handles all controller types with a single, consistent approach
+- Automatically detects controller type from payload structure
+- Extracts data using standardized field mapping
+- Supports custom table names via payload.Table property
+- Generates SQL statements for database insertion
+- Provides detailed error handling and reporting
+
+### Batch Processor
+For processing historical data, the batch processor (`batch_processor.js`):
+- Processes large text files containing multiple JSON payloads
+- Handles each line as a separate JSON object
+- Uses the simplified unified processor for consistent data extraction
+- Generates SQL files for database import
+- Provides progress tracking and success rate statistics
+
+### Deep Analysis Processor
+For detailed data analysis, the deep analysis processor (`deep_analysis_processor.js`):
+- Analyzes data across all controller types
+- Collects statistics on torque and angle values
+- Generates comprehensive reports on data quality and distribution
+- Identifies patterns and anomalies in the data
+
 ## Controller Data Structures
 
 ### Standard Controllers (MFV3, MFV23, MOE61)
@@ -118,7 +152,24 @@ schrauber_verwaltung/
 
 ### Prerequisites
 - Node.js (v14 or higher)
-- SQL Server
+- SQL Server (with database schema from `backend/schrauber_verwaltung.sql`)
+- Node-RED (for live data processing)
+
+### Running the Batch Processor
+```bash
+# Navigate to the project directory
+cd schrauber_verwaltung
+
+# Run the batch processor
+node data/processors/batch_processor.js
+```
+
+### Using the Unified Processor in Node-RED
+1. Create a new function node in your Node-RED flow
+2. Copy the entire contents of `data/processors/simplified_unified_processor.js` into the function node
+3. Configure the input to receive JSON payloads from your MQTT or HTTP source
+4. Add a change node before the function to set `msg.payload.Table` to the appropriate table name
+5. Connect the output to your database node for SQL execution
 - XAMPP (for local development)
 
 ### Installation
