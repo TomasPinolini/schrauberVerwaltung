@@ -32,7 +32,11 @@ if (!fs.existsSync(outputDir)) {
 }
 
 // Process the payload using the unified processor
-function processPayload(payload) {
+function processPayload(payload, controllerType) {
+  // Add the controllerType (filename without extension) as the Table property
+  // This ensures the simplified_unified_processor uses it for the Tabelle column
+  payload.Table = controllerType;
+  
   // Create a context object with the payload and node
   const context = {
     payload: payload,
@@ -94,7 +98,7 @@ async function processFile(filePath, controllerType) {
       // Process the JSON payload
       try {
         const payload = JSON.parse(line);
-        const result = processPayload(payload);
+        const result = processPayload(payload, controllerType);
         
         if (result && result.topic) {
           fs.appendFileSync(outputPath, `${result.topic}\n\n`);

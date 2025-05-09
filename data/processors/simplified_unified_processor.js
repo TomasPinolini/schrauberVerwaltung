@@ -209,20 +209,10 @@ function extractGraphData(step) {
  * @returns {Object} Processed data for SQL insertion
  */
 function processStandardController(payload) {
-  // Extract source name (Tabelle) from file name or payload
-  const tableTag = payload.name || payload.table || 
-    (payload.format === 'channel' ? getSourceNameFromPayload(payload) : 'Unknown');
+  // Use payload.Table directly for the Tabelle column if available
+  // Otherwise fall back to previous logic
+  const tableTag = payload.Table;  
   
-  // Helper function to determine source name from payload characteristics
-  function getSourceNameFromPayload(p) {
-    // Check for specific source characteristics
-    if (p['mac0'] && p['mac0'].startsWith('00-C0-3A')) {
-      if (p['last cmd'] === 'TF Angle') return 'MFV23';
-      if (p['last cmd'] === 'TF Torque') return 'MFV3';
-      return 'MOE61';
-    }
-    return 'Unknown';
-  }
   const datum = formatDate(payload.dateIso || payload.date || new Date());
   const idCode = payload['id code'];
   
@@ -265,8 +255,9 @@ function processStandardController(payload) {
  */
 function processGH4Controller(payload) {
   const results = [];
-  // Determine source name (Tabelle) - for GH4, we can identify it by the channel structure
-  const baseTableTag = payload.name || 
+  // Use payload.Table directly for the Tabelle column if available
+  // Otherwise fall back to previous logic
+  const baseTableTag = payload.Table || payload.name || 
     (payload.channels && payload.channels.length > 0 && 
      payload.channels[0]['id code'] && 
      payload.channels[0]['id code'].startsWith('R')) ? 'MOE61_Halle206_GH4' : 'Unknown_GH4';
