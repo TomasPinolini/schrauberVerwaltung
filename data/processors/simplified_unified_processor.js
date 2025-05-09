@@ -227,6 +227,10 @@ function processStandardController(payload) {
   const tighteningFunctions = Array.isArray(lastStep['tightening functions']) ? lastStep['tightening functions'] : [];
   const functionValues = extractFromTighteningFunctions(tighteningFunctions);
   
+  // Extract the name of the last step program (P_Letzter_Schritt)
+  // For all controllers, it's in the lastStep.name field
+  const lastStepName = lastStep.name || null;
+  
   // Extract graph data
   const graphData = extractGraphData(lastStep);
   
@@ -242,7 +246,7 @@ function processStandardController(payload) {
     Schraubkanal: payload.nr || payload['node id'] || null,
     Ergebnis: (payload.result || payload['quality code'] || '').toString().trim().toUpperCase(),
     N_Letzter_Schritt: lastStep.row || null,
-    P_Letzter_Schritt: lastStep.column || lastStep.name || null,
+    P_Letzter_Schritt: lastStepName,
     ...functionValues,
     ...graphData
   };
@@ -285,6 +289,10 @@ function processGH4Controller(payload) {
         const tighteningFunctions = Array.isArray(lastStep['tightening functions']) ? lastStep['tightening functions'] : [];
         const functionValues = extractFromTighteningFunctions(tighteningFunctions);
         
+        // Extract the name of the last step program (P_Letzter_Schritt)
+        // For GH4 controllers, it's also in the lastStep.name field
+        const lastStepName = lastStep.name || null;
+        
         // Extract graph data
         const graphData = extractGraphData(lastStep);
         
@@ -300,7 +308,7 @@ function processGH4Controller(payload) {
           Schraubkanal: channel.nr || idx + 1,
           Ergebnis: (channel.result || channel['quality code'] || '').toString().trim().toUpperCase(),
           N_Letzter_Schritt: lastStep.row || null,
-          P_Letzter_Schritt: lastStep.column || lastStep.name || null,
+          P_Letzter_Schritt: lastStepName,
           ...functionValues,
           ...graphData
         });
