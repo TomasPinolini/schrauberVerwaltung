@@ -9408,3 +9408,31 @@
 {"level":"info","message":"Incoming GET request to /api/screwdrivers/statistics/overview","timestamp":"2025-05-07T08:45:24.797Z"}
 {"level":"info","message":"Incoming GET request to /api/screwdrivers/parent-attributes","timestamp":"2025-05-07T08:45:25.497Z"}
 {"level":"info","message":"Incoming GET request to /api/screwdrivers/parent-attributes/19/distribution","timestamp":"2025-05-07T08:45:25.590Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-05-07T08:54:22.034Z"}
+{"level":"info","message":"GET /api/attributes request received","service":"schrauber-verwaltung","timestamp":"2025-05-07 10:54:22"}
+{"level":"info","message":"Query parameters: {\n  \"include_inactive\": \"true\"\n}","service":"schrauber-verwaltung","timestamp":"2025-05-07 10:54:22"}
+{"level":"info","message":"Found 5 attributes","service":"schrauber-verwaltung","timestamp":"2025-05-07 10:54:22"}
+{"level":"info","message":"Incoming GET request to /api/attributes?include_inactive=true","timestamp":"2025-05-07T08:54:22.368Z"}
+{"level":"info","message":"GET /api/attributes request received","service":"schrauber-verwaltung","timestamp":"2025-05-07 10:54:22"}
+{"level":"info","message":"Query parameters: {\n  \"include_inactive\": \"true\"\n}","service":"schrauber-verwaltung","timestamp":"2025-05-07 10:54:22"}
+{"level":"info","message":"Found 5 attributes","service":"schrauber-verwaltung","timestamp":"2025-05-07 10:54:22"}
+{"level":"info","message":"Incoming GET request to /api/attributes","timestamp":"2025-05-07T08:54:27.480Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers?include_inactive=true","timestamp":"2025-05-07T08:54:27.481Z"}
+{"level":"info","message":"Incoming GET request to /api/attributes","timestamp":"2025-05-07T08:54:27.481Z"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers?include_inactive=true","timestamp":"2025-05-07T08:54:27.482Z"}
+{"level":"info","message":"GET /api/attributes request received","service":"schrauber-verwaltung","timestamp":"2025-05-07 10:54:27"}
+{"level":"info","message":"Query parameters: {}","service":"schrauber-verwaltung","timestamp":"2025-05-07 10:54:27"}
+{"level":"info","message":"GET /api/screwdrivers request received","service":"schrauber-verwaltung","timestamp":"2025-05-07 10:54:27"}
+{"level":"info","message":"Query parameters: {\n  \"include_inactive\": \"true\"\n}","service":"schrauber-verwaltung","timestamp":"2025-05-07 10:54:27"}
+{"level":"info","message":"GET /api/attributes request received","service":"schrauber-verwaltung","timestamp":"2025-05-07 10:54:27"}
+{"level":"info","message":"Query parameters: {}","service":"schrauber-verwaltung","timestamp":"2025-05-07 10:54:27"}
+{"level":"info","message":"GET /api/screwdrivers request received","service":"schrauber-verwaltung","timestamp":"2025-05-07 10:54:27"}
+{"level":"info","message":"Query parameters: {\n  \"include_inactive\": \"true\"\n}","service":"schrauber-verwaltung","timestamp":"2025-05-07 10:54:27"}
+{"level":"info","message":"Found 5 attributes","service":"schrauber-verwaltung","timestamp":"2025-05-07 10:54:27"}
+{"level":"info","message":"Found 10 screwdrivers","service":"schrauber-verwaltung","timestamp":"2025-05-07 10:54:27"}
+{"level":"info","message":"Found 5 attributes","service":"schrauber-verwaltung","timestamp":"2025-05-07 10:54:27"}
+{"level":"info","message":"Found 10 screwdrivers","service":"schrauber-verwaltung","timestamp":"2025-05-07 10:54:27"}
+{"level":"info","message":"Incoming GET request to /api/screwdrivers?include_inactive=true","timestamp":"2025-05-07T08:54:35.723Z"}
+{"level":"info","message":"GET /api/screwdrivers request received","service":"schrauber-verwaltung","timestamp":"2025-05-07 10:54:35"}
+{"level":"info","message":"Query parameters: {\n  \"include_inactive\": \"true\"\n}","service":"schrauber-verwaltung","timestamp":"2025-05-07 10:54:35"}
+{"level":"info","message":"Found 10 screwdrivers","service":"schrauber-verwaltung","timestamp":"2025-05-07 10:54:35"}

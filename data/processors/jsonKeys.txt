@@ -1,0 +1,365 @@
+# Schrauber-Controller Payload-Zuordnungen
+
+  ## Erklärung der Schlüsselpositionen im vereinfachten Prozessor (Simplified Unified Processor)
+
+    Der vereinfachte Prozessor sucht nach bestimmten Schlüsseln in den JSON-Payloads, 
+    um die Daten für die Datenbank zu extrahieren. Hier ist eine detaillierte Übersicht, 
+    wo genau die Schlüssel in den verschiedenen Payload-Strukturen gesucht werden:
+
+    ### Schlüsselpfade für Standard-Controller (MFV3, MFV23, MOE61)
+
+      ```javascript
+        // Grundlegende Felder (direkt im Root-Objekt)
+        Tabelle = payload.name || payload.table || bestimmt aus Payload-Eigenschaften
+        Datum = payload.dateIso || payload.date || aktuelles Datum
+        ID_Code = payload['id code']
+        Program_Nr = payload['prg nr']
+        Program_Name = payload['prg name']
+        Schraubkanal = payload.nr || payload['node id'] || null
+        Ergebnis = payload.result || payload['quality code']
+
+        // Material- und Seriennummer (aus ID_Code extrahiert)
+        Materialnummer = extrahiert aus ID_Code wenn Format "R901450936-1108_001"
+        Serialnummer = extrahiert aus ID_Code wenn Format "R901450936-1108_001"
+
+        // Schraubschritte
+        steps = payload['tightening steps']
+        lastStep = steps[steps.length - 1]
+        N_Letzter_Schritt = lastStep.row
+        P_Letzter_Schritt = lastStep.column || lastStep.name
+
+        // Drehmoment- und Winkelwerte (aus tightening functions im letzten Schritt)
+        tighteningFunctions = lastStep['tightening functions']
+        // Suche nach spezifischen Funktionen basierend auf 'name'
+      ```
+
+    ### Schlüsselpfade für GH4-Controller (mit Channels-Array)
+
+      ```javascript
+        // Grundlegende Felder
+        Tabelle = payload.name || bestimmt aus Payload-Eigenschaften
+
+        // Für jeden Kanal im channels-Array
+        payload.channels.forEach(channel => {
+          Datum = channel.date || payload.date || aktuelles Datum
+          ID_Code = channel['id code'] || payload['id code']
+          Program_Nr = channel['prg nr']
+          Program_Name = channel['prg name']
+          Schraubkanal = channel.nr || Kanalindex + 1
+          Ergebnis = channel.result || channel['quality code']
+          
+          // Material- und Seriennummer (aus ID_Code extrahiert)
+          Materialnummer = extrahiert aus ID_Code wenn Format "R901450936-1108_001"
+          Serialnummer = extrahiert aus ID_Code wenn Format "R901450936-1108_001"
+          
+          // Schraubschritte
+          steps = channel['tightening steps']
+          lastStep = steps[steps.length - 1]
+          N_Letzter_Schritt = lastStep.row
+          P_Letzter_Schritt = lastStep.column || lastStep.name
+          
+          // Drehmoment- und Winkelwerte (aus tightening functions im letzten Schritt)
+          tighteningFunctions = lastStep['tightening functions']
+          // Suche nach spezifischen Funktionen basierend auf 'name'
+        });
+      ```
+
+    ### Extraktion der Drehmoment- und Winkelwerte
+
+      Für beide Controller-Typen werden die Drehmoment- und Winkelwerte wie folgt extrahiert:
+
+      ```javascript
+        // Durchsuche alle tightening functions nach spezifischen Namen
+        tighteningFunctions.forEach(fn => {
+          switch(fn.name) {
+            case 'TF Torque':
+              Drehmoment_Nom = fn.nom
+              Drehmoment_Ist = fn.act
+              break
+            case 'MF TorqueMin':
+              Drehmoment_Min = fn.nom
+              break
+            case 'MF TorqueMax':
+            case 'MFs TorqueMax':
+              Drehmoment_Max = fn.nom
+              break
+            case 'TF Angle':
+            case 'TF Yield Point':
+              Winkel_Nom = fn.nom
+              Winkel_Ist = fn.act
+              break
+            case 'MF AngleMin':
+            case 'MFs AngleMin':
+              Winkel_Min = fn.nom
+              break
+            case 'MF AngleMax':
+            case 'MFs AngleMax':
+              Winkel_Max = fn.nom
+              break
+          }
+        });
+      ```
+
+    ### Extraktion der Graphdaten
+
+    Die Winkel- und Drehmomentwerte für die Graphen werden aus zwei möglichen Quellen extrahiert:
+
+    ```javascript
+      // Array-Format
+      if (lastStep.graph && Array.isArray(lastStep.graph['angle values'])) {
+        Winkelwerte = lastStep.graph['angle values'].join(',')
+        Drehmomentwerte = lastStep.graph['torque values'].join(',')
+      }
+
+      // Base64-Format
+      else if (lastStep.graph_b64) {
+        // Decodiere Base64-Daten
+        const decodedData = decodeGraphB64(lastStep.graph_b64)
+        Winkelwerte = decodedData.angleValues.join(',')
+        Drehmomentwerte = decodedData.torqueValues.join(',')
+      }
+    ```
+
+  ## Gemeinsame Felder (Alle Controller)
+    - Datum: `date` oder `dateIso` (ISO-Format: "YYYY-MM-DD HH:MM:SS")
+    - ID_Code: `id code` (Formate variieren je nach Controller-Typ)
+    - Ergebnis: `result` oder `quality code` ("OK"|"NOK")
+    - Program_Nr: `prg nr`
+    - Program_Name: `prg name`
+    - Zyklus: `cycle`
+
+  ## Standard-Controller (MFV3, MFV23, MOE61)
+    ### Struktur der Anzugsschritte
+      - Schritte: `tightening steps` (Array von Schritt-Objekten)
+        - Schritt_Typ: `step type`
+        - Zeile: `row`
+        - Spalte: `column`
+        - Anzugsfunktionen: `tightening functions` (Array)
+          - Name: `name` (z.B. "TF Torque", "TF Angle", "TF Yield Point")
+          - Sollwert: `nom`
+          - Istwert: `act`
+
+    ### Messfelder
+      - Drehmoment_Nom: Zu finden im letzten Anzugsschritt: `tightening steps[last].tightening functions[x].nom` wobei name "TF Torque" ist
+      - Drehmoment_Ist: Zu finden im letzten Anzugsschritt: `tightening steps[last].tightening functions[x].act` wobei name "TF Torque" ist
+      - Drehmoment_Min: Zu finden im letzten Anzugsschritt: `tightening steps[last].tightening functions[x].nom` wobei name "MF TorqueMin" ist
+      - Drehmoment_Max: Zu finden im letzten Anzugsschritt: `tightening steps[last].tightening functions[x].nom` wobei name "MF TorqueMax" oder "MFs TorqueMax" ist
+      - Winkel_Nom: Zu finden im letzten Anzugsschritt: `tightening steps[last].tightening functions[x].nom` wobei name "TF Angle" oder "TF Yield Point" ist
+      - Winkel_Ist: Zu finden im letzten Anzugsschritt: `tightening steps[last].tightening functions[x].act` wobei name "TF Angle" oder "TF Yield Point" ist
+      - Winkel_Min: Zu finden im letzten Anzugsschritt: `tightening steps[last].tightening functions[x].nom` wobei name "MF AngleMin" oder "MFs AngleMin" ist
+      - Winkel_Max: Zu finden im letzten Anzugsschritt: `tightening steps[last].tightening functions[x].nom` wobei name "MF AngleMax" oder "MFs AngleMax" ist
+
+  ## GH4 Controller (MOE6_Halle206_GH4)
+    ### Besondere Eigenschaften
+      - Verschachtelte Struktur mit `channels` Array (1-4 Schrauber)
+      - Anderes ID-Format: "R"-Präfix mit Material-/Seriennummern
+      - Anwendungsebene-Felder vor Kanaldaten
+
+    ### Kanal-spezifische Zuordnungen
+      Jeder Kanal enthält:
+        - Kanal_Nr: `nr`
+        - SST: `SST`
+        - Programmdaten: Gleiche Struktur wie Standard-Controller
+        - Anzugsschritte: Gleiche Zuordnung wie Standard, aber innerhalb des Kanal-Objekts
+
+  ## Variationen bei Feldbenennungen
+    - TorqueMax: Kann erscheinen als:
+      - `MF TorqueMax` (am häufigsten)
+      - `MFs TorqueMax` (einige MFV23-Modelle)
+    - AngleMin/Max: Kann erscheinen als:
+      - `MF AngleMin` / `MF AngleMax`
+      - `MFs AngleMin` / `MFs AngleMax`
+    - Angle: Kann erscheinen als:
+      - `TF Angle` (am häufigsten)
+      - `TF Yield Point` (in einigen Controllern)
+
+  ## Graphdaten-Formate
+    - Standard: Array-Format (`graph.angle_values`, `graph.torque_values`)
+    - Einige Controller: Base64-kodiert (`graph_b64.angle_values`, `graph_b64.torque_values`)
+    - Base64-Dekodierung: Verwende Buffer.from(value, 'base64') und lese als Int32LE mit 
+    entsprechender Skalierung
+
+  ## Sonderfälle
+    1. Winkelbasiertes Endanziehen (einige MFV23) - letzter Schritt verwendet Winkel statt Drehmoment
+    2. Redundante Sensordaten (wenn `redundancy sensor` > 0)
+    3. Batch-Verarbeitungsfelder (wenn `batch nr` > 0)
+    4. Einige Controller können Drehmoment-/Winkelwerte in Zwischenschritten anstatt im letzten Schritt haben
+
+  ## Controller-spezifische Hinweise
+    ### MFV3_Halle204_Rest_CH
+      - Datum: `date` oder `dateIso` (beide existieren auf Root-Ebene, dateIso enthält Zeitzone)
+      - ID_Code: `id code` (Format: "L 000000151112")
+      - Program_Nr: `prg nr`
+      - Program_Name: `prg name`
+      - Materialnummer: N/A
+      - Serialnummer: N/A
+      - Schraubkanal: `channel` oder `nr` oder `node id`
+      - Ergebnis: `result` oder `quality code`
+      - N_Letzter_Schritt: `last step row` oder `tightening steps[last].row`
+      - P_Letzter_Schritt: `last step column` oder `tightening steps[last].column`
+      - Drehmoment_Nom: Im letzten Anzugsschritt zu finden: `tightening steps[last].tightening functions[x].nom` wobei name "TF Torque" ist
+      - Drehmoment_Ist: Im letzten Anzugsschritt zu finden: `tightening steps[last].tightening functions[x].act` wobei name "TF Torque" ist
+      - Drehmoment_Min: Im letzten Anzugsschritt zu finden: `tightening steps[last].tightening functions[x].nom` wobei name "MF TorqueMin" ist
+      - Drehmoment_Max: Im letzten Anzugsschritt zu finden: `tightening steps[last].tightening functions[x].nom` wobei name "MF TorqueMax" oder "MFs TorqueMax" ist
+      - Winkel_Nom: Möglicherweise nicht vorhanden in diesem Controller-Typ
+      - Winkel_Ist: Möglicherweise nicht vorhanden in diesem Controller-Typ
+      - Winkel_Min: Möglicherweise nicht vorhanden in diesem Controller-Typ
+      - Winkel_Max: Möglicherweise nicht vorhanden in diesem Controller-Typ
+      - Winkelwerte: `tightening steps[last].graph_b64.angle values` (Base64-kodiert) oder `tightening steps[last].graph.angle values` (Array)
+      - Drehmomentwerte: `tightening steps[last].graph_b64.torque values` (Base64-kodiert) oder `tightening steps[last].graph.torque values` (Array)
+
+    ### MFV3_Halle204_Vorm_Prop_Druck
+      - Datum: `date` oder `dateIso` (beide existieren auf Root-Ebene, dateIso enthält Zeitzone)
+      - ID_Code: `id code` (Format: "L 000000577802")
+      - Program_Nr: `prg nr`
+      - Program_Name: `prg name`
+      - Materialnummer: N/A
+      - Serialnummer: N/A
+      - Schraubkanal: `channel` oder `nr` oder `node id`
+      - Ergebnis: `result` oder `quality code`
+      - N_Letzter_Schritt: `last step row` oder `tightening steps[last].row`
+      - P_Letzter_Schritt: `last step column` oder `tightening steps[last].column`
+      - Drehmoment_Nom: Im letzten Anzugsschritt zu finden: `tightening steps[last].tightening functions[x].nom` wobei name "TF Torque" ist
+      - Drehmoment_Ist: Im letzten Anzugsschritt zu finden: `tightening steps[last].tightening functions[x].act` wobei name "TF Torque" ist
+      - Drehmoment_Min: Im letzten Anzugsschritt zu finden: `tightening steps[last].tightening functions[x].nom` wobei name "MF TorqueMin" ist
+      - Drehmoment_Max: Im letzten Anzugsschritt zu finden: `tightening steps[last].tightening functions[x].nom` wobei name "MF TorqueMax" oder "MFs TorqueMax" ist
+      - Winkel_Nom: Möglicherweise nicht vorhanden in diesem Controller-Typ
+      - Winkel_Ist: Möglicherweise nicht vorhanden in diesem Controller-Typ
+      - Winkel_Min: Möglicherweise nicht vorhanden in diesem Controller-Typ
+      - Winkel_Max: Möglicherweise nicht vorhanden in diesem Controller-Typ
+      - Winkelwerte: `tightening steps[last].graph_b64.angle values` (Base64-kodiert)
+      - Drehmomentwerte: `tightening steps[last].graph_b64.torque values` (Base64-kodiert)
+
+    ### MFV23_Halle101_114227CP_link
+      - Datum: `date` (Format: "2025-04-07 13:27:08")
+      - ID_Code: `id code` (Format: "L 000000195660")
+      - Program_Nr: `prg nr`
+      - Program_Name: `prg name`
+      - Materialnummer: N/A
+      - Serialnummer: N/A
+      - Schraubkanal: `channel` oder `nr` oder `node id`
+      - Ergebnis: `result` oder `quality code`
+      - N_Letzter_Schritt: `last step row` oder `tightening steps[last].row`
+      - P_Letzter_Schritt: `last step column` oder `tightening steps[last].column`
+      - Drehmoment_Nom: Im letzten Anzugsschritt zu finden: `tightening steps[last].tightening functions[x].nom` wobei name "TF Torque" ist
+      - Drehmoment_Ist: Im letzten Anzugsschritt zu finden: `tightening steps[last].tightening functions[x].act` wobei name "TF Torque" ist
+      - Drehmoment_Min: Im letzten Anzugsschritt zu finden: `tightening steps[last].tightening functions[x].nom` wobei name "MF TorqueMin" ist
+      - Drehmoment_Max: Im letzten Anzugsschritt zu finden: `tightening steps[last].tightening functions[x].nom` wobei name "MF TorqueMax" oder "MFs TorqueMax" ist
+      - Winkel_Nom: Möglicherweise nicht vorhanden in diesem Controller-Typ
+      - Winkel_Ist: Möglicherweise nicht vorhanden in diesem Controller-Typ
+      - Winkel_Min: Möglicherweise nicht vorhanden in diesem Controller-Typ
+      - Winkel_Max: Möglicherweise nicht vorhanden in diesem Controller-Typ
+      - Winkelwerte: `tightening steps[last].graph.angle values` (Array-Format)
+      - Drehmomentwerte: `tightening steps[last].graph.torque values` (Array-Format)
+
+    ### MFV23_Halle101_114227CP_recht
+      - Datum: `date` (Format: "2025-04-08 05:54:29")
+      - ID_Code: `id code` (Format: "L 000000223838")
+      - Program_Nr: `prg nr`
+      - Program_Name: `prg name`
+      - Materialnummer: N/A
+      - Serialnummer: N/A
+      - Schraubkanal: `channel` oder `nr` oder `node id`
+      - Ergebnis: `result` oder `quality code`
+      - N_Letzter_Schritt: `last step row` oder `tightening steps[last].row`
+      - P_Letzter_Schritt: `last step column` oder `tightening steps[last].column`
+      - Drehmoment_Nom: Im letzten Anzugsschritt zu finden: `tightening steps[last].tightening functions[x].nom` wobei name "TF Torque" ist
+      - Drehmoment_Ist: Im letzten Anzugsschritt zu finden: `tightening steps[last].tightening functions[x].act` wobei name "TF Torque" ist
+      - Drehmoment_Min: Im letzten Anzugsschritt zu finden: `tightening steps[last].tightening functions[x].nom` wobei name "MF TorqueMin" ist
+      - Drehmoment_Max: Im letzten Anzugsschritt zu finden: `tightening steps[last].tightening functions[x].nom` wobei name "MF TorqueMax" oder "MFs TorqueMax" ist
+      - Winkel_Nom: Möglicherweise nicht vorhanden in diesem Controller-Typ
+      - Winkel_Ist: Möglicherweise nicht vorhanden in diesem Controller-Typ
+      - Winkel_Min: Im letzten Anzugsschritt zu finden: `tightening steps[last].tightening functions[x].nom` wobei name "MF AngleMin" oder "MFs AngleMin" ist
+      - Winkel_Max: Im letzten Anzugsschritt zu finden: `tightening steps[last].tightening functions[x].nom` wobei name "MF AngleMax" oder "MFs AngleMax" ist
+      - Winkelwerte: `tightening steps[last].graph.angle values` (Array-Format)
+      - Drehmomentwerte: `tightening steps[last].graph.torque values` (Array-Format)
+
+    ### MFV23_Halle101_11461CP
+      - Datum: `date` (Format: "2025-04-11 07:50:17")
+      - ID_Code: `id code` (Format: "L 000000109266")
+      - Program_Nr: `prg nr`
+      - Program_Name: `prg name`
+      - Materialnummer: N/A
+      - Serialnummer: N/A
+      - Schraubkanal: `channel` oder `nr` oder `node id`
+      - Ergebnis: `result` oder `quality code`
+      - N_Letzter_Schritt: `last step row` oder `tightening steps[last].row`
+      - P_Letzter_Schritt: `last step column` oder `tightening steps[last].column`
+      - Drehmoment_Nom: Möglicherweise nicht im letzten Schritt vorhanden, wenn winkelbasiertes Anziehen verwendet wird
+      - Drehmoment_Ist: Möglicherweise nicht im letzten Schritt vorhanden, wenn winkelbasiertes Anziehen verwendet wird
+      - Drehmoment_Min: Möglicherweise nicht im letzten Schritt vorhanden
+      - Drehmoment_Max: Möglicherweise nicht im letzten Schritt vorhanden
+      - Winkel_Nom: Im letzten Anzugsschritt zu finden: `tightening steps[last].tightening functions[x].nom` wobei name "TF Angle" oder "TF Yield Point" ist
+      - Winkel_Ist: Im letzten Anzugsschritt zu finden: `tightening steps[last].tightening functions[x].act` wobei name "TF Angle" oder "TF Yield Point" ist
+      - Winkel_Min: Möglicherweise nicht im letzten Schritt vorhanden
+      - Winkel_Max: Möglicherweise nicht im letzten Schritt vorhanden
+      - Winkelwerte: `tightening steps[last].graph.angle values` (Array-Format)
+      - Drehmomentwerte: `tightening steps[last].graph.torque values` (Array-Format)
+      - Sonderfall: Dieser Controller verwendet winkelbasiertes Anziehen im letzten Schritt anstatt Drehmoment
+
+  ### MOE61_Halle206_BGGF1GF3
+    - Datum: `date` (Format: "2025-04-10 07:24:12")
+    - ID_Code: `id code` (Format: "L 000000075617")
+    - Program_Nr: `prg nr`
+    - Program_Name: `prg name`
+    - Materialnummer: N/A
+    - Serialnummer: N/A
+    - Schraubkanal: `channel` oder `nr` oder `node id`
+    - Ergebnis: `result` oder `quality code`
+    - N_Letzter_Schritt: `last step row` oder `tightening steps[last].row`
+    - P_Letzter_Schritt: `last step column` oder `tightening steps[last].column`
+    - Drehmoment_Nom: Im letzten Anzugsschritt zu finden: `tightening steps[last].tightening functions[x].nom` wobei name "TF Torque" ist
+    - Drehmoment_Ist: Im letzten Anzugsschritt zu finden: `tightening steps[last].tightening functions[x].act` wobei name "TF Torque" ist
+    - Drehmoment_Min: Im letzten Anzugsschritt zu finden: `tightening steps[last].tightening functions[x].nom` wobei name "MF TorqueMin" ist
+    - Drehmoment_Max: Im letzten Anzugsschritt zu finden: `tightening steps[last].tightening functions[x].nom` wobei name "MF TorqueMax" oder "MFs TorqueMax" ist
+    - Winkel_Nom: Möglicherweise nicht vorhanden in diesem Controller-Typ
+    - Winkel_Ist: Möglicherweise nicht vorhanden in diesem Controller-Typ
+    - Winkel_Min: Möglicherweise nicht vorhanden in diesem Controller-Typ
+    - Winkel_Max: Möglicherweise nicht vorhanden in diesem Controller-Typ
+    - Winkelwerte: `tightening steps[last].graph.angle values` (Array-Format)
+    - Drehmomentwerte: `tightening steps[last].graph.torque values` (Array-Format)
+
+  ### MOE61_Halle207_BEM
+    - Datum: `date` und `dateIso` (Format: "2025-04-08 07:06:15", dateIso enthält Zeitzone)
+    - ID_Code: `id code` (Format: "L 000000068112")
+    - Program_Nr: `prg nr`
+    - Program_Name: `prg name`
+    - Materialnummer: N/A
+    - Serialnummer: N/A
+    - Schraubkanal: `channel` oder `nr` oder `node id`
+    - Ergebnis: `result` oder `quality code`
+    - N_Letzter_Schritt: `last step row` oder `tightening steps[last].row`
+    - P_Letzter_Schritt: `last step column` oder `tightening steps[last].column`
+    - Drehmoment_Nom: Möglicherweise nicht vorhanden in diesem Controller-Typ
+    - Drehmoment_Ist: Möglicherweise nicht vorhanden in diesem Controller-Typ
+    - Drehmoment_Min: Möglicherweise nicht vorhanden in diesem Controller-Typ
+    - Drehmoment_Max: Möglicherweise nicht vorhanden in diesem Controller-Typ
+    - Winkel_Nom: Im letzten Anzugsschritt zu finden: `tightening steps[last].tightening functions[x].nom` wobei name "TF Angle" oder "TF Yield Point" ist
+    - Winkel_Ist: Im letzten Anzugsschritt zu finden: `tightening steps[last].tightening functions[x].act` wobei name "TF Angle" oder "TF Yield Point" ist
+    - Winkel_Min: Möglicherweise nicht vorhanden in diesem Controller-Typ
+    - Winkel_Max: Möglicherweise nicht vorhanden in diesem Controller-Typ
+    - Winkelwerte: `tightening steps[last].graph.angle values` (Array-Format)
+    - Drehmomentwerte: `tightening steps[last].graph.torque values` (Array-Format)
+
+  ### MOE6_Halle206_GH4
+    - **Spezialformat: Enthält mehrere Kanaldaten in einer verschachtelten Struktur**
+    - Datum: Root-Ebene `date` (Format: "2025-03-06 06:17:44") oder innerhalb jedes Kanals `channels[x].date`
+    - ID_Code: Root-Ebene `id code` (Format: "R901450936-1108_001") oder innerhalb jedes Kanals `channels[x].id code`
+    - Program_Nr: Für jeden Kanal: `channels[x].prg nr`
+    - Program_Name: Für jeden Kanal: `channels[x].prg name`
+    - Materialnummer: Extrahiert aus ID-Code - Teil vor dem ersten "-": "R901450936"
+    - Serialnummer: Extrahiert aus ID-Code - Teil nach dem letzten "_": "001"
+    - Schraubkanal: Für jeden Kanal: `channels[x].nr` (1-4)
+    - Ergebnis: Root-Ebene `result` oder für jeden Kanal: `channels[x].result` oder `channels[x].quality code`
+    - N_Letzter_Schritt: Für jeden Kanal: `channels[x].last step row` oder `channels[x].tightening steps[last].row`
+    - P_Letzter_Schritt: Für jeden Kanal: `channels[x].last step column` oder `channels[x].tightening steps[last].column`
+    - Drehmoment_Nom: Für jeden Kanal, im letzten Anzugsschritt: `channels[x].tightening steps[last].tightening functions[y].nom` wobei name "TF Torque" ist
+    - Drehmoment_Ist: Für jeden Kanal, im letzten Anzugsschritt: `channels[x].tightening steps[last].tightening functions[y].act` wobei name "TF Torque" ist
+    - Drehmoment_Min: Für jeden Kanal, im letzten Anzugsschritt: `channels[x].tightening steps[last].tightening functions[y].nom` wobei name "MF TorqueMin" ist
+    - Drehmoment_Max: Für jeden Kanal, im letzten Anzugsschritt: `channels[x].tightening steps[last].tightening functions[y].nom` wobei name "MF TorqueMax" oder "MFs TorqueMax" ist
+    - Winkel_Nom: Für jeden Kanal, im letzten Anzugsschritt: `channels[x].tightening steps[last].tightening functions[y].nom` wobei name "TF Angle" oder "TF Yield Point" ist
+    - Winkel_Ist: Für jeden Kanal, im letzten Anzugsschritt: `channels[x].tightening steps[last].tightening functions[y].act` wobei name "TF Angle" oder "TF Yield Point" ist
+    - Winkel_Min: Für jeden Kanal, im letzten Anzugsschritt: `channels[x].tightening steps[last].tightening functions[y].nom` wobei name "MF AngleMin" oder "MFs AngleMin" ist
+    - Winkel_Max: Für jeden Kanal, im letzten Anzugsschritt: `channels[x].tightening steps[last].tightening functions[y].nom` wobei name "MF AngleMax" oder "MFs AngleMax" ist
+    - Winkelwerte: Für jeden Kanal: `channels[x].tightening steps[last].graph_b64.angle values` (Base64-kodiert) oder `channels[x].tightening steps[last].graph.angle values` (Array)
+    - Drehmomentwerte: Für jeden Kanal: `channels[x].tightening steps[last].graph_b64.torque values` (Base64-kodiert) oder `channels[x].tightening steps[last].graph.torque values` (Array)
