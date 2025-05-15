@@ -1,0 +1,31 @@
+@startuml yxx
+start
+    :Get prüfmittelnummer from Screwdriver; <<task>>
+    
+    :Build Addition Schraubfall Query; <<task>>
+    
+    :Add Addition Schraubfall\nQuery to {Addition}; <<task>>
+
+    repeat
+        :Show Measurements; <<load>>
+    
+        :Select Measurement; <<input>>
+    
+        repeat
+            :Show Reference Types; <<load>>
+    
+            :Select Reference Type; <<input>>
+    
+            :Enter value; <<input>>
+    
+            :Build Schraubfall_Sollwerte Query; <<task>>
+    
+            :Add Schraubfall_Sollwerte\nQuery to {Addition}; <<task>>
+    
+        repeat while (done?)
+
+    repeat while (done?)
+
+
+stop
+@enduml

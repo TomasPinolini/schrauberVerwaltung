@@ -1,0 +1,59 @@
+@startjson MOE6_Halle206_GH4
+{
+  "format": "application",
+  "mac0": "00-C0-3A-6E-bd-f4",
+  "ip0": "10.52.116.79",
+  "sw version": "2.500",
+  "appl nr": 3,
+  "appl name": "PGH4-3x",
+  "appl cycle": 1076991879,
+  "id code": "R901450936-1108_001",
+  "date": "2025-03-06 06:17:44",
+  "result": "OK",
+  "last step row": "4",
+  "no of channels": 4,
+  "channels": [
+    {},{},{},
+    {
+      "format": "channel",
+      "nr": 4,
+      "result": "OK",
+      "mac0": "00-C0-3A-6E-bd-f4",
+      "ip0": "10.52.116.79",
+      "sw version": "2.500",
+      "prg nr": 3,
+      "prg name": "PGH4-3X",
+      "prg date": "2021-02-09 08:26:45",
+      "cycle": 67582,
+      "date": "2025-03-06 06:17:43",
+      "id code": "R901450936-1108_001",
+      "last step row": "8",
+      "tool serial": 755000014,
+      "tightening steps": [
+        {},{},{},{},{},{},{},
+        {
+          "row": "8",
+          "name": "195Nm",
+          "result": "OK",
+          "angle threshold": { "nom": 100, "act": 100.1 },
+          "tightening functions": [
+            { "name": "TF Torque", "nom": 195, "act": 195.1 },
+            { "name": "TF Yield Point", "nom": 50, "act": 53},
+            { "name": "MFs TimeMax", "nom": 15, "act": 1.09 },
+            { "name": "MF TorqueMin", "nom": 160, "act": 195.1 },
+            { "name": "MFs TorqueMax", "nom": 230, "act": 195.1 },
+            { "name": "MF AngleMin","nom": 1,"act": 39.62},
+            { "name": "MFs AngleMax","nom": 120, "act": 39.62}
+          ],
+            "graph": {
+                "angle values": [2171.75, 2173.84, 2175.35],
+                "torque values": [7.61, 3.89, 5.19, 3.44],
+                "time values": [2.5608, 2.5908,2.616, 2.6364]
+            }
+        }
+      ]
+    }
+  ]
+}
+
+@endjson

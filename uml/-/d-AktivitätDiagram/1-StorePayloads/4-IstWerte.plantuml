@@ -1,0 +1,41 @@
+@startuml xcxv
+start
+    :Get Schraubfall; <<load>>
+
+    note right
+      SELECT prüfmittelnummer FROM Schrauber
+      WHERE toolserial = ${channel.toolserial}
+      AND aktuell = 1
+    end note
+
+    :Get Necessary_Messungen; <<load>>
+
+    note right
+      SELECT id_Messung
+      FROM   Schraubfall_Istwerte
+      WHERE  id = ${Schraubfall.prüfmittelnummer}
+    end note
+    
+    :Schraubfall.id = id_Schraubfall;
+    :Enter "Last Step";
+
+    floating note right: Channel.tightening steps.row
+
+    :Enter tightening functions;
+    :Get Schraubfall.Necessary_Messungen;
+
+    repeat
+        fork
+            :Extract ist_Werte;
+            #palegreen :INSERT INTO Ist_Werte;
+        fork again
+            if(Channel.result) then (NOK)
+              :Extract Graph;
+              #palegreen :INSERT INTO Graph_Werte;
+            else (OK)
+            endif
+        end fork
+    repeat while (Messungen?)
+
+stop
+@enduml

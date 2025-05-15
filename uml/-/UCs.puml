@@ -1,0 +1,55 @@
+@startuml AssemblyAssistant
+left to right direction
+'top to bottom direction
+skinparam actorStyle awesome
+
+'actor "Arbeitsplaner" as ap
+'actor "TEF7" as tef
+'actor "QMM" as qmm
+
+actor "User" as user
+actor "Payload" as payload
+
+package Verschraubung {
+    usecase "Schraubergebnisse einsehen" as see
+    usecase "Qualitätskennzahlen anzeigen" as qa
+    usecase "NOK Kurve aufweisen" as ka
+    usecase "Verschraubungen Liste exportieren" as vle
+}
+
+package Schrauber {
+    usecase "einfügen" as se
+    usecase "bearbeiten" as sb
+    usecase "aktivieren/deaktivieren" as su
+    usecase "Schrauber Liste exportieren" as sle
+}
+
+package "Schrauber Attribute" {
+    usecase "einfügen" as ae
+    usecase "bearbeiten" as ab
+    usecase "aktivieren/deaktivieren" as au
+}
+
+package Schraubfall {
+    usecase "Automatiziert einfügen" as schfe
+}
+
+
+
+user --> see
+user --> qa
+user --> ka
+user --> vle
+
+user --> ae
+user --> ab
+user --> au
+
+user --> se
+user --> sb
+user --> su
+user --> sle
+
+payload --> schfe
+
+@enduml

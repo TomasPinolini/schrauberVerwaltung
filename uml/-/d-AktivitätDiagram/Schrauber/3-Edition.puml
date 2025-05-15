@@ -1,0 +1,43 @@
+@startuml xsss
+start
+    if (Edition) then (Sollwerte)
+        :Show Sollwerte from selected Schraubfall; <<load>>
+        repeat
+            :Select Sollwerte; <<input>>
+            switch(Action)
+            case(Add Sollwert)
+                repeat
+                    :Show and Select\nMeasurement and Referenz_Typ;
+            
+                    :Enter value; <<input>>
+            
+                    :Build Edit_Schraubfall_Sollwerte Query; <<task>>
+            
+                    :Add Edit_Schraubfall_Sollwerte\nQuery to {Edition}; <<task>>
+            
+                repeat while (done?)
+            case(Edit Sollwerte)
+                repeat
+                    :Show and Select\nMeasurement and Referenz_Typ;
+            
+                    :Enter value; <<input>>
+            
+                    :Build Edit_Schraubfall_Sollwerte Query; <<task>>
+            
+                    :Add Edit_Schraubfall_Sollwerte\nQuery to {Edition}; <<task>>
+            
+                repeat while (done?)
+            endswitch
+        repeat while (done?)
+    else (State)
+        :Select Switch;
+        if(State) then (ON)
+            :Deactivate;  <<task>>
+        else (OFF)
+            :Activate;  <<task>>
+        endif
+        :Add Edit_Schraubfall_State\nQuery to {Edition}; <<task>>
+
+    endif
+stop
+@enduml

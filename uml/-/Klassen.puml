@@ -1,0 +1,22 @@
+@startuml xxx
+    class "Verschraubung" as ver
+    class "Schrauber" as sch     
+    class "Schraubfall" as schf
+    class "Messung" as m
+    class "Referenzwert_Typ" as rt
+    class "Schraubfall_Sollwerte" as soll
+    class "Istwerte" as ist
+    class "Graph_Werte" as gw
+    class "Materialnummer" as mn
+    class "Programm" as p
+    class "Programm_Version" as pv
+
+    ver "*" --* "1" mt : einschraubt
+    sch "1" *-- "*" ver
+    sch "1" --o "*" schf
+    schf "1" *-- "*" sw
+    
+    
+
+@enduml
+

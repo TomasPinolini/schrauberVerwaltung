@@ -1,0 +1,78 @@
+@startuml "Messauftrag bearbeiten"
+start
+    :Show Messaufträge; <<output>>
+
+    if(User Type) then(Führungskraft)
+        :Also show Priorities; <<output>>
+    else (Other)
+    endif
+    
+    :Select Auftrag; <<input>>
+
+    :Select action; <<input>>
+
+    switch(action) 
+    case (Location)
+        :Show all Meassuring_Room; <<output>>
+
+        :Select Meassuring_Room; <<input>>
+
+        :Save new Meassuring_Room_History; <<save>>
+
+
+    case (Status)
+        :Extract Messaufgaben from Messauftrag; <<load>>
+
+        :Show Messaufgaben; <<output>>
+
+        repeat
+            :Select Messaufgabe; <<input>>
+
+        repeat while (Done selecting?)
+        
+        :Select State; <<input>>
+
+        :Save new Task_State_History; <<save>>
+
+        group 'Get minimum State'{
+            :Minimum_State = 3; <<task>>
+            note: 3 at this point:\nlatest State
+
+            repeat
+                :Read State of Messaufgabe of Messauftrag; <<load>>
+                
+                if(Id of State of Messaufgabe < Minimum_State)then(yes)
+                    :Minimum_State = State of Messaubgabe;
+
+                else (no)
+                endif
+                
+            repeat while (next Messaufgabe)
+
+            if(Order_State_History = Minimum_State)
+                :Save new Order_State_History; <<save>>
+            else(no)
+            endif
+        
+        }
+
+    
+    case (Priority)
+        if(User Type) then(Führungskraft)
+            :Show Priorities; <<output>>
+            
+            :Select priority; <<input>>
+
+            :Save Priority_History; <<save>>
+
+        else (Other)
+            end
+        endif
+
+    endswitch
+
+    :MessAufträge_Suchen; <<procedure>> 
+    note right: just to show\nthe done changes.
+
+stop
+@enduml

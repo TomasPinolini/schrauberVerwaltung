@@ -1,0 +1,45 @@
+@startuml "Messauftrag erstellen"
+start
+    :Open Interface;
+    
+    fork
+        :AuthO; <<procedure>>
+    fork again
+        :Get timestamp; <<procedure>>
+    end fork
+    
+    :Enter 'Fertigungsauftragsnummer'; <<input>>
+    
+    :Enter Number of part to be checked; <<input>>
+    
+    fork
+        :Get Materialnummer; <<task>>
+    fork again
+        :Get Materialtext; <<task>>
+    fork again
+        :Get Arbeitsplatz; <<task>>
+    end fork
+
+    :Display material number, text, workstation; <<output>>
+    
+    :Enter 'Grund der Messung'; <<input>>
+
+    :Select one or more Form- und Oberflächenprüfung; <<input>>
+
+
+    if ("Other measuring task" selected?) then (yes)
+        :Enter description text; <<input>>
+    endif
+
+    :Confirm;
+
+    :Save Messauftrag; <<save>>
+
+    if(Add Begleitkarte?) then (yes)
+        :Print Begleitkarte; 
+        :Attach Begleitkarte;
+    endif
+
+
+stop
+@enduml

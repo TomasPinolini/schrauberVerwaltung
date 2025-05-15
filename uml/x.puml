@@ -1,0 +1,30 @@
+@startuml cc
+
+package "Assembly Line Control" {
+  MQTT - [PLC Controller]
+  [HMI Panel]
+}
+
+node "Edge Devices" {
+  OPCUA - [Screwdriver Controller]
+  [PLC Controller] --> OPCUA
+}
+
+cloud "Cloud Services" {
+  [Torque Analysis Engine]
+}
+
+database "Production Database" {
+  folder "Screw Records" {
+    [Torque Record Table]
+  }
+  frame "Analysis Reports" {
+    [CPK Report Generator]
+  }
+}
+
+[HMI Panel] --> [Torque Analysis Engine]
+[Torque Analysis Engine] --> [Torque Record Table]
+[Torque Record Table] --> [CPK Report Generator]
+
+@enduml

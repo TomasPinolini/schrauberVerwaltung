@@ -1,0 +1,84 @@
+@startuml "Messaufträge Einsehen"
+start
+    :Get todays date;
+    
+    :Get User Type; <<task>>
+    
+    if(User Type) then (Fertigungsmitarbeiter)
+        :Get User_Id; <<task>>
+        :Get Messaufträge from User\n
+        from the last 7 days; <<task>>
+
+        group Filter{
+            if(Filter?) then (yes)
+                :Select column; <<input>>
+                :Enter value\n(written or selection); <<input>>
+                :Filter; <<task>>
+            else (no)
+            endif
+        }
+
+        group Sort{
+            if(Sort?) then (yes)
+                :Select Column to sort; <<input>>
+                :Sort Ascending; <<task>>
+                if(Want descending?) then (yes)
+                    :Press Column; <<input>>
+                    :Sort descending; <<task>>
+                else (no)
+                endif
+            else (no)
+            endif
+        }
+
+        :Show:
+        - Messauftragsnummer
+        - Zeitstempel Erstellung
+        - Fertigungsauftrag, Materialnummer
+        - Status (Status_History)
+        - Priorität (Priority_History)
+        - Ergebnis (Result)
+        ; <<output>>
+    
+    else (Messraummitarbeiter)
+    
+    :Messauftrag Suchen; <<procedure>>
+
+        :Show:
+        - Messauftragsnummer
+        - Zeitstempel Erstellung
+        - Fertigungsauftrag
+        - Materialnummer
+        - Anzahl der zu prüfenden Teile
+        - Grund der Messung (Reason_History)
+        - Status (State_History)
+        - Priorität (Priority_History)
+        - Ergebnis (Result)
+        - Messaufgabe (Form- und Oberflächenprüfung) 
+        ; <<output>>
+
+        group "Edit Messauftrag"{
+            if(Edit?) then (yes)
+                :Select Messauftrag to edit; <<input>>
+                repeat 
+                    :Select column to edit; <<input>>
+                    
+                    if(Attribute) then (Category)
+                        :Show Values of Attributes; <<output>>
+
+                        :Select value; <<input>>
+                        
+                    else(NotCategory)
+                        :Enter value; <<input>>
+                                        
+                    endif
+                repeat while (Done?)
+
+
+            else (no)
+            endif
+        }
+
+    endif
+stop
+@enduml

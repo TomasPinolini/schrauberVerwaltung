@@ -1,0 +1,37 @@
+@startjson MFV23_Halle101_114227CP_link
+{
+  "format": "channel",
+  "result": "OK",
+  "mac0": "00-C0-3A-6E-7a-2d",
+  "ip0": "10.52.97.92",
+  "sw version": "2.500",
+  "prg nr": 2,
+  "prg name": "5.8Nm",
+  "prg date": "2024-03-19 08:27:17",
+  "cycle": 109266,
+  "date": "2025-04-07 13:27:08",
+  "id code": "L 000000195660",
+  "last step row": "3",
+  "tool serial": 519000006,
+  "tightening steps": [
+    {},
+    {
+      "row": "3",
+      "name": "Endanzug_5.8Nm",
+      "result": "OK",
+      "tightening functions": [
+        { "name": "TF Torque", "nom": 5.7, "act": 5.79 },
+        { "name": "MFs TimeMax", "nom": 10, "act": 0.08 },
+        { "name": "MF TorqueMin", "nom": 5.22, "act": 5.79 },
+        { "name": "MF TorqueMax", "nom": 6.38, "act": 5.79 }
+      ],
+      "graph": {
+        "angle values": [2783.02, 2785.28, 2787.65],
+        "torque values": [1.24, 1.68, 2.15],
+        "time values": [1.4976, 1.512, 1.5252, 1.5348]
+      }
+    }
+  ]
+}
+
+@endjson
