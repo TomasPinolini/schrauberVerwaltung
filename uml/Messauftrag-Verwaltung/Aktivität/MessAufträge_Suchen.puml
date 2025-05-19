@@ -1,46 +1,44 @@
 @startuml "Messauftrag Suchen"
 start
-    :Create Filters;
+    :Create //Filters//;
+    note right: {}
     repeat
         switch ("Filter nach...")
             case (Fertigungsauftragsnummer)
-                :Enter FAN; <<input>>         
-
-                :Add FAN to Filters{}; <<task>>
+                :Enter **FAN**; <<input>>         
 
             case (Status)
-                :Get Messaufträge with\n
-            
-                Bearbeitung = 'offen'; <<task>>
-            
-                if(Include Abgeschlossene?) then (yes)
-                    :Get Messaufträge with\n
-                    Bearbeitung = 'abgeschlossene'; <<task>>
-            
-                else (no)
-                endif
+                :Extract possible States; <<load>>
 
-                :Add Status to Filters; <<task>>
+                :Show possible States; <<output>>
 
-            case (Spalte)
-                :Select column; <<input>>
-                    
-                if(Attribute) then (Category)
-                    :Show Values of Attributes; <<output>>
-                    :Select value; <<input>>
-                else(NotCategory)
-                    :Enter value; <<input>>
-                                    
-                endif
+                :Select **possible State**; <<input>>
 
-                :Add Value of Column to Filters; <<task>>
+'            case (Spalte)
+'                :Select column; <<input>>
+'                    
+'                if(Attribute) then (Category)
+'                    :Show Values of Attributes; <<output>>
+'
+'                    :Select value; <<input>>
+'                
+'                else(NotCategory)
+'                    :Enter value; <<input>>
+'                                    
+'                endif
+'
+'                :Add Value of Column to Filters; <<task>>
+'
+'            case (Datum)
+'                :Enter Date From; <<input>>
 
-            case (Datum)
-                :Enter Date From; <<input>>
-                :Enter Date To; <<input>>
-                :Validate that To > From; <<task>>
+'                :Enter Date To; <<input>>
 
-                :Add Dates to Filters; <<task>>
+'                :Validate that To > From; <<task>>
+'
+'                :Add Dates to Filters; <<task>>
+'
+            case(No filter)
 
         endswitch
 
@@ -49,7 +47,9 @@ start
     
     :Add Filters to Query; <<task>>
 
-    :Show Messaufträge with Filters; <<output>>
+    :Extract Messaufträge with Filters; <<load>>
+
+    :Show retreived Messaufträge; <<output>>
 
 stop
 @enduml

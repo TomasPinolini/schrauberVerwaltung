@@ -8,6 +8,7 @@ skinparam actorStyle awesome
 'actor "QMM" as qmm
 
 actor "User" as user
+actor "Admin" as admin
 actor "Payload" as payload
 
 package Verschraubung {
@@ -32,24 +33,29 @@ package "Schrauber Attribute" {
 
 package Schraubfall {
     usecase "Automatiziert einfügen" as schfe
+    usecase "Neues Programm" as np
 }
 
 
+
+user <|-- admin
 
 user --> see
 user --> qa
 user --> ka
 user --> vle
 
+admin --> se
+admin --> sb
+admin --> su
+admin --> sle
+
 user --> ae
 user --> ab
 user --> au
 
-user --> se
-user --> sb
-user --> su
-user --> sle
 
 payload --> schfe
+payload --> np
 
 @enduml

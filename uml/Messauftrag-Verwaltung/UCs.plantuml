@@ -23,7 +23,7 @@ m --> bearbeiten
 fk --> bearbeiten
 m --> abschließen
 a --> stammdatenflege
-bearbeiten --> PVM
+fk --> PVM
 
 
 

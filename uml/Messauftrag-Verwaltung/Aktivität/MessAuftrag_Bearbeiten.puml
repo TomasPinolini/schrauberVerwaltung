@@ -1,11 +1,6 @@
 @startuml "Messauftrag bearbeiten"
 start
     :Show Messaufträge; <<output>>
-
-    if(User Type) then(Führungskraft)
-        :Also show Priorities; <<output>>
-    else (Other)
-    endif
     
     :Select Auftrag; <<input>>
 
@@ -34,24 +29,21 @@ start
 
         :Save new Task_State_History; <<save>>
 
-        group 'Get minimum State'{
-            :Minimum_State = 3; <<task>>
-            note: 3 at this point:\nlatest State
+        group 'Set proper State of Messauftrag'{
+            :Set State = 0; <<task>>
 
             repeat
-                :Read State of Messaufgabe of Messauftrag; <<load>>
-                
-                if(Id of State of Messaufgabe < Minimum_State)then(yes)
-                    :Minimum_State = State of Messaubgabe;
-
-                else (no)
+                :Read next step; <<load>>
+                if (StepState == In Bearbeitung?) then (<color:green>yes)
+                    :Set any = 1; <<task>>
                 endif
-                
-            repeat while (next Messaufgabe)
+        
+            repeat while (More steps?)
 
-            if(Order_State_History = Minimum_State)
-                :Save new Order_State_History; <<save>>
-            else(no)
+            if (State) then (<color:green> 1)
+                :Set State of Messauftrag to //In Bearbeitung//; <<save>>
+            else(<color:red> 0)
+                :Set State of Messauftrag to //Offen//; <<save>>
             endif
         
         }

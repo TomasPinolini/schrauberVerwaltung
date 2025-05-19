@@ -34,12 +34,16 @@ start
         :Show:
         - Messauftragsnummer
         - Zeitstempel Erstellung
-        - Fertigungsauftrag, Materialnummer
+        - Fertigungsauftrag
+        - Materialnummer
+        - Timestamp_since_in_Messraum
         - Status (Status_History)
         - Priorität (Priority_History)
         - Ergebnis (Result)
         ; <<output>>
-    
+        note right: between ():\nlocated in other tables
+        note right: Ergebnis in grün\noder rot anzeigen.
+
     else (Messraummitarbeiter)
     
     :Messauftrag Suchen; <<procedure>>
@@ -50,12 +54,16 @@ start
         - Fertigungsauftrag
         - Materialnummer
         - Anzahl der zu prüfenden Teile
+        - Timestamp_since_in_Messraum
         - Grund der Messung (Reason_History)
         - Status (State_History)
         - Priorität (Priority_History)
         - Ergebnis (Result)
         - Messaufgabe (Form- und Oberflächenprüfung) 
         ; <<output>>
+        note left: between ():\nlocated in other tables
+        note left: Ergebnis in grün\noder rot anzeigen.
+
 
         group "Edit Messauftrag"{
             if(Edit?) then (yes)

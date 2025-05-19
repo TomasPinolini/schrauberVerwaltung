@@ -1,7 +1,32 @@
 @startuml "Messauftrag Abschließend"
 start
+    :Select Messauftrag; <<input>>
 
+    :Messauftrag Ergebnis = OK; <<task>>
 
+    :Extract Messaufgaben; <<load>>
 
-end
+    :Show Messaufgaben; <<output>>
+
+    repeat
+        :Run Messaufgabe;
+
+        :Enter Ergebnis; <<input>>
+
+        :Save //result// from Messaugabe; <<save>>
+        
+        if(Ergebnis form Aufgabe) then (<color:red>NOK)
+            :Messauftrag Ergebnis = NOK;
+        else (<color:green>OK)
+        endif
+
+    repeat while(Next Messaufgabe?)
+
+    if(Messauftrag Ergebnis) then (<color:green>OK)
+        :Store Messauftrag //State// = Abgeschlossen; <<save>>
+    else (<color:red>NOK)
+        :Store Messauftrag //State// = In Bearbeitung; <<save>>
+    endif
+
+stop
 @enduml

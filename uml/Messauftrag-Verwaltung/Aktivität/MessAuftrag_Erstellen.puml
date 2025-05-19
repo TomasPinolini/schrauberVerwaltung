@@ -3,35 +3,40 @@ start
     :Open Interface;
     
     fork
-        :AuthO; <<procedure>>
+        :Get todays date; <<task>>
     fork again
-        :Get timestamp; <<procedure>>
+        :Get User Data; <<task>>
+    fork again
+        :Create //Messafutrag//;
+        note right: {}
     end fork
-    
-    :Enter 'Fertigungsauftragsnummer'; <<input>>
-    
-    :Enter Number of part to be checked; <<input>>
+
+    :Enter **Fertigungsauftragsnummer**; <<input>>
+
+    :Enter **Number of part to be checked**; <<input>>
     
     fork
-        :Get Materialnummer; <<task>>
+        :Extract **Materialnummer**; <<load>>
     fork again
-        :Get Materialtext; <<task>>
+        :Extract **Materialtext**; <<load>>
     fork again
-        :Get Arbeitsplatz; <<task>>
+        :Extract **Arbeitsplatz**; <<load>>
     end fork
 
     :Display material number, text, workstation; <<output>>
     
-    :Enter 'Grund der Messung'; <<input>>
+    :Enter **Grund der Messung**; <<input>>
 
-    :Select one or more Form- und Oberflächenprüfung; <<input>>
+    :Select one or more **Form- und Oberflächenprüfung**; <<input>>
 
 
     if ("Other measuring task" selected?) then (yes)
-        :Enter description text; <<input>>
+        :Enter **description** text; <<input>>
     endif
 
     :Confirm;
+ 
+    floating note right: All variables **in bold**\nwere added to //Messafutrag//
 
     :Save Messauftrag; <<save>>
 
