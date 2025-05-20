@@ -1,0 +1,37 @@
+@startjson MFV3_Halle204_Rest_CH
+{
+  "format": "channel",
+  "nr": 1,
+  "result": "OK",
+  "mac0": "00-C0-3A-6E-07-c5",
+  "ip0": "10.52.114.35",
+  "sw version": "2.700",
+  "prg nr": 11,
+  "prg name": "HSZ06-Platten 30Nm",
+  "prg date": "2024-06-27 08:03:49",
+  "cycle": 151112,
+  "date": "2025-04-08 07:03:08",
+  "id code": "L 000000151112",
+  "last step row": "4",
+  "tool serial": 101000005,
+  "tightening steps": [
+    {},{},
+    {
+      "row": "4",
+      "name": "Schraubstufe 30Nm",
+      "result": "OK",
+      "tightening functions": [
+        { "name": "TF Torque", "nom": 30, "act": 30.42 },
+        { "name": "MFs TimeMax", "nom": 10, "act": 0.33 },
+        { "name": "MF TorqueMin", "nom": 27, "act": 30.42 },
+        { "name": "MF TorqueMax", "nom": 33, "act": 30.42 }
+      ],
+      "graph_b64": {
+        "angle values": [360.21, 360.63, 362.14],
+        "torque values": [0.2, 0.17, 0.24],
+        "time values": [0.996, 0.9972, 1.0008]
+      }
+    }
+  ]
+}
+@endjson

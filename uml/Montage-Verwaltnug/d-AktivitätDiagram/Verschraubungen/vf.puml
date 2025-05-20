@@ -1,0 +1,22 @@
+@startuml "Verschraubungen filtern"
+start
+    #Violet:Create {Verschraubungen}; <<task>> 
+    note: as Ver
+    :Get Screwdrivers; <<task>>
+    :Select Screwdriver; <<input>>
+    note: Ver.id_Schrauber
+    :Get Programs from Screwdriver; <<task>>
+    :Select Program; <<input>>
+    note: Ver.id_Program
+    :Select Result; <<input>>
+    note: Ver.Result
+    if(Number of Channels) then (> 1)
+        :Select Screwdriver Channel;
+        note: Ver.schraubkanal
+        :Select Date_From and Date_To;
+        note: Ver.timerange\n([Date_From,Date_To])
+    else (1)
+    endif
+    :Extract Verchraubungen; <<load>>
+stop
+@enduml

@@ -1,0 +1,12 @@
+@startuml xcxv
+start
+    fork
+        if(Extract 'No of Channels') then (yes)
+        else (no) 
+            :'No of Channels' = 1;
+    endif
+    fork again
+        :N = 0;
+    end fork
+stop
+@enduml
